@@ -1,0 +1,61 @@
+{
+  "name": "libplanet-explorer",
+  "version": "0.1.0",
+  "description": "Libplanet Explorer",
+  "main": "index.js",
+  "scripts": {
+    "install": "npm run codegen",
+    "build": "gatsby build --prefix-paths",
+    "lint": "prettier --check \"@(*.css|*.js|*.json|src/**/*.@(ts|tsx))\"",
+    "lint:fix": "prettier --write \"@(*.css|*.js|*.json|src/**/*.@(ts|tsx))\"",
+    "dev:gatsby": "gatsby develop -H 0.0.0.0",
+    "dev:prettier": "onchange '@(*.css|*.js|*.json|*.ts|@(src|types)/**/*.@(ts|tsx))' -- prettier --write {{changed}}",
+    "codegen": "graphql-codegen --config codegen.yml",
+    "dev": "run-p dev:**"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/planetarium/libplanet-explorer-frontend.git"
+  },
+  "keywords": [
+    "blockchain"
+  ],
+  "author": "Planetarium",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/planetarium/libplanet-explorer-frontend/issues"
+  },
+  "homepage": "https://github.com/planetarium/libplanet-explorer-frontend#readme",
+  "dependencies": {
+    "@apollo/react-components": "^3.0.0",
+    "@apollo/react-hoc": "^3.0.0",
+    "@emotion/core": "^10.0.15",
+    "@emotion/styled": "^10.0.15",
+    "@graphql-codegen/cli": "^1.5.0",
+    "@graphql-codegen/typescript-react-apollo": "^1.5.0",
+    "@uifabric/icons": "^7.1.1",
+    "apollo-boost": "^0.4.3",
+    "apollo-client": "^2.6.3",
+    "emotion": "^10.0.14",
+    "gatsby": "^2.13.55",
+    "gatsby-plugin-catch-links": "^2.1.2",
+    "gatsby-plugin-layout": "^1.1.3",
+    "gatsby-plugin-typescript": "^2.1.2",
+    "graphql": "^14.4.2",
+    "npm-run-all": "^4.1.5",
+    "office-ui-fabric-core": "^10.1.0",
+    "office-ui-fabric-react": "^7.22.1",
+    "onchange": "^6.0.0",
+    "prettier": "^1.18.2",
+    "react": "^16.9.0",
+    "react-apollo": "^3.0.0",
+    "react-dom": "^16.9.0",
+    "typescript": "^3.5.3"
+  },
+  "devDependencies": {
+    "@graphql-codegen/typescript": "1.5.0",
+    "@graphql-codegen/typescript-operations": "1.5.0",
+    "@graphql-codegen/typescript-react-apollo": "1.5.0",
+    "@graphql-codegen/introspection": "1.5.0"
+  }
+}

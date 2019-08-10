@@ -1,0 +1,29 @@
+fragment BlockCommon on Block {
+  hash
+  index
+  difficulty
+  timestamp
+}
+
+query BlockList($offset: Int!, $limit: Int!) {
+  blocks(desc: true, offset: $offset, limit: $limit) {
+    ...BlockCommon
+  }
+}
+
+query BlockByHash($hash: ID) {
+  block(hash: $hash) {
+    ...BlockCommon
+    miner
+    nonce
+    previousHash
+    transactions {
+      nonce
+      publicKey
+      signature
+      signer
+      timestamp
+      updatedAddress
+    }
+  }
+}
