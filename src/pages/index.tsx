@@ -29,10 +29,10 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
     }
   };
   const olderHandler = () => {
-    setOffset(offset + limit);
+    setOffset(+offset + limit);
   };
   const newerHandler = () => {
-    setOffset(offset - limit);
+    setOffset(+offset - limit);
   };
 
   return (
