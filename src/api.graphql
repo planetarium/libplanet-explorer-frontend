@@ -16,14 +16,16 @@ query BlockByHash($hash: ID) {
     ...BlockCommon
     miner
     nonce
-    previousHash
+    previousBlock {
+      hash
+    }
     transactions {
       nonce
       publicKey
       signature
       signer
       timestamp
-      updatedAddress
+      updatedAddresses
     }
   }
 }

@@ -3,24 +3,33 @@ schema {
 }
 
 type Action {
-  plainValue: [PlainValueKeyValuePairType]
+  arguments: [ActionArgumentType!]!
 }
+
+type ActionArgumentType {
+  key: String!
+  value: String!
+}
+
+scalar Address
 
 type Block {
   difficulty: Int!
-  hash: ID
+  hash: ID!
   index: Int!
-  miner: String
-  nonce: String
-  previousHash: String
+  miner: Address!
+  nonce: ByteString!
+  previousBlock: Block
   timestamp: DateTimeOffset!
-  transactions: [Transaction]
+  transactions: [Transaction!]!
 }
 
 type BlockQuery {
   block(hash: ID = null): Block
-  blocks(desc: Boolean = false, offset: Int = 0, limit: Int = 7673): [Block]
+  blocks(desc: Boolean = false, offset: Int = 0, limit: Int = 27291): [Block]
 }
+
+scalar ByteString
 
 # The `Date` scalar type represents a year, month and day in accordance with the
 # [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
@@ -38,24 +47,21 @@ scalar DateTimeOffset
 
 scalar Decimal
 
-# The `Milliseconds` scalar type represents a period of time represented as the total number of milliseconds.
+# The `Milliseconds` scalar type
+# represents a period of time represented as the total number of milliseconds.
 scalar Milliseconds
 
-type PlainValueKeyValuePairType {
-  key: String
-  value: String
-}
-
-# The `Seconds` scalar type represents a period of time represented as the total number of seconds.
+# The `Seconds` scalar type
+# represents a period of time represented as the total number of seconds.
 scalar Seconds
 
 type Transaction {
-  actions: [Action]
+  actions: [Action!]!
+  id: ID!
   nonce: Int!
-  publicKey: String
-  signature: ID
-  signer: String
+  publicKey: ByteString!
+  signature: ByteString!
+  signer: Address!
   timestamp: DateTimeOffset!
-  updatedAddress: [String]
+  updatedAddresses: [Address!]!
 }
-
