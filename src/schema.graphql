@@ -26,7 +26,7 @@ type Block {
 
 type BlockQuery {
   block(hash: ID = null): Block
-  blocks(desc: Boolean = false, offset: Int = 0, limit: Int = 27291): [Block]
+  blocks(desc: Boolean = false, offset: Int = 0, limit: Int = null): [Block]
 }
 
 scalar ByteString
