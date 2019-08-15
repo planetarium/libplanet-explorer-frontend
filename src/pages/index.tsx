@@ -40,8 +40,31 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
       <BlockListComponent variables={{ offset, limit }}>
         {({ data, loading, error }) => {
           if (error) return <p>error!</p>;
+
+          const timestamps: Date[] | null = data && data.blocks
+            ? data.blocks.map(block => new Date(block!.timestamp))
+            : null;
+
+          let interval : number | null = timestamps ? 0 : null;
+          if (interval != null && timestamps) {
+            for (let i = 0; i < timestamps.length - 1; i++) {
+              interval += +timestamps[i] - +timestamps[i + 1];
+            }
+            interval /= (timestamps.length - 1) * 1000;
+          }
+
+          const difficulties: number[] | null = data && data.blocks
+            ? data.blocks.map(block => block!.difficulty)
+            : null;
+          let difficulty = 0;
+          if (difficulty != null && difficulties) {
+            difficulty = difficulties.reduce((d, sum) => d + sum, 0)
+              / difficulties.length;
+          }
           return (
             <>
+              <p key="interval">Recent {limit} blocks' interval: {interval} sec</p>
+              <p key="difficulty">Recent {limit} blocks' difficulty: {difficulty}</p>
               <DefaultButton
                 onClick={newerHandler}
                 disabled={loading || offset < 1}
