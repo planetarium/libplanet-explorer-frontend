@@ -52,7 +52,11 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
                   block.transactions.map(
                     transaction => <>
                       <dt>Id</dt>
-                      <dd><code>{transaction.id}</code></dd>
+                      <dd>
+                        <a href={`/transaction/?${transaction.id}`}>
+                          <code>{transaction.id}</code>
+                        </a>
+                      </dd>
                       <dt>Timestamp</dt>
                       <dd>{transaction.timestamp}</dd>
                     </>
