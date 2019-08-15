@@ -53,9 +53,21 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
             interval /= (timestamps.length - 1) * 1000;
           }
 
+          const difficulties: number[] | null = data && data.blocks
+            ? data.blocks.map(block => block!.difficulty)
+            : null;
+          let difficulty = 0;
+          if (difficulty != null && difficulties) {
+            for (let i = 0; i < difficulties.length; i++)
+            {
+              difficulty += difficulties[i];
+            }
+            difficulty /= difficulties.length;
+          }
           return (
             <>
-              <p>Recent {limit} blocks' interval: {interval} sec</p>
+              <p key="interval">Recent {limit} blocks' interval: {interval} sec</p>
+              <p key="difficulty">Recent {limit} blocks' difficulty: {difficulty}</p>
               <DefaultButton
                 onClick={newerHandler}
                 disabled={loading || offset < 1}
