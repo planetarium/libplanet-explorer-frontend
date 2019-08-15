@@ -58,11 +58,8 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
             : null;
           let difficulty = 0;
           if (difficulty != null && difficulties) {
-            for (let i = 0; i < difficulties.length; i++)
-            {
-              difficulty += difficulties[i];
-            }
-            difficulty /= difficulties.length;
+            difficulty = difficulties.reduce((d, sum) => d + sum, 0)
+              / difficulties.length;
           }
           return (
             <>
