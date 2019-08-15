@@ -12,6 +12,7 @@ import {
 import { getId } from 'office-ui-fabric-react/lib/Utilities';
 
 import Wrapper from './Wrapper';
+import { navigate } from '@reach/router';
 
 const GRAPHQL_ENDPOINT_URI = process.env.GRAPHQL_ENDPOINT_URI;
 
@@ -45,10 +46,18 @@ interface NavBarProps {
 }
 const NavBar: React.FC<NavBarProps> = ({ className }) => {
   const hostId = getId('tooltipHost');
+  const onSearch = (value: string) => {
+    if (value.match(/^[0-9a-fA-F]{64}$/)) {
+      navigate(`/block/?${value}`);
+    }
+    else {
+      alert('Wrong block hash!');
+    }
+  };
   return (
     <nav className={className}>
       <NavWrapper>
-        <NavSearchBox placeholder="block" />
+        <NavSearchBox placeholder="Block hash" onSearch={onSearch} />
         <NetworkNameContainer>
           <TooltipHost
             tooltipProps={{
