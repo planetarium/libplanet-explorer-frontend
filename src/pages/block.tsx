@@ -45,6 +45,21 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
             </dd>
             <dt>Difficulty</dt>
             <dd>{block.difficulty}</dd>
+            <dt>Transactions</dt>
+            <dd>
+              <dl>
+                {
+                  block.transactions.map(
+                    transaction => <>
+                      <dt>Id</dt>
+                      <dd><code>{transaction.id}</code></dd>
+                      <dt>Timestamp</dt>
+                      <dd>{transaction.timestamp}</dd>
+                    </>
+                  )
+                }
+              </dl>
+            </dd>
           </dl>
         );
       }}
