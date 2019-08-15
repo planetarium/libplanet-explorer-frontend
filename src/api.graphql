@@ -8,6 +8,9 @@ fragment BlockCommon on Block {
 query BlockList($offset: Int!, $limit: Int!) {
   blocks(desc: true, offset: $offset, limit: $limit) {
     ...BlockCommon
+    transactions {
+      id
+    }
   }
 }
 

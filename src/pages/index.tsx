@@ -141,6 +141,22 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       data: 'string',
       isPadded: true,
     },
+    {
+      key: 'columnTxNumber',
+      name: 'Tx #',
+      fieldName: null,
+      minWidth: 5,
+      maxWidth: 20,
+      isRowHeader: true,
+      isResizable: true,
+      isSorted: false,
+      isSortedDescending: false,
+      data: 'number',
+      isPadded: true,
+      onRender: block => (
+        <>{block.transactions.length}</>
+      ),
+    },
   ];
   return (
     <DetailsList
@@ -152,6 +168,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       layoutMode={DetailsListLayoutMode.justified}
       isHeaderVisible={true}
       onItemInvoked={block => navigate(`/block/?${block.hash}`)}
+
     />
   );
 };
