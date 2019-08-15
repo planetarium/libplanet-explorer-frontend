@@ -4,10 +4,11 @@
   "description": "Libplanet Explorer",
   "main": "index.js",
   "scripts": {
-    "install": "npm run codegen",
+    "prebuild": "npm run codegen",
     "build": "gatsby build --prefix-paths",
     "lint": "prettier --check \"@(*.css|*.js|*.json|src/**/*.@(ts|tsx))\"",
     "lint:fix": "prettier --write \"@(*.css|*.js|*.json|src/**/*.@(ts|tsx))\"",
+    "predev:gatsby": "npm run codegen",
     "dev:gatsby": "gatsby develop -H 0.0.0.0",
     "dev:prettier": "onchange '@(*.css|*.js|*.json|*.ts|@(src|types)/**/*.@(ts|tsx))' -- prettier --write {{changed}}",
     "codegen": "graphql-codegen --config codegen.yml",
