@@ -20,6 +20,7 @@ query BlockByHash($hash: ID) {
       hash
     }
     transactions {
+      id
       nonce
       publicKey
       signature
