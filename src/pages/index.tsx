@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { css } from 'emotion';
 import { navigate } from 'gatsby';
-import { DefaultButton, Link } from 'office-ui-fabric-react';
+import { Checkbox, DefaultButton, Link } from 'office-ui-fabric-react';
 import {
   DetailsList,
   DetailsListLayoutMode,
@@ -34,18 +34,27 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
   const newerHandler = () => {
     setOffset(+offset - limit);
   };
+  const [excludeEmptyTxs, setExcludeEmptyTxs] = useState(false);
 
   return (
     <>
-      <BlockListComponent variables={{ offset, limit }}>
+      <Checkbox
+        label="Include blocks having any tx"
+        checked={excludeEmptyTxs}
+        onChange={(_, checked) => {
+          setExcludeEmptyTxs(!!checked);
+        }}
+      />
+      <BlockListComponent variables={{ offset, limit, excludeEmptyTxs }}>
         {({ data, loading, error }) => {
           if (error) return <p>error!</p>;
 
-          const timestamps: Date[] | null = data && data.blocks
-            ? data.blocks.map(block => new Date(block!.timestamp))
-            : null;
+          const timestamps: Date[] | null =
+            data && data.blocks
+              ? data.blocks.map(block => new Date(block!.timestamp))
+              : null;
 
-          let interval : number | null = timestamps ? 0 : null;
+          let interval: number | null = timestamps ? 0 : null;
           if (interval != null && timestamps) {
             for (let i = 0; i < timestamps.length - 1; i++) {
               interval += +timestamps[i] - +timestamps[i + 1];
@@ -53,18 +62,23 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
             interval /= (timestamps.length - 1) * 1000;
           }
 
-          const difficulties: number[] | null = data && data.blocks
-            ? data.blocks.map(block => block!.difficulty)
-            : null;
+          const difficulties: number[] | null =
+            data && data.blocks
+              ? data.blocks.map(block => block!.difficulty)
+              : null;
           let difficulty = 0;
           if (difficulty != null && difficulties) {
-            difficulty = difficulties.reduce((d, sum) => d + sum, 0)
-              / difficulties.length;
+            difficulty =
+              difficulties.reduce((d, sum) => d + sum, 0) / difficulties.length;
           }
           return (
             <>
-              <p key="interval">Recent {limit} blocks' interval: {interval} sec</p>
-              <p key="difficulty">Recent {limit} blocks' difficulty: {difficulty}</p>
+              <p key="interval">
+                Average interval in this page: {interval} sec
+              </p>
+              <p key="difficulty">
+                Average difficulty in this page: {difficulty}
+              </p>
               <DefaultButton
                 onClick={newerHandler}
                 disabled={loading || offset < 1}
@@ -153,9 +167,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       isSortedDescending: false,
       data: 'number',
       isPadded: true,
-      onRender: block => (
-        <>{block.transactions.length}</>
-      ),
+      onRender: block => <>{block.transactions.length}</>,
     },
   ];
   return (
@@ -168,7 +180,6 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       layoutMode={DetailsListLayoutMode.justified}
       isHeaderVisible={true}
       onItemInvoked={block => navigate(`/block/?${block.hash}`)}
-
     />
   );
 };

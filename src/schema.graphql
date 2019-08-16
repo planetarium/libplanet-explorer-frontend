@@ -30,7 +30,7 @@ type BlockQuery {
     desc: Boolean = false
     offset: Int = 0
     limit: Int = null
-    empty: Boolean = true
+    excludeEmptyTxs: Boolean = false
   ): [Block]
   transaction(id: ID = null): Transaction
 }
