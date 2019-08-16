@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { css } from 'emotion';
 import { navigate } from 'gatsby';
-import { DefaultButton, Link } from 'office-ui-fabric-react';
+import { Checkbox, DefaultButton, Link } from 'office-ui-fabric-react';
 import {
   DetailsList,
   DetailsListLayoutMode,
@@ -34,10 +34,18 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
   const newerHandler = () => {
     setOffset(+offset - limit);
   };
+  const [havingTx, setHavingTx] = useState(false);
 
   return (
     <>
-      <BlockListComponent variables={{ offset, limit }}>
+      <Checkbox
+        label="Include blocks having any tx"
+        checked={havingTx}
+        onChange={(_, checked) => {
+          setHavingTx(!!checked);
+        }}
+      />
+      <BlockListComponent variables={{ offset, limit, empty: !havingTx }}>
         {({ data, loading, error }) => {
           if (error) return <p>error!</p>;
 
