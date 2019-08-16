@@ -5,6 +5,16 @@ fragment BlockCommon on Block {
   timestamp
 }
 
+fragment TransactionCommon on Transaction {
+  id
+  nonce
+  publicKey
+  signature
+  signer
+  timestamp
+  updatedAddresses
+}
+
 query BlockList($offset: Int!, $limit: Int!) {
   blocks(desc: true, offset: $offset, limit: $limit) {
     ...BlockCommon
@@ -20,13 +30,13 @@ query BlockByHash($hash: ID) {
       hash
     }
     transactions {
-      id
-      nonce
-      publicKey
-      signature
-      signer
-      timestamp
-      updatedAddresses
+      ...TransactionCommon
     }
+  }
+}
+
+query TransactionById($id: ID) {
+  transaction(id: $id) {
+    ...TransactionCommon
   }
 }
