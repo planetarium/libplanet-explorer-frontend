@@ -74,10 +74,10 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
           return (
             <>
               <p key="interval">
-                Recent {limit} blocks' interval: {interval} sec
+                Average interval in this page: {interval} sec
               </p>
               <p key="difficulty">
-                Recent {limit} blocks' difficulty: {difficulty}
+                Average difficulty in this page: {difficulty}
               </p>
               <DefaultButton
                 onClick={newerHandler}
