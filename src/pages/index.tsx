@@ -34,18 +34,18 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
   const newerHandler = () => {
     setOffset(+offset - limit);
   };
-  const [havingTx, setHavingTx] = useState(false);
+  const [excludeEmptyTxs, setExcludeEmptyTxs] = useState(false);
 
   return (
     <>
       <Checkbox
         label="Include blocks having any tx"
-        checked={havingTx}
+        checked={excludeEmptyTxs}
         onChange={(_, checked) => {
-          setHavingTx(!!checked);
+          setExcludeEmptyTxs(!!checked);
         }}
       />
-      <BlockListComponent variables={{ offset, limit, empty: !havingTx }}>
+      <BlockListComponent variables={{ offset, limit, excludeEmptyTxs }}>
         {({ data, loading, error }) => {
           if (error) return <p>error!</p>;
 

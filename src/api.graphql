@@ -15,8 +15,8 @@ fragment TransactionCommon on Transaction {
   updatedAddresses
 }
 
-query BlockList($offset: Int!, $limit: Int!, $empty: Boolean!) {
-  blocks(desc: true, offset: $offset, limit: $limit, empty: $empty) {
+query BlockList($offset: Int!, $limit: Int!, $excludeEmptyTxs: Boolean!) {
+  blocks(desc: true, offset: $offset, limit: $limit, excludeEmptyTxs: $excludeEmptyTxs) {
     ...BlockCommon
     transactions {
       id
