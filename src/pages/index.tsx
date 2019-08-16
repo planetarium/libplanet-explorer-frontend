@@ -49,11 +49,12 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
         {({ data, loading, error }) => {
           if (error) return <p>error!</p>;
 
-          const timestamps: Date[] | null = data && data.blocks
-            ? data.blocks.map(block => new Date(block!.timestamp))
-            : null;
+          const timestamps: Date[] | null =
+            data && data.blocks
+              ? data.blocks.map(block => new Date(block!.timestamp))
+              : null;
 
-          let interval : number | null = timestamps ? 0 : null;
+          let interval: number | null = timestamps ? 0 : null;
           if (interval != null && timestamps) {
             for (let i = 0; i < timestamps.length - 1; i++) {
               interval += +timestamps[i] - +timestamps[i + 1];
@@ -61,18 +62,23 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
             interval /= (timestamps.length - 1) * 1000;
           }
 
-          const difficulties: number[] | null = data && data.blocks
-            ? data.blocks.map(block => block!.difficulty)
-            : null;
+          const difficulties: number[] | null =
+            data && data.blocks
+              ? data.blocks.map(block => block!.difficulty)
+              : null;
           let difficulty = 0;
           if (difficulty != null && difficulties) {
-            difficulty = difficulties.reduce((d, sum) => d + sum, 0)
-              / difficulties.length;
+            difficulty =
+              difficulties.reduce((d, sum) => d + sum, 0) / difficulties.length;
           }
           return (
             <>
-              <p key="interval">Recent {limit} blocks' interval: {interval} sec</p>
-              <p key="difficulty">Recent {limit} blocks' difficulty: {difficulty}</p>
+              <p key="interval">
+                Recent {limit} blocks' interval: {interval} sec
+              </p>
+              <p key="difficulty">
+                Recent {limit} blocks' difficulty: {difficulty}
+              </p>
               <DefaultButton
                 onClick={newerHandler}
                 disabled={loading || offset < 1}
@@ -161,9 +167,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       isSortedDescending: false,
       data: 'number',
       isPadded: true,
-      onRender: block => (
-        <>{block.transactions.length}</>
-      ),
+      onRender: block => <>{block.transactions.length}</>,
     },
   ];
   return (
@@ -176,7 +180,6 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       layoutMode={DetailsListLayoutMode.justified}
       isHeaderVisible={true}
       onItemInvoked={block => navigate(`/block/?${block.hash}`)}
-
     />
   );
 };
