@@ -6,8 +6,8 @@ Libplanet Explorer Frontend
 This project is a user-facing web app, which renders data provided by
 a [Libplanet Explorer server][] instance.
 
-[github-actions-badge]: https://wdp9fww0r9.execute-api.us-west-2.amazonaws.com/production/badge/planetarium/libplanet-explorer-frontend
-[github-actions]: https://wdp9fww0r9.execute-api.us-west-2.amazonaws.com/production/results/planetarium/libplanet-explorer-frontend
+[github-actions-badge]: https://github.com/planetarium/libplanet-explorer-frontend/workflows/Deployment/badge.svg
+[github-actions]: https://github.com/planetarium/libplanet-explorer-frontend/actions
 [Libplanet Explorer server]: https://github.com/planetarium/libplanet-explorer
 
 
