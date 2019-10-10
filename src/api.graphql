@@ -18,6 +18,7 @@ fragment TransactionCommon on Transaction {
 query BlockList($offset: Int!, $limit: Int!, $excludeEmptyTxs: Boolean!) {
   blocks(desc: true, offset: $offset, limit: $limit, excludeEmptyTxs: $excludeEmptyTxs) {
     ...BlockCommon
+    miner
     transactions {
       id
     }

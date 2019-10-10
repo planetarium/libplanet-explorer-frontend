@@ -35,7 +35,6 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
     setOffset(+offset - limit);
   };
   const [excludeEmptyTxs, setExcludeEmptyTxs] = useState(false);
-
   return (
     <>
       <Checkbox
@@ -130,7 +129,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       key: 'columnHash',
       name: 'Hash',
       fieldName: 'hash',
-      minWidth: 350,
+      minWidth: 200,
       maxWidth: 450,
       isRowHeader: true,
       isResizable: true,
@@ -156,9 +155,21 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       isPadded: true,
     },
     {
+      key: 'coulmnMiner',
+      name: 'Miner',
+      fieldName: 'miner',
+      minWidth: 200,
+      maxWidth: 450,
+      isRowHeader: true,
+      isResizable: true,
+      isSorted: false,
+      isSortedDescending: true,
+      data: 'string',
+      isPadded: true,
+    },
+    {
       key: 'columnTxNumber',
       name: 'Tx #',
-      fieldName: null,
       minWidth: 5,
       maxWidth: 20,
       isRowHeader: true,
