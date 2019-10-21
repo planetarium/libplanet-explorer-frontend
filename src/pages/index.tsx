@@ -16,7 +16,7 @@ interface IndexPageProps {
 }
 
 const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
-  const limit = 20;
+  const limit = 21;
   const [searchParams, setSearchParams] = useSearchParams(location);
   const { offset = 0 } = searchParams;
   const setOffset = (offset: number) => {
@@ -105,7 +105,7 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
 };
 
 interface BlockListProps {
-  blocks: Pick<Block, 'hash' | 'index'>[];
+  blocks: Pick<Block, 'hash' | 'index' | 'timestamp'>[];
 }
 
 const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
@@ -168,6 +168,24 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       isPadded: true,
     },
     {
+      key: 'columnTimeTaken',
+      name: 'Time Taken',
+      minWidth: 80,
+      maxWidth: 200,
+      isRowHeader: true,
+      isResizable: true,
+      isSorted: false,
+      isSortedDescending: true,
+      data: 'string',
+      isPadded: true,
+      onRender: (block, index) => {
+        let beforeBlock = blocks[Math.min(index! + 1, blocks.length - 1)];
+        let beforeTimestamp = Date.parse(beforeBlock.timestamp);
+        let nowTimestamp = Date.parse(block.timestamp);
+        return <>{(nowTimestamp - beforeTimestamp) / 1000}</>;
+      },
+    },
+    {
       key: 'columnTxNumber',
       name: 'Tx #',
       minWidth: 5,
@@ -183,7 +201,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
   ];
   return (
     <DetailsList
-      items={blocks}
+      items={blocks.slice(0, -1)}
       columns={columns}
       selectionMode={SelectionMode.none}
       getKey={block => block.hash}
