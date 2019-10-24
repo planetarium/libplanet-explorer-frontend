@@ -15,6 +15,8 @@ interface IndexPageProps {
   location: Location;
 }
 
+const POLL_INTERVAL = 2000;
+
 const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
   const limit = 21;
   const [searchParams, setSearchParams] = useSearchParams(location);
@@ -44,7 +46,10 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
           setExcludeEmptyTxs(!!checked);
         }}
       />
-      <BlockListComponent variables={{ offset, limit, excludeEmptyTxs }}>
+      <BlockListComponent
+        variables={{ offset, limit, excludeEmptyTxs }}
+        pollInterval={POLL_INTERVAL}
+      >
         {({ data, loading, error }) => {
           if (error) return <p>error!</p>;
 
