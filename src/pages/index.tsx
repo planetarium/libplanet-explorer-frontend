@@ -48,8 +48,7 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
       />
       <BlockListComponent
         variables={{ offset, limit, excludeEmptyTxs }}
-        pollInterval={POLL_INTERVAL}
-      >
+        pollInterval={POLL_INTERVAL}>
         {({ data, loading, error }) => {
           if (error) return <p>error!</p>;
 
@@ -110,7 +109,7 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
 };
 
 interface BlockListProps {
-  blocks: Pick<Block, 'hash' | 'index' | 'timestamp'>[];
+  blocks: Pick<Block, 'hash' | 'index' | 'timestamp' | 'difficulty'>[];
 }
 
 const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
@@ -189,6 +188,19 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
         let nowTimestamp = Date.parse(block.timestamp);
         return <>{(nowTimestamp - beforeTimestamp) / 1000}</>;
       },
+    },
+    {
+      key: 'columnDifficulty',
+      name: 'Difficulty',
+      minWidth: 80,
+      maxWidth: 200,
+      isRowHeader: true,
+      isResizable: true,
+      isSorted: false,
+      isSortedDescending: true,
+      data: 'string',
+      isPadded: true,
+      onRender: block => <>{block.difficulty}</>,
     },
     {
       key: 'columnTxNumber',
