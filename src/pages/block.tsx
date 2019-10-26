@@ -49,7 +49,10 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
             <dd>{block.timestamp}</dd>
             <dt>Previous hash</dt>
             <dd>
-              {block.previousBlock ? <code>{block.previousBlock.hash}</code> : "N/A"}
+              {block.previousBlock ? 
+                <a href={`/block/?${block.previousBlock.hash}`}>
+                  <code>{block.previousBlock.hash}</code>
+                </a> : "N/A"}
             </dd>
             <dt>Difficulty</dt>
             <dd>{block.difficulty}</dd>
