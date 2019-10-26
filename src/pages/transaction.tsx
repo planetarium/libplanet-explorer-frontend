@@ -44,11 +44,26 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
             <dt>Timestamp</dt>
             <dd>{transaction.timestamp}</dd>
             <dt>Updated Addresses</dt>
-            {
-              transaction.updatedAddresses.map(
-                address => <dd><code>{address}</code></dd>
-              )
-            }
+            {transaction.updatedAddresses.map(address => (
+              <dd>
+                <code>{address}</code>
+              </dd>
+            ))}
+            <dt>Actions</dt>
+            {transaction.actions.map(action => (
+              <dd>
+                <dl>
+                  {action.arguments.map(argument => (
+                    <>
+                      <dt>{argument.key}</dt>
+                      <dd>
+                        <code> {JSON.stringify(argument.value)} </code>
+                      </dd>
+                    </>
+                  ))}
+                </dl>
+              </dd>
+            ))}
           </dl>
         );
       }}
