@@ -45,7 +45,7 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
             </dd>
             <dt>Difficulty</dt>
             <dd>{block.difficulty}</dd>
-            <dt>Transactions</dt>
+            <dt>{`Transactions [count: ${block.transactions.length}]`}</dt>
             <dd>
               <dl>
                 {
