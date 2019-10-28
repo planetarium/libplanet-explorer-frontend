@@ -28,7 +28,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
               </p>
             </>
           );
-        const { transaction } = data!;
+        const { transaction } = data!.transactionQuery!;
         if (!transaction)
           return (
             <>

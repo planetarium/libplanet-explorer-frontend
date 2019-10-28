@@ -36,7 +36,7 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
               </p>
             </>
           );
-        const { block } = data!;
+        const { block } = data!.blockQuery!;
         if (!block)
           return (
             <>
