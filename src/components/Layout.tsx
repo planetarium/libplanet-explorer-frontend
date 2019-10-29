@@ -32,8 +32,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <ApolloProvider client={client}>
       <LayoutContainer className="ms-bgColor-gray10">
-        <NavBar className="ms-bgColor-white" />
-        <Wrapper>{children}</Wrapper>
+        {children}
       </LayoutContainer>
     </ApolloProvider>
   );
@@ -44,7 +43,7 @@ export default Layout;
 interface NavBarProps {
   className?: string;
 }
-const NavBar: React.FC<NavBarProps> = ({ className }) => {
+export const NavBar: React.FC<NavBarProps> = ({ className }) => {
   const hostId = getId('tooltipHost');
   const onSearch = (value: string) => {
     if (value.match(/^[0-9a-fA-F]{64}$/)) {
