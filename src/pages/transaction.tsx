@@ -58,6 +58,26 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
                 </dd>
               )
             }
+            {transaction.updatedAddresses.map((address, index) => (
+              <dd key={index}>
+                <code>{address}</code>
+              </dd>
+            ))}
+            <dt>Actions</dt>
+            {transaction.actions.map((action, index) => (
+              <dd key={index}>
+                <dl>
+                  {action.arguments.map(argument => (
+                    <React.Fragment key={argument.key}>
+                      <dt>{argument.key}</dt>
+                      <dd>
+                        <code> {JSON.stringify(argument.value)} </code>
+                      </dd>
+                    </React.Fragment>
+                  ))}
+                </dl>
+              </dd>
+            ))}
           </dl>
         );
       }}

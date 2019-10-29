@@ -6,6 +6,12 @@ fragment BlockCommon on Block {
 }
 
 fragment TransactionCommon on Transaction {
+  actions {
+    arguments {
+      key
+      value
+    }
+  }
   id
   nonce
   publicKey

@@ -17,6 +17,8 @@ interface IndexPageProps {
   location: Location;
 }
 
+const POLL_INTERVAL = 2000;
+
 const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
   const limit = 21;
   const [searchParams, setSearchParams] = useSearchParams(location);
@@ -39,18 +41,31 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
   const [excludeEmptyTxs, setExcludeEmptyTxs] = useState(false);
   return (
     <>
-      <NavBar className="ms-bgColor-white" />
-      <Wrapper>
-        <Checkbox
-          label="Include blocks having any tx"
-          checked={excludeEmptyTxs}
-          onChange={(_, checked) => {
-            setExcludeEmptyTxs(!!checked);
-          }}
-        />
-        <BlockListComponent variables={{ offset, limit, excludeEmptyTxs }}>
-          {({ data, loading, error }) => {
+    
+      <Checkbox
+        label="Include blocks having any tx"
+        checked={excludeEmptyTxs}
+        onChange={(_, checked) => {
+          setExcludeEmptyTxs(!!checked);
+        }}
+      />
+      <BlockListComponent
+            variables={{ offset, limit, excludeEmptyTxs }}
+            pollInterval={POLL_INTERVAL}>
+            {({ data, loading, error }) => {
             if (error) return <p>error!</p>;
+      <Checkbox
+        label="Include blocks having any tx"
+        checked={excludeEmptyTxs}
+        onChange={(_, checked) => {
+          setExcludeEmptyTxs(!!checked);
+        }}
+      />
+      <BlockListComponent
+        variables={{ offset, limit, excludeEmptyTxs }}
+        pollInterval={POLL_INTERVAL}>
+        {({ data, loading, error }) => {
+          if (error) return <p>error!</p>;
 
             const timestamps: Date[] | null =
               data && data.blocks
@@ -110,7 +125,7 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
 };
 
 interface BlockListProps {
-  blocks: Pick<Block, 'hash' | 'index' | 'timestamp'>[];
+  blocks: Pick<Block, 'hash' | 'index' | 'timestamp' | 'difficulty'>[];
 }
 
 const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
@@ -134,7 +149,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       key: 'columnHash',
       name: 'Hash',
       fieldName: 'hash',
-      minWidth: 200,
+      minWidth: 5,
       maxWidth: 450,
       isRowHeader: true,
       isResizable: true,
@@ -163,7 +178,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       key: 'coulmnMiner',
       name: 'Miner',
       fieldName: 'miner',
-      minWidth: 200,
+      minWidth: 123,
       maxWidth: 450,
       isRowHeader: true,
       isResizable: true,
@@ -175,7 +190,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
     {
       key: 'columnTimeTaken',
       name: 'Time Taken',
-      minWidth: 80,
+      minWidth: 50,
       maxWidth: 200,
       isRowHeader: true,
       isResizable: true,
@@ -189,6 +204,19 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
         let nowTimestamp = Date.parse(block.timestamp);
         return <>{(nowTimestamp - beforeTimestamp) / 1000}</>;
       },
+    },
+    {
+      key: 'columnDifficulty',
+      name: 'Difficulty',
+      minWidth: 50,
+      maxWidth: 200,
+      isRowHeader: true,
+      isResizable: true,
+      isSorted: false,
+      isSortedDescending: true,
+      data: 'string',
+      isPadded: true,
+      onRender: block => <>{block.difficulty}</>,
     },
     {
       key: 'columnTxNumber',
