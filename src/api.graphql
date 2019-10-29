@@ -44,3 +44,9 @@ query TransactionById($id: ID) {
     ...TransactionCommon
   }
 }
+
+query TransactionsByAccount($involvedAddress: Address) {
+  transactions(involvedAddress: $involvedAddress) {
+    ...TransactionCommon
+  }
+}
