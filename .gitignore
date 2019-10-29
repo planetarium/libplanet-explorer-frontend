@@ -1,5 +1,13 @@
+# macOS
+.DS_Store
+
+# editor
+.vscode/
+
+# gatsby
 .cache/
 .vscode/
 node_modules/
 public/
 src/generated
+
