@@ -49,8 +49,7 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
   const onSearch = (value: string) => {
     if (value.match(/^[0-9a-fA-F]{64}$/)) {
       navigate(`/block/?${value}`);
-    }
-    else {
+    } else {
       alert('Wrong block hash!');
     }
   };
