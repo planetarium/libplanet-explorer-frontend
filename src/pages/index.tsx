@@ -10,6 +10,8 @@ import {
 } from 'office-ui-fabric-react/lib/DetailsList';
 import { Block, BlockListComponent } from '../generated/graphql';
 import useSearchParams from '../misc/useSearchParams';
+import { NavBar } from '../components/Layout';
+import Wrapper from '../components/Wrapper';
 
 interface IndexPageProps {
   location: Location;
@@ -37,69 +39,72 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
   const [excludeEmptyTxs, setExcludeEmptyTxs] = useState(false);
   return (
     <>
-      <Checkbox
-        label="Include blocks having any tx"
-        checked={excludeEmptyTxs}
-        onChange={(_, checked) => {
-          setExcludeEmptyTxs(!!checked);
-        }}
-      />
-      <BlockListComponent variables={{ offset, limit, excludeEmptyTxs }}>
-        {({ data, loading, error }) => {
-          if (error) return <p>error!</p>;
+      <NavBar className="ms-bgColor-white" />
+      <Wrapper>
+        <Checkbox
+          label="Include blocks having any tx"
+          checked={excludeEmptyTxs}
+          onChange={(_, checked) => {
+            setExcludeEmptyTxs(!!checked);
+          }}
+        />
+        <BlockListComponent variables={{ offset, limit, excludeEmptyTxs }}>
+          {({ data, loading, error }) => {
+            if (error) return <p>error!</p>;
 
-          const timestamps: Date[] | null =
-            data && data.blocks
-              ? data.blocks.map(block => new Date(block!.timestamp))
-              : null;
+            const timestamps: Date[] | null =
+              data && data.blocks
+                ? data.blocks.map(block => new Date(block!.timestamp))
+                : null;
 
-          let interval: number | null = timestamps ? 0 : null;
-          if (interval != null && timestamps) {
-            for (let i = 0; i < timestamps.length - 1; i++) {
-              interval += +timestamps[i] - +timestamps[i + 1];
+            let interval: number | null = timestamps ? 0 : null;
+            if (interval != null && timestamps) {
+              for (let i = 0; i < timestamps.length - 1; i++) {
+                interval += +timestamps[i] - +timestamps[i + 1];
+              }
+              interval /= (timestamps.length - 1) * 1000;
             }
-            interval /= (timestamps.length - 1) * 1000;
-          }
 
-          const difficulties: number[] | null =
-            data && data.blocks
-              ? data.blocks.map(block => block!.difficulty)
-              : null;
-          let difficulty = 0;
-          if (difficulty != null && difficulties) {
-            difficulty =
-              difficulties.reduce((d, sum) => d + sum, 0) / difficulties.length;
-          }
-          return (
-            <>
-              <p key="interval">
-                Average interval in this page: {interval} sec
-              </p>
-              <p key="difficulty">
-                Average difficulty in this page: {difficulty}
-              </p>
-              <DefaultButton
-                onClick={newerHandler}
-                disabled={loading || offset < 1}
-                className={css`
-                  margin-right: 5px;
-                `}>
-                &larr; Newer
-              </DefaultButton>
-              <DefaultButton disabled={loading} onClick={olderHandler}>
-                Older &rarr;
-              </DefaultButton>
-              {loading ? (
-                <p>Loading&hellip;</p>
-              ) : (
-                <BlockList
-                  blocks={loading ? [] : (data!.blocks as NonNullable<Block[]>)}
-                />
-              )}
-            </>
-          );
-        }}
-      </BlockListComponent>
+            const difficulties: number[] | null =
+              data && data.blocks
+                ? data.blocks.map(block => block!.difficulty)
+                : null;
+            let difficulty = 0;
+            if (difficulty != null && difficulties) {
+              difficulty =
+                difficulties.reduce((d, sum) => d + sum, 0) / difficulties.length;
+            }
+            return (
+              <>
+                <p key="interval">
+                  Average interval in this page: {interval} sec
+                </p>
+                <p key="difficulty">
+                  Average difficulty in this page: {difficulty}
+                </p>
+                <DefaultButton
+                  onClick={newerHandler}
+                  disabled={loading || offset < 1}
+                  className={css`
+                    margin-right: 5px;
+                  `}>
+                  &larr; Newer
+                </DefaultButton>
+                <DefaultButton disabled={loading} onClick={olderHandler}>
+                  Older &rarr;
+                </DefaultButton>
+                {loading ? (
+                  <p>Loading&hellip;</p>
+                ) : (
+                  <BlockList
+                    blocks={loading ? [] : (data!.blocks as NonNullable<Block[]>)}
+                  />
+                )}
+              </>
+            );
+          }}
+        </BlockListComponent>
+      </Wrapper>
     </>
   );
 };
