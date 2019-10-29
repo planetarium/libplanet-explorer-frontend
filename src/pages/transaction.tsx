@@ -21,6 +21,9 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
               No such transaction: <code>{id}</code>
             </p>
           );
+
+        const signerLink = `/account/?${transaction.signer}`;
+
         return (
           <dl>
             <dt>Id</dt>
@@ -39,14 +42,20 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
             </dd>
             <dt>Signer</dt>
             <dd>
-              <code>{transaction.signer}</code>
+              <a href={signerLink}>
+                {transaction.signer}
+              </a>
             </dd>
             <dt>Timestamp</dt>
             <dd>{transaction.timestamp}</dd>
             <dt>Updated Addresses</dt>
             {
-              transaction.updatedAddresses.map(
-                address => <dd><code>{address}</code></dd>
+              transaction.updatedAddresses.map(address =>
+                <dd>
+                  <a href={`/account/?${address}`}>
+                    {address}
+                  </a>
+                </dd>
               )
             }
           </dl>
