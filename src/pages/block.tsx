@@ -20,45 +20,62 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
   return (
     <BlockByHashComponent variables={{ hash }}>
       {({ data, loading, error }) => {
-        if (loading) return <p>loading&hellip;</p>;
-        if (error) return <p>error!</p>;
+        if (loading) return <p>Loading&hellip;</p>;
+        if (error)
+          return (
+            <>
+              <h2>Block Hash</h2>
+              <p>
+                Failed to load {hash} - {JSON.stringify(error.message)}
+              </p>
+            </>
+          );
         const { block } = data!;
         if (!block)
           return (
-            <p>
-              No such block: <code>{hash}</code>
-            </p>
+            <>
+              <h2>Block Hash</h2>
+              <p>
+                No such block: <code>{hash}</code>
+              </p>
+            </>
           );
         return (
-          <dl>
-            <dt>Index</dt>
-            <dd>{block.index}</dd>
-            <dt>Hash</dt>
-            <dd>
-              <code>{block.hash}</code>
-            </dd>
-            <dt>Nonce</dt>
-            <dd>
-              <code>{block.nonce}</code>
-            </dd>
-            <dt>Miner</dt>
-            <dd>
-              <code>{block.miner}</code>
-            </dd>
-            <dt>Timestamp</dt>
-            <dd>{block.timestamp}</dd>
-            <dt>Previous hash</dt>
-            <dd>
-              {block.previousBlock ? 
-                <a href={`/block/?${block.previousBlock.hash}`}>
-                  <code>{block.previousBlock.hash}</code>
-                </a> : "N/A"}
-            </dd>
-            <dt>Difficulty</dt>
-            <dd>{block.difficulty}</dd>
-            <dt>Transactions</dt>
-            <TxList txs = {block.transactions as NonNullable<Transaction[]>}/>
-          </dl>
+          <>
+            <h2>Block Hash</h2>
+            <dl>
+              <dt>Index</dt>
+              <dd>{block.index}</dd>
+              <dt>Hash</dt>
+              <dd>
+                <code>{block.hash}</code>
+              </dd>
+              <dt>Nonce</dt>
+              <dd>
+                <code>{block.nonce}</code>
+              </dd>
+              <dt>Miner</dt>
+              <dd>
+                <code>{block.miner}</code>
+              </dd>
+              <dt>Timestamp</dt>
+              <dd>{block.timestamp}</dd>
+              <dt>Previous hash</dt>
+              <dd>
+                {block.previousBlock ? (
+                  <a href={`/block/?${block.previousBlock.hash}`}>
+                    <code>{block.previousBlock.hash}</code>
+                  </a>
+                ) : (
+                  'N/A'
+                )}
+              </dd>
+              <dt>Difficulty</dt>
+              <dd>{block.difficulty}</dd>
+              <dt>Transactions</dt>
+              <TxList txs={block.transactions as NonNullable<Transaction[]>} />
+            </dl>
+          </>
         );
       }}
     </BlockByHashComponent>
@@ -83,9 +100,7 @@ const TxList: React.FC<TxListProps> = ({ txs }) => {
       isSortedDescending: true,
       data: 'string',
       isPadded: true,
-      onRender: tx => (
-        <Link href={`/transaction/?${tx.id}`}>{tx.id}</Link>
-      ),
+      onRender: tx => <Link href={`/transaction/?${tx.id}`}>{tx.id}</Link>,
     },
     {
       key: 'columnSigner',
@@ -98,7 +113,7 @@ const TxList: React.FC<TxListProps> = ({ txs }) => {
       isSorted: false,
       isSortedDescending: false,
       data: 'string',
-      isPadded: true
+      isPadded: true,
     },
     {
       key: 'columnTimestamp',

@@ -225,7 +225,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       setKey="set"
       layoutMode={DetailsListLayoutMode.justified}
       isHeaderVisible={true}
-      onItemInvoked={block => navigate(`/block/?${block.hash}`)}
+      onItemInvoked={block => navigate(`/search/?${block.hash}`)}
     />
   );
 };
