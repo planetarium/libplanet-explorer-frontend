@@ -10,6 +10,7 @@ import {
   DirectionalHint,
 } from 'office-ui-fabric-react/lib/Tooltip';
 import { getId } from 'office-ui-fabric-react/lib/Utilities';
+import Logo from '../static/img/logo.svg';
 
 import Wrapper from './Wrapper';
 import { navigate } from '@reach/router';
@@ -32,7 +33,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <ApolloProvider client={client}>
       <LayoutContainer className="ms-bgColor-gray10">
-        <NavBar className="ms-bgColor-white" />
+        <NavBar className="ms-bgColor-gray190" />
         <Wrapper>{children}</Wrapper>
       </LayoutContainer>
     </ApolloProvider>
@@ -48,15 +49,18 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
   const hostId = getId('tooltipHost');
   const onSearch = (value: string) => {
     if (value.match(/^[0-9a-fA-F]{64}$/)) {
-      navigate(`/block/?${value}`);
+      navigate(`/search/?${value}`);
     } else {
-      alert('Wrong block hash!');
+      alert('Wrong hash!');
     }
   };
   return (
     <nav className={className}>
       <NavWrapper>
-        <NavSearchBox placeholder="Block hash" onSearch={onSearch} />
+        <a href="/">
+          <LogoImg src={Logo} />
+        </a>
+        <NavSearchBox placeholder="Block Hash / TxID" onSearch={onSearch} />
         <NetworkNameContainer>
           <TooltipHost
             tooltipProps={{
@@ -65,7 +69,7 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
             delay={TooltipDelay.zero}
             id={hostId}
             directionalHint={DirectionalHint.bottomCenter}>
-            <Label>
+            <Label className="ms-fontColor-gray20">
               <NetworkNameIcon iconName="InternetSharing" />
               {process.env.NETWORK_NAME}
             </Label>
@@ -82,9 +86,14 @@ const LayoutContainer = styled.div`
     -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
 `;
 const NavWrapper = styled(Wrapper)`
-  padding: 20px;
+  margin-bottom: 1rem;
+  padding: 0;
   display: flex;
+  justify-content: flex-start;
   align-items: center;
+`;
+const LogoImg = styled.img`
+  height: 48px;
 `;
 const NavSearchBox = styled(SearchBox)`
   flex: 1;
