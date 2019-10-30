@@ -9,7 +9,10 @@ import {
   IColumn,
 } from 'office-ui-fabric-react/lib/DetailsList';
 import Wrapper from '../components/Wrapper';
-import { Transaction, TransactionsByAccountComponent } from '../generated/graphql';
+import {
+  Transaction,
+  TransactionsByAccountComponent,
+} from '../generated/graphql';
 
 interface AccountPageProps {
   location: Location;
@@ -20,7 +23,9 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
   return (
     <Wrapper>
       <h1>{`Account Details`}</h1>
-      <p>Account Number: <b>{queryString}</b></p>
+      <p>
+        Account Number: <b>{queryString}</b>
+      </p>
 
       <TransactionsByAccountComponent
         variables={{ involvedAddress: queryString }}>
@@ -35,7 +40,10 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
               </p>
             );
 
-          const [signedTransactions, involvedTransactions] = transactions.reduce(
+          const [
+            signedTransactions,
+            involvedTransactions,
+          ] = transactions.reduce(
             (acc, tx) => {
               if (tx.signer === queryString) {
                 acc[0].push(tx);
@@ -53,15 +61,29 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
           return (
             <>
               <h2>Signed Transactions: {numOfSigned}</h2>
-              {numOfSigned > 0
-                ? <TransactionsList transactions={loading ? [] : (signedTransactions as NonNullable<Transaction[]>)}/>
-                : <div>No transactions of this type</div>
-              }
+              {numOfSigned > 0 ? (
+                <TransactionsList
+                  transactions={
+                    loading
+                      ? []
+                      : (signedTransactions as NonNullable<Transaction[]>)
+                  }
+                />
+              ) : (
+                <div>No transactions of this type</div>
+              )}
               <h2>Involved Transactions: {numOfInvolved}</h2>
-              {numOfInvolved
-                ? <TransactionsList transactions={loading ? [] : (involvedTransactions as NonNullable<Transaction[]>)}/>
-                : <div>No transactions of this type</div>
-              }
+              {numOfInvolved ? (
+                <TransactionsList
+                  transactions={
+                    loading
+                      ? []
+                      : (involvedTransactions as NonNullable<Transaction[]>)
+                  }
+                />
+              ) : (
+                <div>No transactions of this type</div>
+              )}
             </>
           );
         }}
@@ -71,7 +93,10 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
 };
 
 interface TxListProps {
-  transactions: Pick<Transaction, 'id' | 'nonce' | 'signature' | 'signer' | 'timestamp' >[];
+  transactions: Pick<
+    Transaction,
+    'id' | 'nonce' | 'signature' | 'signer' | 'timestamp'
+  >[];
 }
 
 const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
@@ -101,9 +126,7 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       isSortedDescending: true,
       data: 'number',
       isPadded: true,
-      onRender: tx => (
-        <Link href={`/transaction/?${tx.id}`}>{tx.id}</Link>
-      ),
+      onRender: tx => <Link href={`/transaction/?${tx.id}`}>{tx.id}</Link>,
     },
     {
       key: 'columnSignature',
@@ -130,9 +153,7 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       isSortedDescending: true,
       data: 'number',
       isPadded: true,
-      onRender: tx => (
-        <Link href={`/account/?${tx.signer}`}>{tx.signer}</Link>
-      ),
+      onRender: tx => <Link href={`/account/?${tx.signer}`}>{tx.signer}</Link>,
     },
     {
       key: 'columnTimestamp',
