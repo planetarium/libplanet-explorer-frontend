@@ -1,14 +1,15 @@
 import React from 'react';
 import useQueryString from '../misc/useQueryString';
-import { Transaction, TransactionsByAccountComponent } from '../generated/graphql';
+import { navigate } from 'gatsby-link';
+import { Link } from 'office-ui-fabric-react';
 import {
   DetailsList,
   DetailsListLayoutMode,
   SelectionMode,
   IColumn,
 } from 'office-ui-fabric-react/lib/DetailsList';
-import { navigate } from 'gatsby-link';
 import Wrapper from '../components/Wrapper';
+import { Transaction, TransactionsByAccountComponent } from '../generated/graphql';
 
 interface AccountPageProps {
   location: Location;
@@ -100,6 +101,9 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       isSortedDescending: true,
       data: 'number',
       isPadded: true,
+      onRender: tx => (
+        <Link href={`/transaction/?${tx.id}`}>{tx.id}</Link>
+      ),
     },
     {
       key: 'columnSignature',
@@ -126,6 +130,9 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       isSortedDescending: true,
       data: 'number',
       isPadded: true,
+      onRender: tx => (
+        <Link href={`/account/?${tx.signer}`}>{tx.signer}</Link>
+      ),
     },
     {
       key: 'columnTimestamp',
