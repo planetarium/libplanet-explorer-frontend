@@ -106,7 +106,7 @@ const TxList: React.FC<TxListProps> = ({ txs }) => {
       isSortedDescending: true,
       data: 'string',
       isPadded: true,
-      onRender: tx => <Link href={`/transaction/?${tx.id}`}>{tx.id}</Link>,
+      onRender: ({ id }) => <Link href={`/transaction/?${id}`}>{id}</Link>,
     },
     {
       key: 'columnSigner',
@@ -120,7 +120,9 @@ const TxList: React.FC<TxListProps> = ({ txs }) => {
       isSortedDescending: false,
       data: 'string',
       isPadded: true,
-      onRender: tx => <Link href={`/account/?${tx.signer}`}>{tx.id}</Link>,
+      onRender: ({ signer }) => (
+        <Link href={`/account/?${signer}`}>{signer}</Link>
+      ),
     },
     {
       key: 'columnTimestamp',

@@ -149,9 +149,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       isSortedDescending: false,
       data: 'string',
       isPadded: true,
-      onRender: block => (
-        <Link href={`./block/?${block.hash}`}>{block.hash}</Link>
-      ),
+      onRender: ({ hash }) => <Link href={`./block/?${hash}`}>{hash}</Link>,
     },
     {
       key: 'columnTimestamp',
@@ -208,7 +206,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       isSortedDescending: true,
       data: 'string',
       isPadded: true,
-      onRender: block => <>{block.difficulty}</>,
+      onRender: ({ difficulty }) => <>{difficulty}</>,
     },
     {
       key: 'columnTxNumber',
@@ -221,7 +219,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       isSortedDescending: false,
       data: 'number',
       isPadded: true,
-      onRender: block => <>{block.transactions.length}</>,
+      onRender: ({ transactions }) => <>{transactions.length}</>,
     },
   ];
   return (
@@ -233,7 +231,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       setKey="set"
       layoutMode={DetailsListLayoutMode.justified}
       isHeaderVisible={true}
-      onItemInvoked={block => navigate(`/block/?${block.hash}`)}
+      onItemInvoked={({ hash }) => navigate(`/block/?${hash}`)}
     />
   );
 };

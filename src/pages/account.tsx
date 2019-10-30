@@ -126,7 +126,7 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       isSortedDescending: true,
       data: 'number',
       isPadded: true,
-      onRender: tx => <Link href={`/transaction/?${tx.id}`}>{tx.id}</Link>,
+      onRender: ({ id }) => <Link href={`/transaction/?${id}`}>{id}</Link>,
     },
     {
       key: 'columnSignature',
@@ -153,7 +153,9 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       isSortedDescending: true,
       data: 'number',
       isPadded: true,
-      onRender: tx => <Link href={`/account/?${tx.signer}`}>{tx.signer}</Link>,
+      onRender: ({ signer }) => (
+        <Link href={`/account/?${signer}`}>{signer}</Link>
+      ),
     },
     {
       key: 'columnTimestamp',
@@ -179,7 +181,7 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       setKey="set"
       layoutMode={DetailsListLayoutMode.justified}
       isHeaderVisible={true}
-      onItemInvoked={tx => navigate(`/transaction/?${tx.id}`)}
+      onItemInvoked={({ id }) => navigate(`/transaction/?${id}`)}
     />
   );
 };
