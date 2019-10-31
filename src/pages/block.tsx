@@ -9,6 +9,7 @@ import {
   IColumn,
 } from 'office-ui-fabric-react/lib/DetailsList';
 import { BlockByHashComponent, Transaction } from '../generated/graphql';
+import Wrapper from '../components/Wrapper';
 
 interface BlockPageProps {
   location: Location;
@@ -18,50 +19,72 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
   const [queryString, setQueryString] = useQueryString(location);
   const hash = queryString;
   return (
-    <BlockByHashComponent variables={{ hash }}>
-      {({ data, loading, error }) => {
-        if (loading) return <p>loading&hellip;</p>;
-        if (error) return <p>error!</p>;
-        const { block } = data!;
-        if (!block)
+    <Wrapper>
+      <h1>{`Block Details`}</h1>
+      <p>
+        Block Hash: <b>{queryString}</b>
+      </p>
+
+      <BlockByHashComponent variables={{ hash }}>
+        {({ data, loading, error }) => {
+          if (loading) return <p>loading&hellip;</p>;
+          if (error) return <p>error!</p>;
+          const { block } = data!;
+          if (!block)
+            return (
+              <p>
+                No such block: <code>{hash}</code>
+              </p>
+            );
+
+          const minerLink = `/account/?${block.miner}`;
+
           return (
-            <p>
-              No such block: <code>{hash}</code>
-            </p>
+            <dl>
+              <dt>Index</dt>
+              <dd>{block.index}</dd>
+              <dt>Hash</dt>
+              <dd>
+                <code>{block.hash}</code>
+              </dd>
+              <dt>Nonce</dt>
+              <dd>
+                <code>{block.nonce}</code>
+              </dd>
+
+              <dt>Miner</dt>
+              <dd>
+                <a href={minerLink}>{block.miner}</a>
+              </dd>
+              <dt>Timestamp</dt>
+              <dd>{block.timestamp}</dd>
+              <dt>Previous hash</dt>
+              <dd>
+                {block.previousBlock ? (
+                  <a href={`/block/?${block.previousBlock.hash}`}>
+                    <code>{block.previousBlock.hash}</code>
+                  </a>
+                ) : (
+                  'N/A'
+                )}
+              </dd>
+              <dt>Difficulty</dt>
+              <dd>{block.difficulty}</dd>
+              <dt>Transactions</dt>
+              {block.transactions.length > 0 ? (
+                <TxList
+                  txs={block.transactions as NonNullable<Transaction[]>}
+                />
+              ) : (
+                <dd>
+                  <i>There is no transactions in this block</i>
+                </dd>
+              )}
+            </dl>
           );
-        return (
-          <dl>
-            <dt>Index</dt>
-            <dd>{block.index}</dd>
-            <dt>Hash</dt>
-            <dd>
-              <code>{block.hash}</code>
-            </dd>
-            <dt>Nonce</dt>
-            <dd>
-              <code>{block.nonce}</code>
-            </dd>
-            <dt>Miner</dt>
-            <dd>
-              <code>{block.miner}</code>
-            </dd>
-            <dt>Timestamp</dt>
-            <dd>{block.timestamp}</dd>
-            <dt>Previous hash</dt>
-            <dd>
-              {block.previousBlock ? 
-                <a href={`/block/?${block.previousBlock.hash}`}>
-                  <code>{block.previousBlock.hash}</code>
-                </a> : "N/A"}
-            </dd>
-            <dt>Difficulty</dt>
-            <dd>{block.difficulty}</dd>
-            <dt>Transactions</dt>
-            <TxList txs = {block.transactions as NonNullable<Transaction[]>}/>
-          </dl>
-        );
-      }}
-    </BlockByHashComponent>
+        }}
+      </BlockByHashComponent>
+    </Wrapper>
   );
 };
 
@@ -83,9 +106,7 @@ const TxList: React.FC<TxListProps> = ({ txs }) => {
       isSortedDescending: true,
       data: 'string',
       isPadded: true,
-      onRender: tx => (
-        <Link href={`/transaction/?${tx.id}`}>{tx.id}</Link>
-      ),
+      onRender: ({ id }) => <Link href={`/transaction/?${id}`}>{id}</Link>,
     },
     {
       key: 'columnSigner',
@@ -98,7 +119,10 @@ const TxList: React.FC<TxListProps> = ({ txs }) => {
       isSorted: false,
       isSortedDescending: false,
       data: 'string',
-      isPadded: true
+      isPadded: true,
+      onRender: ({ signer }) => (
+        <Link href={`/account/?${signer}`}>{signer}</Link>
+      ),
     },
     {
       key: 'columnTimestamp',
@@ -124,7 +148,7 @@ const TxList: React.FC<TxListProps> = ({ txs }) => {
       isSortedDescending: false,
       data: 'number',
       isPadded: true,
-      onRender: tx => <>{tx.actions.length}</>,
+      onRender: tx => <>{tx.actions ? tx.actions.length : '--'}</>,
     },
   ];
   return (

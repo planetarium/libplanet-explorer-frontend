@@ -33,6 +33,13 @@ type BlockQuery {
     excludeEmptyTxs: Boolean = false
   ): [Block!]!
   transaction(id: ID = null): Transaction
+  transactions(
+    signer: Address = null
+    involvedAddress: Address = null
+    desc: Boolean = false
+    offset: Int = 0
+    limit: Int = null
+  ): [Transaction!]!
 }
 
 scalar ByteString
