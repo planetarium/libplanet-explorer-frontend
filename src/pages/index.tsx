@@ -10,6 +10,7 @@ import {
 } from 'office-ui-fabric-react/lib/DetailsList';
 import { Block, BlockListComponent } from '../generated/graphql';
 import useSearchParams from '../misc/useSearchParams';
+import Wrapper from '../components/Wrapper';
 
 interface IndexPageProps {
   location: Location;
@@ -38,7 +39,7 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
   };
   const [excludeEmptyTxs, setExcludeEmptyTxs] = useState(false);
   return (
-    <>
+    <Wrapper>
       <Checkbox
         label="Include blocks having any tx"
         checked={excludeEmptyTxs}
@@ -104,7 +105,7 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
           );
         }}
       </BlockListComponent>
-    </>
+    </Wrapper>
   );
 };
 
@@ -131,9 +132,9 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
     },
     {
       key: 'columnHash',
-      name: 'Hash',
+      name: 'Block Hash',
       fieldName: 'hash',
-      minWidth: 200,
+      minWidth: 5,
       maxWidth: 450,
       isRowHeader: true,
       isResizable: true,
@@ -141,9 +142,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       isSortedDescending: false,
       data: 'string',
       isPadded: true,
-      onRender: block => (
-        <Link href={`./block/?${block.hash}`}>{block.hash}</Link>
-      ),
+      onRender: ({ hash }) => <Link href={`./block/?${hash}`}>{hash}</Link>,
     },
     {
       key: 'columnTimestamp',
@@ -162,7 +161,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       key: 'coulmnMiner',
       name: 'Miner',
       fieldName: 'miner',
-      minWidth: 200,
+      minWidth: 123,
       maxWidth: 450,
       isRowHeader: true,
       isResizable: true,
@@ -174,7 +173,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
     {
       key: 'columnTimeTaken',
       name: 'Time Taken',
-      minWidth: 80,
+      minWidth: 50,
       maxWidth: 200,
       isRowHeader: true,
       isResizable: true,
@@ -192,7 +191,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
     {
       key: 'columnDifficulty',
       name: 'Difficulty',
-      minWidth: 80,
+      minWidth: 50,
       maxWidth: 200,
       isRowHeader: true,
       isResizable: true,
@@ -200,7 +199,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       isSortedDescending: true,
       data: 'string',
       isPadded: true,
-      onRender: block => <>{block.difficulty}</>,
+      onRender: ({ difficulty }) => <>{difficulty}</>,
     },
     {
       key: 'columnTxNumber',
@@ -213,7 +212,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
       isSortedDescending: false,
       data: 'number',
       isPadded: true,
-      onRender: block => <>{block.transactions.length}</>,
+      onRender: ({ transactions }) => <>{transactions.length}</>,
     },
   ];
   return (

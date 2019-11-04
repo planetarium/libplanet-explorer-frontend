@@ -10,7 +10,7 @@ import {
   DirectionalHint,
 } from 'office-ui-fabric-react/lib/Tooltip';
 import { getId } from 'office-ui-fabric-react/lib/Utilities';
-import Logo from '../static/img/logo.svg';
+const logo = require('../static/img/logo.svg');
 
 import Wrapper from './Wrapper';
 import { navigate } from '@reach/router';
@@ -45,7 +45,7 @@ export default Layout;
 interface NavBarProps {
   className?: string;
 }
-const NavBar: React.FC<NavBarProps> = ({ className }) => {
+export const NavBar: React.FC<NavBarProps> = ({ className }) => {
   const hostId = getId('tooltipHost');
   const onSearch = (value: string) => {
     if (value.match(/^[0-9a-fA-F]{64}$/)) {
@@ -57,9 +57,9 @@ const NavBar: React.FC<NavBarProps> = ({ className }) => {
   return (
     <nav className={className}>
       <NavWrapper>
-        <a href="/">
-          <LogoImg src={Logo} />
-        </a>
+        <LogoLink href="/">
+          <LogoImg src={logo} />
+        </LogoLink>
         <NavSearchBox placeholder="Block Hash / TxID" onSearch={onSearch} />
         <NetworkNameContainer>
           <TooltipHost
@@ -86,10 +86,14 @@ const LayoutContainer = styled.div`
     -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
 `;
 const NavWrapper = styled(Wrapper)`
-  margin-bottom: 1rem;
   padding: 0;
   display: flex;
   justify-content: flex-start;
+  align-items: center;
+`;
+const LogoLink = styled.a`
+  display: flex;
+  justify-content: center;
   align-items: center;
 `;
 const LogoImg = styled.img`

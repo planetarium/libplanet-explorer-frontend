@@ -12,7 +12,13 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
   return (
     <TransactionByIdComponent variables={{ id }}>
       {({ data, loading, error }) => {
-        if (loading) return <p>Loading&hellip;</p>;
+        if (loading)
+          return (
+            <>
+              <h2>Tx ID</h2>
+              <p>Loading&hellip;</p>
+            </>
+          );
         if (error)
           return (
             <>
