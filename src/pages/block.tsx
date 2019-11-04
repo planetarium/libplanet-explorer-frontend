@@ -23,14 +23,14 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
         if (loading)
           return (
             <>
-              <h2>Block Hash</h2>
+              <h2>Block Details</h2>
               <p>Loading&hellip;</p>
             </>
           );
         if (error)
           return (
             <>
-              <h2>Block Hash</h2>
+              <h2>Block Details</h2>
               <p>
                 Failed to load {hash} - {JSON.stringify(error.message)}
               </p>
@@ -40,15 +40,17 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
         if (!block)
           return (
             <>
-              <h2>Block Hash</h2>
+              <h2>Block Details</h2>
               <p>
                 No such block: <code>{hash}</code>
               </p>
             </>
           );
+
+        const minerLink = `/account/?${block.miner}`;
         return (
           <>
-            <h2>Block Hash</h2>
+            <h2>Block Details</h2>
             <dl>
               <dt>Index</dt>
               <dd>{block.index}</dd>
@@ -62,7 +64,9 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
               </dd>
               <dt>Miner</dt>
               <dd>
-                <code>{block.miner}</code>
+                <a href={minerLink}>
+                  <code>{block.miner}</code>
+                </a>
               </dd>
               <dt>Timestamp</dt>
               <dd>{block.timestamp}</dd>
@@ -79,7 +83,15 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
               <dt>Difficulty</dt>
               <dd>{block.difficulty}</dd>
               <dt>Transactions</dt>
-              <TxList txs={block.transactions as NonNullable<Transaction[]>} />
+              {block.transactions.length > 0 ? (
+                <TxList
+                  txs={block.transactions as NonNullable<Transaction[]>}
+                />
+              ) : (
+                <dd>
+                  <i>There is no transactions in this block.</i>
+                </dd>
+              )}
             </dl>
           </>
         );
@@ -106,7 +118,7 @@ const TxList: React.FC<TxListProps> = ({ txs }) => {
       isSortedDescending: true,
       data: 'string',
       isPadded: true,
-      onRender: tx => <Link href={`/transaction/?${tx.id}`}>{tx.id}</Link>,
+      onRender: ({ id }) => <Link href={`/transaction/?${id}`}>{id}</Link>,
     },
     {
       key: 'columnSigner',
@@ -120,6 +132,9 @@ const TxList: React.FC<TxListProps> = ({ txs }) => {
       isSortedDescending: false,
       data: 'string',
       isPadded: true,
+      onRender: ({ signer }) => (
+        <Link href={`/account/?${signer}`}>{signer}</Link>
+      ),
     },
     {
       key: 'columnTimestamp',

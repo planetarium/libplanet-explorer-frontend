@@ -15,14 +15,14 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
         if (loading)
           return (
             <>
-              <h2>Tx ID</h2>
+              <h2>Transaction Details</h2>
               <p>Loading&hellip;</p>
             </>
           );
         if (error)
           return (
             <>
-              <h2>Tx ID</h2>
+              <h2>Transaction Details</h2>
               <p>
                 Failed to load {id} - {JSON.stringify(error.message)}
               </p>
@@ -32,15 +32,16 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
         if (!transaction)
           return (
             <>
-              <h2>Tx ID</h2>
+              <h2>Transaction Details</h2>
               <p>
                 No such transaction: <code>{id}</code>
               </p>
             </>
           );
+        const signerLink = `/account/?${transaction.signer}`;
         return (
           <>
-            <h2>Tx ID</h2>
+            <h2>Transaction Details</h2>
             <dl>
               <dt>Id</dt>
               <dd>
@@ -58,14 +59,18 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
               </dd>
               <dt>Signer</dt>
               <dd>
-                <code>{transaction.signer}</code>
+                <a href={signerLink}>
+                  <code>{transaction.signer}</code>
+                </a>
               </dd>
               <dt>Timestamp</dt>
               <dd>{transaction.timestamp}</dd>
               <dt>Updated Addresses</dt>
               {transaction.updatedAddresses.map((address, index) => (
                 <dd key={index}>
-                  <code>{address}</code>
+                  <a href={`/account/?${address}`}>
+                    <code>{address}</code>
+                  </a>
                 </dd>
               ))}
               <dt>Actions</dt>
