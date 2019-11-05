@@ -9,7 +9,6 @@ import {
   IColumn,
 } from 'office-ui-fabric-react/lib/DetailsList';
 import { BlockByHashComponent, Transaction } from '../generated/graphql';
-import Wrapper from '../components/Wrapper';
 
 interface BlockPageProps {
   location: Location;
@@ -19,27 +18,39 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
   const [queryString, setQueryString] = useQueryString(location);
   const hash = queryString;
   return (
-    <Wrapper>
-      <h1>{`Block Details`}</h1>
-      <p>
-        Block Hash: <b>{queryString}</b>
-      </p>
-
-      <BlockByHashComponent variables={{ hash }}>
-        {({ data, loading, error }) => {
-          if (loading) return <p>loading&hellip;</p>;
-          if (error) return <p>error!</p>;
-          const { block } = data!;
-          if (!block)
-            return (
+    <BlockByHashComponent variables={{ hash }}>
+      {({ data, loading, error }) => {
+        if (loading)
+          return (
+            <>
+              <h2>Block Details</h2>
+              <p>Loading&hellip;</p>
+            </>
+          );
+        if (error)
+          return (
+            <>
+              <h2>Block Details</h2>
+              <p>
+                Failed to load {hash} - {JSON.stringify(error.message)}
+              </p>
+            </>
+          );
+        const { block } = data!;
+        if (!block)
+          return (
+            <>
+              <h2>Block Details</h2>
               <p>
                 No such block: <code>{hash}</code>
               </p>
-            );
+            </>
+          );
 
-          const minerLink = `/account/?${block.miner}`;
-
-          return (
+        const minerLink = `/account/?${block.miner}`;
+        return (
+          <>
+            <h2>Block Details</h2>
             <dl>
               <dt>Index</dt>
               <dd>{block.index}</dd>
@@ -51,10 +62,11 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
               <dd>
                 <code>{block.nonce}</code>
               </dd>
-
               <dt>Miner</dt>
               <dd>
-                <a href={minerLink}>{block.miner}</a>
+                <a href={minerLink}>
+                  <code>{block.miner}</code>
+                </a>
               </dd>
               <dt>Timestamp</dt>
               <dd>{block.timestamp}</dd>
@@ -77,14 +89,14 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
                 />
               ) : (
                 <dd>
-                  <i>There is no transactions in this block</i>
+                  <i>There is no transactions in this block.</i>
                 </dd>
               )}
             </dl>
-          );
-        }}
-      </BlockByHashComponent>
-    </Wrapper>
+          </>
+        );
+      }}
+    </BlockByHashComponent>
   );
 };
 

@@ -4,7 +4,7 @@ export const wrapperWidth = 960;
 
 const Wrapper = styled.div`
   margin: 0 auto;
-  padding: 2rem 0;
+  margin-bottom: 1rem;
   width: 100%;
   max-width: ${wrapperWidth}px;
 `;

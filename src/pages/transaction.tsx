@@ -1,7 +1,6 @@
 import React from 'react';
 import useQueryString from '../misc/useQueryString';
 import { TransactionByIdComponent } from '../generated/graphql';
-import Wrapper from '../components/Wrapper';
 
 interface TransactionPageProps {
   location: Location;
@@ -11,27 +10,38 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
   const [queryString, setQueryString] = useQueryString(location);
   const id = queryString;
   return (
-    <Wrapper>
-      <h1>{`Transaction Details`}</h1>
-      <p>
-        Transaction ID: <b>{queryString}</b>
-      </p>
-
-      <TransactionByIdComponent variables={{ id }}>
-        {({ data, loading, error }) => {
-          if (loading) return <p>loading&hellip;</p>;
-          if (error) return <p>error!</p>;
-          const { transaction } = data!;
-          if (!transaction)
-            return (
+    <TransactionByIdComponent variables={{ id }}>
+      {({ data, loading, error }) => {
+        if (loading)
+          return (
+            <>
+              <h2>Transaction Details</h2>
+              <p>Loading&hellip;</p>
+            </>
+          );
+        if (error)
+          return (
+            <>
+              <h2>Transaction Details</h2>
+              <p>
+                Failed to load {id} - {JSON.stringify(error.message)}
+              </p>
+            </>
+          );
+        const { transaction } = data!;
+        if (!transaction)
+          return (
+            <>
+              <h2>Transaction Details</h2>
               <p>
                 No such transaction: <code>{id}</code>
               </p>
-            );
-
-          const signerLink = `/account/?${transaction.signer}`;
-
-          return (
+            </>
+          );
+        const signerLink = `/account/?${transaction.signer}`;
+        return (
+          <>
+            <h2>Transaction Details</h2>
             <dl>
               <dt>Id</dt>
               <dd>
@@ -49,37 +59,40 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
               </dd>
               <dt>Signer</dt>
               <dd>
-                <a href={signerLink}>{transaction.signer}</a>
+                <a href={signerLink}>
+                  <code>{transaction.signer}</code>
+                </a>
               </dd>
               <dt>Timestamp</dt>
               <dd>{transaction.timestamp}</dd>
               <dt>Updated Addresses</dt>
-              {transaction.updatedAddresses.map(address => (
-                <dd>
-                  <a href={`/account/?${address}`}>{address}</a>
+              {transaction.updatedAddresses.map((address, index) => (
+                <dd key={index}>
+                  <a href={`/account/?${address}`}>
+                    <code>{address}</code>
+                  </a>
                 </dd>
               ))}
               <dt>Actions</dt>
-              {transaction.actions &&
-                transaction.actions.map((action, index) => (
-                  <dd key={index}>
-                    <dl>
-                      {action.arguments.map(argument => (
-                        <React.Fragment key={argument.key}>
-                          <dt>{argument.key}</dt>
-                          <dd>
-                            <code> {JSON.stringify(argument.value)} </code>
-                          </dd>
-                        </React.Fragment>
-                      ))}
-                    </dl>
-                  </dd>
-                ))}
+              {transaction.actions.map((action, index) => (
+                <dd key={index}>
+                  <dl>
+                    {action.arguments.map(argument => (
+                      <React.Fragment key={argument.key}>
+                        <dt>{argument.key}</dt>
+                        <dd>
+                          <code> {JSON.stringify(argument.value)} </code>
+                        </dd>
+                      </React.Fragment>
+                    ))}
+                  </dl>
+                </dd>
+              ))}
             </dl>
-          );
-        }}
-      </TransactionByIdComponent>
-    </Wrapper>
+          </>
+        );
+      }}
+    </TransactionByIdComponent>
   );
 };
 
