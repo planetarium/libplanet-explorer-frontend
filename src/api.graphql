@@ -22,37 +22,53 @@ fragment TransactionCommon on Transaction {
 }
 
 query BlockList($offset: Int!, $limit: Int!, $excludeEmptyTxs: Boolean!) {
-  blocks(desc: true, offset: $offset, limit: $limit, excludeEmptyTxs: $excludeEmptyTxs) {
-    ...BlockCommon
-    miner
-    transactions {
-      id
+  blockQuery {
+    blocks(desc: true, offset: $offset, limit: $limit, excludeEmptyTxs: $excludeEmptyTxs) {
+      ...BlockCommon
+      miner
+      transactions {
+        id
+      }
     }
   }
 }
 
 query BlockByHash($hash: ID) {
-  block(hash: $hash) {
-    ...BlockCommon
-    miner
-    nonce
-    previousBlock {
-      hash
+  blockQuery {
+    block(hash: $hash) {
+      ...BlockCommon
+      miner
+      nonce
+      previousBlock {
+        hash
+      }
+      transactions {
+        ...TransactionCommon
+      }
     }
-    transactions {
+  }
+}
+
+query TransactionList($signer: Address!, $updatedAddresses: Address!, $desc: Boolean!, $offset: Int!, $limit: Int!) {
+  transactionQuery {
+    transactions(signer: $signer, updatedAddresses: $updatedAddresses, desc: $desc, offset: $offset, limit: $limit) {
       ...TransactionCommon
     }
   }
 }
 
 query TransactionById($id: ID) {
-  transaction(id: $id) {
-    ...TransactionCommon
+  transactionQuery {
+    transaction(id: $id) {
+      ...TransactionCommon
+    }
   }
 }
 
 query TransactionsByAccount($involvedAddress: Address) {
-  transactions(involvedAddress: $involvedAddress) {
-    ...TransactionCommon
+  transactionQuery{
+    transactions(involvedAddress: $involvedAddress) {
+      ...TransactionCommon
+    }
   }
 }

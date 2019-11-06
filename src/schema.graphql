@@ -1,5 +1,5 @@
 schema {
-  query: BlockQuery
+  query: Query
 }
 
 type Action {
@@ -10,8 +10,6 @@ type ActionArgumentType {
   key: String!
   value: String!
 }
-
-scalar Address
 
 type Block {
   difficulty: Int!
@@ -24,6 +22,11 @@ type Block {
   transactions: [Transaction!]!
 }
 
+type Query {
+  blockQuery: BlockQuery
+  transactionQuery: TransactionQuery
+}
+
 type BlockQuery {
   block(hash: ID = null): Block
   blocks(
@@ -32,15 +35,21 @@ type BlockQuery {
     limit: Int = null
     excludeEmptyTxs: Boolean = false
   ): [Block!]!
+}
+
+type TransactionQuery {
   transaction(id: ID = null): Transaction
   transactions(
     signer: Address = null
     involvedAddress: Address = null
+    updatedAddresses: Address = null
     desc: Boolean = false
     offset: Int = 0
     limit: Int = null
   ): [Transaction!]!
 }
+
+scalar Address
 
 scalar ByteString
 
