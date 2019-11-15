@@ -13,7 +13,7 @@ import { getId } from 'office-ui-fabric-react/lib/Utilities';
 const logo = require('../static/img/logo.svg');
 
 import Wrapper from './Wrapper';
-import { navigate } from '@reach/router';
+import { navigate } from 'gatsby-link';
 
 const GRAPHQL_ENDPOINT_URI = process.env.GRAPHQL_ENDPOINT_URI;
 

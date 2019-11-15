@@ -64,18 +64,18 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
               </dd>
               <dt>Miner</dt>
               <dd>
-                <a href={minerLink}>
+                <Link href={minerLink}>
                   <code>{block.miner}</code>
-                </a>
+                </Link>
               </dd>
               <dt>Timestamp</dt>
               <dd>{block.timestamp}</dd>
               <dt>Previous hash</dt>
               <dd>
                 {block.previousBlock ? (
-                  <a href={`/block/?${block.previousBlock.hash}`}>
+                  <Link href={`/block/?${block.previousBlock.hash}`}>
                     <code>{block.previousBlock.hash}</code>
-                  </a>
+                  </Link>
                 ) : (
                   'N/A'
                 )}
