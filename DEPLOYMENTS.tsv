@@ -1,3 +1,4 @@
 9c-fft	http://52.231.74.24:31235/graphql
 9c-testnet	http://9c-testnet.planetarium.dev:31235/graphql/
+9c-testnet-mm	http://13.76.81.220:31236/graphql
 localhost	http://localhost:5000/graphql/
