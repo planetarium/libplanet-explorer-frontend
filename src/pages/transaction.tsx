@@ -1,6 +1,7 @@
 import React from 'react';
 import useQueryString from '../misc/useQueryString';
 import { TransactionByIdComponent } from '../generated/graphql';
+import { Link } from 'office-ui-fabric-react';
 
 interface TransactionPageProps {
   location: Location;
@@ -59,18 +60,18 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
               </dd>
               <dt>Signer</dt>
               <dd>
-                <a href={signerLink}>
+                <Link href={signerLink}>
                   <code>{transaction.signer}</code>
-                </a>
+                </Link>
               </dd>
               <dt>Timestamp</dt>
               <dd>{transaction.timestamp}</dd>
               <dt>Updated Addresses</dt>
               {transaction.updatedAddresses.map((address, index) => (
                 <dd key={index}>
-                  <a href={`/account/?${address}`}>
+                  <Link href={`/account/?${address}`}>
                     <code>{address}</code>
-                  </a>
+                  </Link>
                 </dd>
               ))}
               <dt>Actions</dt>
