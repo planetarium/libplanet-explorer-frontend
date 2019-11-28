@@ -32,13 +32,10 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
         {({ data, loading, error }) => {
           if (loading) return <p>loading&hellip;</p>;
           if (error) return <p>error!</p>;
-          const { transactions } = data!;
-          if (!transactions)
-            return (
-              <p>
-                No such transaction: <code>{id}</code>
-              </p>
-            );
+          const { transactions } = data!.transactionQuery!;
+          if (!transactions) {
+            return <p>There are no transactions.</p>;
+          }
 
           const [
             signedTransactions,
