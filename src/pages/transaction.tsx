@@ -39,7 +39,10 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
               </p>
             </>
           );
-        const signerLink = `/account/?${transaction.signer}`;
+        // FIXME: We'd better to use absolute paths and make Gatsby to
+        // automatically rebase these absolute paths on the PATH_PREFIX
+        // configuration.
+        const signerLink = `../account/?${transaction.signer}`;
         return (
           <>
             <h2>Transaction Details</h2>
@@ -69,7 +72,12 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
               <dt>Updated Addresses</dt>
               {transaction.updatedAddresses.map((address, index) => (
                 <dd key={index}>
-                  <Link href={`/account/?${address}`}>
+                  {/*
+                  FIXME: We'd better to use absolute paths and make Gatsby to
+                  automatically rebase these absolute paths on the PATH_PREFIX
+                  configuration.
+                  */}
+                  <Link href={`../account/?${address}`}>
                     <code>{address}</code>
                   </Link>
                 </dd>
