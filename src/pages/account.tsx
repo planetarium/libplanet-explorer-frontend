@@ -32,13 +32,10 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
         {({ data, loading, error }) => {
           if (loading) return <p>loading&hellip;</p>;
           if (error) return <p>error!</p>;
-          const { transactions } = data!;
-          if (!transactions)
-            return (
-              <p>
-                No such transaction: <code>{id}</code>
-              </p>
-            );
+          const { transactions } = data!.transactionQuery!;
+          if (!transactions) {
+            return <p>There are no transactions.</p>;
+          }
 
           const [
             signedTransactions,
@@ -126,7 +123,9 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       isSortedDescending: true,
       data: 'number',
       isPadded: true,
-      onRender: ({ id }) => <Link href={`/transaction/?${id}`}>{id}</Link>,
+      // FIXME: We'd better to use absolute paths and make Gatsby automatically
+      // to rebase these absolute paths on the PATH_PREFIX configuration.
+      onRender: ({ id }) => <Link href={`../transaction/?${id}`}>{id}</Link>,
     },
     {
       key: 'columnSignature',
@@ -154,7 +153,9 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       data: 'number',
       isPadded: true,
       onRender: ({ signer }) => (
-        <Link href={`/account/?${signer}`}>{signer}</Link>
+        // FIXME: We'd better to use absolute paths and make Gatsby automatically
+        // to rebase these absolute paths on the PATH_PREFIX configuration.
+        <Link href={`./?${signer}`}>{signer}</Link>
       ),
     },
     {
@@ -181,7 +182,9 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       setKey="set"
       layoutMode={DetailsListLayoutMode.justified}
       isHeaderVisible={true}
-      onItemInvoked={({ id }) => navigate(`/transaction/?${id}`)}
+      // FIXME: We'd better to use absolute paths and make Gatsby automatically
+      // to rebase these absolute paths on the PATH_PREFIX configuration.
+      onItemInvoked={({ id }) => navigate(`../transaction/?${id}`)}
     />
   );
 };
