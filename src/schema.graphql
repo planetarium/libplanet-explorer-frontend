@@ -42,7 +42,6 @@ type TransactionQuery {
   transactions(
     signer: Address = null
     involvedAddress: Address = null
-    updatedAddresses: Address = null
     desc: Boolean = false
     offset: Int = 0
     limit: Int = null
