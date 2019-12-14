@@ -175,7 +175,7 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
 
   return (
     <DetailsList
-      items={transactions.slice(0, -1)}
+      items={transactions}
       columns={columns}
       selectionMode={SelectionMode.none}
       getKey={tx => tx.id}
