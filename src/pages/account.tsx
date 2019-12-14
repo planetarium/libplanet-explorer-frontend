@@ -37,23 +37,33 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
             return <p>There are no transactions.</p>;
           }
 
-          const [
-            signedTransactions,
-            involvedTransactions,
-          ] = transactions.reduce(
-            (acc, tx) => {
-              if (tx.signer === queryString) {
-                acc[0].push(tx);
-              } else {
-                acc[1].push(tx);
-              }
-              return acc;
-            },
-            [[], []]
-          );
+          const signedTransactions: Transaction[] = [],
+            involvedTransactions: Transaction[] = [];
+          transactions.forEach(tx => {
+            if (tx.signer === queryString) {
+              signedTransactions.push(tx);
+            } else {
+              involvedTransactions.push(tx);
+            }
+          });
+
+          const missingNonces: number[] = [];
+          for (let i = 1; i < signedTransactions.length; ++i) {
+            const prevNonce = signedTransactions[i - 1].nonce;
+            const nonce = signedTransactions[i].nonce;
+            if (prevNonce === nonce - 1) continue;
+            for (
+              let missingNonce = prevNonce + 1;
+              missingNonce < nonce;
+              ++missingNonce
+            ) {
+              missingNonces.push(missingNonce);
+            }
+          }
 
           const numOfSigned = signedTransactions.length;
           const numOfInvolved = involvedTransactions.length;
+          const numOfMissingNonces = missingNonces.length;
 
           return (
             <>
@@ -80,6 +90,12 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
                 />
               ) : (
                 <div>No transactions of this type</div>
+              )}
+              <h2>Missing Nonces: {numOfMissingNonces}</h2>
+              {numOfMissingNonces ? (
+                missingNonces.map(nonce => <p>{nonce}</p>)
+              ) : (
+                <div>No missing nonces.</div>
               )}
             </>
           );
