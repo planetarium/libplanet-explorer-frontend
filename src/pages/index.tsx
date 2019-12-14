@@ -75,14 +75,30 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
             difficulty =
               difficulties.reduce((d, sum) => d + sum, 0) / difficulties.length;
           }
+
+          const txNumbers: number[] | null =
+            data && data.blockQuery && data.blockQuery.blocks
+              ? data.blockQuery.blocks.map(block => block!.transactions.length)
+              : null;
+          let totalTxNumber = 0;
+          if (difficulty != null && difficulties) {
+            totalTxNumber = txNumbers.reduce((a, b) => a + b, 0);
+          }
           return (
             <>
-              <p key="interval">
-                Average interval in this page: {interval} sec
-              </p>
-              <p key="difficulty">
-                Average difficulty in this page: {difficulty}
-              </p>
+              <div className="card" key="interval">
+                <strong>{interval}</strong> sec
+                <p>Average interval in this page</p>
+              </div>
+              <div className="card" key="difficulty">
+                <strong>{parseInt(difficulty)}</strong>
+                <p>Average difficulty in this page</p>
+              </div>
+              <div className="last card" key="total-tx-number">
+                <strong>{parseInt(totalTxNumber)}</strong>
+                <p>Total txs in this page</p>
+              </div>
+              <div style={{ clear: 'both' }}></div>
               <DefaultButton
                 onClick={newerHandler}
                 disabled={loading || offset < 1}
@@ -98,7 +114,11 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
                 <p>Loading&hellip;</p>
               ) : (
                 <BlockList
-                  blocks={loading ? [] : (data!.blockQuery!.blocks as NonNullable<Block[]>)}
+                  blocks={
+                    loading
+                      ? []
+                      : (data!.blockQuery!.blocks as NonNullable<Block[]>)
+                  }
                 />
               )}
             </>

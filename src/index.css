@@ -10,3 +10,21 @@ h1 {
   margin: 0;
   margin-bottom: 1em;
 }
+
+.card {
+  background-color: white;
+  padding: 2%;
+  display: inline-block;
+  width: 28%;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 2%;
+}
+
+.card.last {
+  margin-right: 0;
+}
+
+.card strong {
+  font-size: 3rem;
+}
