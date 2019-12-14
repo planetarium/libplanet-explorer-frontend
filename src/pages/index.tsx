@@ -75,30 +75,55 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
             difficulty =
               difficulties.reduce((d, sum) => d + sum, 0) / difficulties.length;
           }
+
+          const txNumbers: number[] | null =
+            data && data.blockQuery && data.blockQuery.blocks
+              ? data.blockQuery.blocks.map(block => block!.transactions.length)
+              : null;
+          let totalTxNumber = 0;
+          if (difficulty != null && difficulties) {
+            totalTxNumber = txNumbers.reduce((a, b) => a + b, 0);
+          }
           return (
             <>
-              <p key="interval">
-                Average interval in this page: {interval} sec
-              </p>
-              <p key="difficulty">
-                Average difficulty in this page: {difficulty}
-              </p>
-              <DefaultButton
-                onClick={newerHandler}
-                disabled={loading || offset < 1}
-                className={css`
-                  margin-right: 5px;
-                `}>
-                &larr; Newer
-              </DefaultButton>
-              <DefaultButton disabled={loading} onClick={olderHandler}>
-                Older &rarr;
-              </DefaultButton>
+              <div className="cards">
+                <div className="card" key="interval">
+                  <strong>{interval}</strong> sec
+                  <p>Average interval in this page</p>
+                </div>
+                <div className="card" key="difficulty">
+                  <strong>
+                    {Number(parseInt(difficulty)).toLocaleString()}
+                  </strong>
+                  <p>Average difficulty in this page</p>
+                </div>
+                <div className="card" key="total-tx-number">
+                  <strong>{Number(totalTxNumber).toLocaleString()}</strong>
+                  <p>Total txs in this page</p>
+                </div>
+              </div>
+              <div className="nav">
+                <DefaultButton
+                  onClick={newerHandler}
+                  disabled={loading || offset < 1}
+                  className={css`
+                    margin-right: 5px;
+                  `}>
+                  &larr; Newer
+                </DefaultButton>
+                <DefaultButton disabled={loading} onClick={olderHandler}>
+                  Older &rarr;
+                </DefaultButton>
+              </div>
               {loading ? (
                 <p>Loading&hellip;</p>
               ) : (
                 <BlockList
-                  blocks={loading ? [] : (data!.blockQuery!.blocks as NonNullable<Block[]>)}
+                  blocks={
+                    loading
+                      ? []
+                      : (data!.blockQuery!.blocks as NonNullable<Block[]>)
+                  }
                 />
               )}
             </>
