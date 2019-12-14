@@ -67,7 +67,7 @@ query TransactionById($id: ID) {
 
 query TransactionsByAccount($involvedAddress: Address) {
   transactionQuery{
-    transactions(involvedAddress: $involvedAddress) {
+    transactions(involvedAddress: $involvedAddress, desc: true) {
       ...TransactionCommon
     }
   }
