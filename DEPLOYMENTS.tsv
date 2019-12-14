@@ -2,5 +2,6 @@
 9c-testnet	http://9c-testnet.planetarium.dev:31235/graphql/
 9c-testnet-mm	http://13.76.81.220:31236/graphql
 9c-prealpha	http://40.82.155.78:31235/graphql/
-9c-alpha	http://a1006a862183311ea98ec06ceb5d810e-1208435107.ap-northeast-2.elb.amazonaws.com:31235/graphql/
+ground-zero	http://a1006a862183311ea98ec06ceb5d810e-1208435107.ap-northeast-2.elb.amazonaws.com:31235/graphql/
+9c-alpha	http://a37e984421e3211ea977602d4f8e7735-717101775.ap-northeast-2.elb.amazonaws.com:31235/graphql/
 localhost	http://localhost:5000/graphql/
