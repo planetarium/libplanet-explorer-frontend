@@ -8,6 +8,7 @@ import {
   SelectionMode,
   IColumn,
 } from 'office-ui-fabric-react/lib/DetailsList';
+import { ShimmeredDetailsList } from 'office-ui-fabric-react/lib/ShimmeredDetailsList';
 import { Block, BlockListComponent } from '../generated/graphql';
 import useSearchParams from '../misc/useSearchParams';
 import Wrapper from '../components/Wrapper';
@@ -115,17 +116,14 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
                   Older &rarr;
                 </DefaultButton>
               </div>
-              {loading ? (
-                <p>Loading&hellip;</p>
-              ) : (
-                <BlockList
-                  blocks={
-                    loading
-                      ? []
-                      : (data!.blockQuery!.blocks as NonNullable<Block[]>)
-                  }
-                />
-              )}
+              <BlockList
+                blocks={
+                  loading
+                    ? []
+                    : (data!.blockQuery!.blocks as NonNullable<Block[]>)
+                }
+                loading={loading}
+              />
             </>
           );
         }}
@@ -136,9 +134,10 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
 
 interface BlockListProps {
   blocks: Pick<Block, 'hash' | 'index' | 'timestamp' | 'difficulty'>[];
+  loading: NonNullable<Boolean>;
 }
 
-const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
+const BlockList: React.FC<BlockListProps> = ({ blocks, loading }) => {
   const columns: IColumn[] = [
     {
       key: 'columnIndex',
@@ -241,14 +240,14 @@ const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
     },
   ];
   return (
-    <DetailsList
-      items={blocks.slice(0, -1)}
+    <ShimmeredDetailsList
+      setKey="set"
+      items={loading ? [] : blocks.slice(0, -1)}
       columns={columns}
       selectionMode={SelectionMode.none}
-      getKey={block => block.hash}
-      setKey="set"
       layoutMode={DetailsListLayoutMode.justified}
       isHeaderVisible={true}
+      enableShimmer={loading}
       onItemInvoked={block => navigate(`/search/?${block.hash}`)}
     />
   );
