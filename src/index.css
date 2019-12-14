@@ -21,10 +21,14 @@ h1 {
   margin-right: 2%;
 }
 
-.card.last {
+.card:last-child {
   margin-right: 0;
 }
 
 .card strong {
   font-size: 3rem;
+}
+
+.nav {
+  margin-bottom: 10px;
 }

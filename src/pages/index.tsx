@@ -86,30 +86,35 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
           }
           return (
             <>
-              <div className="card" key="interval">
-                <strong>{interval}</strong> sec
-                <p>Average interval in this page</p>
+              <div className="cards">
+                <div className="card" key="interval">
+                  <strong>{interval}</strong> sec
+                  <p>Average interval in this page</p>
+                </div>
+                <div className="card" key="difficulty">
+                  <strong>
+                    {Number(parseInt(difficulty)).toLocaleString()}
+                  </strong>
+                  <p>Average difficulty in this page</p>
+                </div>
+                <div className="card" key="total-tx-number">
+                  <strong>{Number(totalTxNumber).toLocaleString()}</strong>
+                  <p>Total txs in this page</p>
+                </div>
               </div>
-              <div className="card" key="difficulty">
-                <strong>{parseInt(difficulty)}</strong>
-                <p>Average difficulty in this page</p>
+              <div className="nav">
+                <DefaultButton
+                  onClick={newerHandler}
+                  disabled={loading || offset < 1}
+                  className={css`
+                    margin-right: 5px;
+                  `}>
+                  &larr; Newer
+                </DefaultButton>
+                <DefaultButton disabled={loading} onClick={olderHandler}>
+                  Older &rarr;
+                </DefaultButton>
               </div>
-              <div className="last card" key="total-tx-number">
-                <strong>{parseInt(totalTxNumber)}</strong>
-                <p>Total txs in this page</p>
-              </div>
-              <div style={{ clear: 'both' }}></div>
-              <DefaultButton
-                onClick={newerHandler}
-                disabled={loading || offset < 1}
-                className={css`
-                  margin-right: 5px;
-                `}>
-                &larr; Newer
-              </DefaultButton>
-              <DefaultButton disabled={loading} onClick={olderHandler}>
-                Older &rarr;
-              </DefaultButton>
               {loading ? (
                 <p>Loading&hellip;</p>
               ) : (
