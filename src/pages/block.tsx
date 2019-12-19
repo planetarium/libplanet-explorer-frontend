@@ -9,6 +9,7 @@ import {
   IColumn,
 } from 'office-ui-fabric-react/lib/DetailsList';
 import { BlockByHashComponent, Transaction } from '../generated/graphql';
+import Timestamp from '../components/Timestamp';
 
 interface BlockPageProps {
   location: Location;
@@ -72,7 +73,9 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
                 </Link>
               </dd>
               <dt>Timestamp</dt>
-              <dd>{block.timestamp}</dd>
+              <dd>
+                <Timestamp timestamp={block.timestamp} />
+              </dd>
               <dt>Previous hash</dt>
               <dd>
                 {block.previousBlock ? (
@@ -159,6 +162,7 @@ const TxList: React.FC<TxListProps> = ({ txs }) => {
       isSortedDescending: true,
       data: 'string',
       isPadded: true,
+      onRender: ({ timestamp }) => <Timestamp timestamp={timestamp} />,
     },
     {
       key: 'columnActionNumber',

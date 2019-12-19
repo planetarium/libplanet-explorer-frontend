@@ -13,6 +13,7 @@ import {
   Transaction,
   TransactionsByAccountComponent,
 } from '../generated/graphql';
+import Timestamp from '../components/Timestamp';
 
 interface AccountPageProps {
   location: Location;
@@ -186,6 +187,7 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       isSortedDescending: true,
       data: 'number',
       isPadded: true,
+      onRender: ({ timestamp }) => <Timestamp timestamp={timestamp} />,
     },
   ];
 

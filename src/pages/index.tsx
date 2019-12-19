@@ -11,6 +11,7 @@ import {
 import { ShimmeredDetailsList } from 'office-ui-fabric-react/lib/ShimmeredDetailsList';
 import { Block, BlockListComponent } from '../generated/graphql';
 import useSearchParams from '../misc/useSearchParams';
+import Timestamp from '../components/Timestamp';
 import Wrapper from '../components/Wrapper';
 
 interface IndexPageProps {
@@ -180,6 +181,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks, loading }) => {
       isSortedDescending: true,
       data: 'string',
       isPadded: true,
+      onRender: ({ timestamp }) => <Timestamp timestamp={timestamp} />,
     },
     {
       key: 'coulmnMiner',

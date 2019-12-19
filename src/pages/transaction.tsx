@@ -2,6 +2,7 @@ import React from 'react';
 import useQueryString from '../misc/useQueryString';
 import { TransactionByIdComponent } from '../generated/graphql';
 import { Link } from 'office-ui-fabric-react';
+import Timestamp from '../components/Timestamp';
 
 interface TransactionPageProps {
   location: Location;
@@ -68,7 +69,9 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
                 </Link>
               </dd>
               <dt>Timestamp</dt>
-              <dd>{transaction.timestamp}</dd>
+              <dd>
+                <Timestamp timestamp={transaction.timestamp} />
+              </dd>
               <dt>Updated Addresses</dt>
               {transaction.updatedAddresses.map((address, index) => (
                 <dd key={index}>
