@@ -3,12 +3,6 @@
 # Install deps
 npm install
 
-# Prepare build directory
-mkdir -p _site
-
-# Export CNAME
-echo "$DOMAIN" > _site/CNAME
-
 # Export endpoint uris to .env.production
 COUNT=0
 VAR_ENV="GRAPHQL_ENDPOINTS=["
@@ -22,5 +16,11 @@ done < DEPLOYMENTS.tsv
 VAR_ENV+="]";
 echo "$VAR_ENV" > ".env.production"
 
-# Then build Gatsby site
+# Then build Gatsby site into public (default path)
 npm run build
+
+# Export CNAME
+echo "$DOMAIN" > public/CNAME
+
+# Rename public to _site
+mv public _site
