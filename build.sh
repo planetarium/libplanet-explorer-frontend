@@ -1,27 +1,26 @@
 #!/bin/bash
-npm install
+
+# Install deps
+#npm install
+
+# Prepare build directory
 mkdir -p _site
+
+# Export CNAME
 echo "$DOMAIN" > _site/CNAME
+
+# Export endpoint uris to .env.production
+COUNT=0
+VAR_ENV="GRAPHQL_ENDPOINTS=["
+
 while IFS=$'\t' read -r -a tuple; do
-  {
-    echo PATH_PREFIX="/${tuple[0]}"
-    echo NETWORK_NAME="${tuple[0]}"
-    echo GRAPHQL_ENDPOINT_URI="${tuple[1]}"
-  } > .env.production
-  npm run build
-  mv public "_site/${tuple[0]}"
-  if [[ ! -f _site/index.html ]]; then
-    url="/${tuple[0]}/"
-    echo $url
-    {
-      echo '<!DOCTYPE html>'
-      echo '<html><head><meta charset="utf-8">'
-      echo '<meta http-equiv="refresh" content="0;' \
-           "$url"'">'
-      echo '<title>Libplanet Explorer</title>'
-      echo '<link rel="canonical" href="'"$url"'">'
-      echo '</head><body>'
-      echo '</body>'
-    } > _site/index.html
-  fi
+  let COUNT++
+  if [ $COUNT != 1 ]; then VAR_ENV+=","; fi
+  VAR_ENV+="{\"name\": \"${tuple[0]}\", \"uri\": \"${tuple[1]}\"}"
 done < DEPLOYMENTS.tsv
+
+VAR_ENV+="]";
+echo $VAR_ENV > ".env.production"
+
+# Then build Gatsby site
+npm run build
