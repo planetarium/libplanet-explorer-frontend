@@ -16,6 +16,7 @@ exports.createPages = ({ graphql, actions }) => {
       createPage({
         path: `${endpoint.name}/${file.path}`,
         component: path.resolve(`src/subpages/${file.name}`),
+        isPermanent: true,
         context: {
           endpoint,
         },
