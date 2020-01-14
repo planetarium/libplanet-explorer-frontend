@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Install deps
-#npm install
+npm install
 
 # Prepare build directory
 mkdir -p _site
