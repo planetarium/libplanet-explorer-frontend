@@ -11,12 +11,7 @@ while IFS=$'\t' read -r -a tuple; do
   npm run build
   mv public "_site/${tuple[0]}"
   if [[ ! -f _site/index.html ]]; then
-    if [[ "${tuple[1]}" = https* ]]; then
-      url="https://$DOMAIN/${tuple[0]}/"
-    else
-      url="http://$DOMAIN/${tuple[0]}/"
-    fi
-    echo "${tuple[0]} -> ${tuple[1]}"
+    url="/${tuple[0]}/"
     echo $url
     {
       echo '<!DOCTYPE html>'
