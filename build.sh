@@ -14,13 +14,13 @@ COUNT=0
 VAR_ENV="GRAPHQL_ENDPOINTS=["
 
 while IFS=$'\t' read -r -a tuple; do
-  let COUNT++
-  if [ $COUNT != 1 ]; then VAR_ENV+=","; fi
+  (( COUNT++ ))
+  if [ "$COUNT" != 1 ]; then VAR_ENV+=","; fi
   VAR_ENV+="{\"name\": \"${tuple[0]}\", \"uri\": \"${tuple[1]}\"}"
 done < DEPLOYMENTS.tsv
 
 VAR_ENV+="]";
-echo $VAR_ENV > ".env.production"
+echo "$VAR_ENV" > ".env.production"
 
 # Then build Gatsby site
 npm run build
