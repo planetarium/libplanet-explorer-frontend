@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "prebuild": "npm run codegen",
-    "build": "gatsby build --prefix-paths",
+    "build": "gatsby build",
     "lint": "prettier --check \"@(*.css|*.js|*.json|src/**/*.@(ts|tsx))\"",
     "lint:fix": "prettier --write \"@(*.css|*.js|*.json|src/**/*.@(ts|tsx))\"",
     "predev:gatsby": "npm run codegen",

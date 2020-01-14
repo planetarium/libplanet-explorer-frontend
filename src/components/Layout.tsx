@@ -9,35 +9,58 @@ import {
   TooltipDelay,
   DirectionalHint,
 } from 'office-ui-fabric-react/lib/Tooltip';
+import {
+  Dropdown,
+  DropdownMenuItemType,
+  IDropdownStyles,
+  IDropdownOption,
+} from 'office-ui-fabric-react/lib/Dropdown';
 import { getId } from 'office-ui-fabric-react/lib/Utilities';
 const logo = require('../static/img/logo.svg');
 
 import Wrapper from './Wrapper';
 import { navigate } from 'gatsby-link';
 
-const GRAPHQL_ENDPOINT_URI = process.env.GRAPHQL_ENDPOINT_URI;
+const GRAPHQL_ENDPOINTS = JSON.parse(process.env.GRAPHQL_ENDPOINTS);
 
 interface LayoutProps {
   children: React.ReactNode;
 }
-const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const [client, setClient] = useState<ApolloClient<any> | null>(null);
-  useEffect(() => {
-    setClient(
-      new ApolloClient({
-        uri: GRAPHQL_ENDPOINT_URI,
-      })
+const Layout: React.FC<LayoutProps> = ({ children, pageContext }) => {
+  if (pageContext.endpoint) {
+    const [client, setClient] = useState<ApolloClient<any> | null>(null);
+    useEffect(() => {
+      setClient(
+        new ApolloClient({
+          uri: pageContext.endpoint.uri,
+        })
+      );
+    }, [setClient, pageContext]);
+    if (!client) return null;
+
+    return (
+      <ApolloProvider client={client}>
+        <LayoutContainer className="ms-bgColor-gray10">
+          <NavBar
+            className="ms-bgColor-gray190"
+            endpoint={pageContext.endpoint}
+          />
+          <Wrapper>{children}</Wrapper>
+        </LayoutContainer>
+      </ApolloProvider>
     );
-  }, [setClient]);
-  if (!client) return null;
-  return (
-    <ApolloProvider client={client}>
+  } else {
+    // redirect to the first endpoint
+    return (
       <LayoutContainer className="ms-bgColor-gray10">
-        <NavBar className="ms-bgColor-gray190" />
-        <Wrapper>{children}</Wrapper>
+        {children}
       </LayoutContainer>
-    </ApolloProvider>
-  );
+    );
+  }
+};
+
+const dropdownStyles: Partial<IDropdownStyles> = {
+  dropdown: { width: 120 },
 };
 
 export default Layout;
@@ -45,7 +68,7 @@ export default Layout;
 interface NavBarProps {
   className?: string;
 }
-export const NavBar: React.FC<NavBarProps> = ({ className }) => {
+export const NavBar: React.FC<NavBarProps> = ({ className, endpoint }) => {
   const hostId = getId('tooltipHost');
   const onSearch = (value: string) => {
     if (value.match(/^[0-9a-fA-F]{64}$/)) {
@@ -54,26 +77,61 @@ export const NavBar: React.FC<NavBarProps> = ({ className }) => {
       alert('Wrong hash!');
     }
   };
+
+  const options: IDropdownOption[] = GRAPHQL_ENDPOINTS.map(endpoint => {
+    return {
+      key: endpoint.name,
+      text: endpoint.name,
+      data: {
+        icon: 'InternetSharing',
+        uri: endpoint.uri,
+      },
+    };
+  });
+
+  const _onRenderTitle = (options: IDropdownOption[]): JSX.Element => {
+    const option = options[0];
+
+    return (
+      <TooltipHost
+        tooltipProps={{
+          onRenderContent: () => <div>{option.data.uri}</div>,
+        }}
+        delay={TooltipDelay.zero}
+        directionalHint={DirectionalHint.bottomCenter}>
+        <div>
+          {option.data && option.data.icon && (
+            <Icon
+              style={{ marginRight: '8px' }}
+              iconName={option.data.icon}
+              aria-hidden="true"
+              title={option.data.icon}
+            />
+          )}
+          <span>{option.text}</span>
+        </div>
+      </TooltipHost>
+    );
+  };
+
   return (
     <nav className={className}>
       <NavWrapper>
-        <LogoLink href="/">
+        <LogoLink href={`/${endpoint.name}/`}>
           <LogoImg src={logo} />
         </LogoLink>
         <NavSearchBox placeholder="Block Hash / TxID" onSearch={onSearch} />
         <NetworkNameContainer>
-          <TooltipHost
-            tooltipProps={{
-              onRenderContent: () => <div>{GRAPHQL_ENDPOINT_URI}</div>,
+          <Dropdown
+            placeholder="Select an endpoint"
+            defaultSelectedKey={endpoint.name}
+            options={options}
+            onRenderTitle={_onRenderTitle}
+            onChanged={item => {
+              navigate(`/${item.key}/`);
             }}
-            delay={TooltipDelay.zero}
-            id={hostId}
-            directionalHint={DirectionalHint.bottomCenter}>
-            <Label className="ms-fontColor-gray20">
-              <NetworkNameIcon iconName="InternetSharing" />
-              {process.env.NETWORK_NAME}
-            </Label>
-          </TooltipHost>
+            styles={dropdownStyles}
+          />
         </NetworkNameContainer>
       </NavWrapper>
     </nav>
