@@ -49,9 +49,9 @@ query BlockByHash($hash: ID) {
   }
 }
 
-query TransactionList($signer: Address!, $updatedAddresses: Address!, $desc: Boolean!, $offset: Int!, $limit: Int!) {
+query TransactionList($signer: Address, $involvedAddress: Address, $desc: Boolean!, $offset: Int!, $limit: Int!) {
   transactionQuery {
-    transactions(signer: $signer, updatedAddresses: $updatedAddresses, desc: $desc, offset: $offset, limit: $limit) {
+    transactions(signer: $signer, involvedAddress: $involvedAddress, desc: $desc, offset: $offset, limit: $limit) {
       ...TransactionCommon
     }
   }
