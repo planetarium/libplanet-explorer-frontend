@@ -151,8 +151,9 @@ const BlockList: React.FC<BlockListProps> = ({ blocks, loading }) => {
       isResizable: true,
       isSorted: false,
       isSortedDescending: true,
-      data: 'number',
+      data: 'string',
       isPadded: true,
+      onRender: ({ index }) => <>{Number(index).toLocaleString()}</>,
     },
     {
       key: 'columnHash',
@@ -224,7 +225,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks, loading }) => {
       isSortedDescending: true,
       data: 'string',
       isPadded: true,
-      onRender: ({ difficulty }) => <>{difficulty}</>,
+      onRender: ({ difficulty }) => <>{parseInt(difficulty).toLocaleString()}</>,
     },
     {
       key: 'columnTxNumber',
