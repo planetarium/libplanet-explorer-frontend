@@ -5,7 +5,7 @@ interface TimestampProps {
   timestamp: Scalars['DateTimeOffset'];
 }
 
-const formatOptions = {
+const formatOptions: Intl.DateTimeFormatOptions = {
   hour: '2-digit',
   minute: '2-digit',
   year: '2-digit',
