@@ -15,6 +15,10 @@ const formatOptions: Intl.DateTimeFormatOptions = {
 
 const Timestamp: React.FC<TimestampProps> = ({ timestamp }) => {
   const date = new Date(timestamp);
+  const ms = `${date
+    .getMilliseconds()
+    .toString()
+    .padStart(4, '0') ms}`
   const now = new Date();
   if (
     now.getFullYear() == date.getFullYear() &&
@@ -24,13 +28,13 @@ const Timestamp: React.FC<TimestampProps> = ({ timestamp }) => {
     const { year, month, day, ...timeStyle } = formatOptions;
     return (
       <time dateTime={date.toISOString()} title={date.toLocaleString()}>
-        {date.toLocaleString(undefined, timeStyle)}
+        {date.toLocaleString(undefined, timeStyle)}, {ms}
       </time>
     );
   }
   return (
     <time dateTime={date.toISOString()} title={date.toLocaleString()}>
-      {date.toLocaleString(undefined, formatOptions)}
+      {date.toLocaleString(undefined, formatOptions)}, {ms}
     </time>
   );
 };
