@@ -195,6 +195,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks, loading }) => {
       isSortedDescending: true,
       data: 'string',
       isPadded: true,
+      onRender: ({ miner }) => <Link href={`./account/?${miner}`}>{miner}</Link>,
     },
     {
       key: 'columnTimeTaken',
