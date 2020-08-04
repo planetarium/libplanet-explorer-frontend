@@ -93,7 +93,9 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
                       <React.Fragment key={argument.key}>
                         <dt>{argument.key}</dt>
                         <dd>
-                          <code> {JSON.stringify(argument.value)} </code>
+                          <pre>
+                            <code> {JSON.stringify(argument.value, null, 2)} </code>
+                          </pre>
                         </dd>
                       </React.Fragment>
                     ))}
