@@ -23,10 +23,12 @@ exports.createPages = async ({ graphql, actions }) => {
 
   GRAPHQL_ENDPOINTS.forEach(endpoint => {
     files.forEach(file => {
-      const generatedPath = file in remap ? remap[file] : path.parse(file).name;
+      const subPath = file in remap ? remap[file] : path.parse(file).name;
+      const pagePath =
+        subPath === '' ? `${endpoint.name}/` : `${endpoint.name}/${subPath}/`;
 
       createPage({
-        path: `${endpoint.name}/${generatedPath}`,
+        path: pagePath,
         component: path.resolve(`src/subpages/${file}`),
         isPermanent: true,
         context: {
