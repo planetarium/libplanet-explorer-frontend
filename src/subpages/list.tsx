@@ -146,7 +146,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks, loading }) => {
       iconName: 'NumberSymbol',
       isIconOnly: true,
       minWidth: 5,
-      maxWidth: 40,
+      maxWidth: 41,
       isRowHeader: true,
       isResizable: true,
       isSorted: false,
