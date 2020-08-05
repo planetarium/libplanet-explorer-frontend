@@ -221,7 +221,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks, loading }) => {
       key: 'columnTxNumber',
       name: 'Tx #',
       minWidth: 5,
-      maxWidth: 20,
+      maxWidth: 40,
       isRowHeader: true,
       isResizable: true,
       isSorted: false,
