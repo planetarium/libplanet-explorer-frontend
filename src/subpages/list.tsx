@@ -218,21 +218,6 @@ const BlockList: React.FC<BlockListProps> = ({ blocks, loading }) => {
       },
     },
     {
-      key: 'columnDifficulty',
-      name: 'Difficulty',
-      minWidth: 50,
-      maxWidth: 200,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: true,
-      data: 'string',
-      isPadded: true,
-      onRender: ({ difficulty }) => (
-        <>{parseInt(difficulty).toLocaleString()}</>
-      ),
-    },
-    {
       key: 'columnTxNumber',
       name: 'Tx #',
       minWidth: 5,
