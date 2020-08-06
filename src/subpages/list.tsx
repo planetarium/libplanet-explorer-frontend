@@ -133,7 +133,7 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
 };
 
 interface BlockListProps {
-  blocks: Pick<Block, 'hash' | 'index' | 'timestamp' | 'difficulty'>[];
+  blocks: Pick<Block, 'index' | 'hash' | 'timestamp' | 'miner'>[];
   loading: NonNullable<Boolean>;
 }
 
