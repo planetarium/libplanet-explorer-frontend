@@ -3,19 +3,19 @@ import { css, cx } from 'emotion';
 import styled from '@emotion/styled';
 import { ApolloProvider } from 'react-apollo';
 import ApolloClient from 'apollo-boost';
-import { Icon, Label, SearchBox } from 'office-ui-fabric-react';
+import { Icon, Label, SearchBox } from '@fluentui/react';
 import {
   TooltipHost,
   TooltipDelay,
   DirectionalHint,
-} from 'office-ui-fabric-react/lib/Tooltip';
+} from '@fluentui/react/lib/Tooltip';
 import {
   Dropdown,
   DropdownMenuItemType,
   IDropdownStyles,
   IDropdownOption,
-} from 'office-ui-fabric-react/lib/Dropdown';
-import { getId } from 'office-ui-fabric-react/lib/Utilities';
+} from '@fluentui/react/lib/Dropdown';
+import { getId } from '@fluentui/react/lib/Utilities';
 const logo = require('../static/img/logo.svg');
 
 import Wrapper from './Wrapper';

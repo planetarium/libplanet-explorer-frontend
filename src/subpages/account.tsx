@@ -1,13 +1,13 @@
 import React from 'react';
 import useQueryString from '../misc/useQueryString';
 import { navigate } from 'gatsby-link';
-import { Link } from 'office-ui-fabric-react';
+import { Link } from '@fluentui/react';
 import {
   DetailsList,
   DetailsListLayoutMode,
   SelectionMode,
   IColumn,
-} from 'office-ui-fabric-react/lib/DetailsList';
+} from '@fluentui/react/lib/DetailsList';
 import Wrapper from '../components/Wrapper';
 import {
   Transaction,

@@ -1,7 +1,7 @@
 import React from 'react';
 import useQueryString from '../misc/useQueryString';
 import { TransactionByIdComponent } from '../generated/graphql';
-import { Link } from 'office-ui-fabric-react';
+import { Link } from '@fluentui/react';
 import Timestamp from '../components/Timestamp';
 
 interface TransactionPageProps {
@@ -94,7 +94,10 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
                         <dt>{argument.key}</dt>
                         <dd>
                           <pre>
-                            <code> {JSON.stringify(argument.value, null, 2)} </code>
+                            <code>
+                              {' '}
+                              {JSON.stringify(argument.value, null, 2)}{' '}
+                            </code>
                           </pre>
                         </dd>
                       </React.Fragment>
