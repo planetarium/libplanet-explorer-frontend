@@ -3,7 +3,7 @@ import { css, cx } from 'emotion';
 import styled from '@emotion/styled';
 import { ApolloProvider } from 'react-apollo';
 import ApolloClient from 'apollo-boost';
-import { Icon, Label, SearchBox } from '@fluentui/react';
+import { Icon, Label, SearchBox, IRenderFunction } from '@fluentui/react';
 import {
   TooltipHost,
   TooltipDelay,
@@ -16,15 +16,17 @@ import {
   IDropdownOption,
 } from '@fluentui/react/lib/Dropdown';
 import { getId } from '@fluentui/react/lib/Utilities';
+
+import { GraphQLEndPoint, GRAPHQL_ENDPOINTS } from '../misc/graphQLEndPoint';
+
 const logo = require('../static/img/logo.svg');
 
 import Wrapper from './Wrapper';
 import { navigate } from 'gatsby-link';
 
-const GRAPHQL_ENDPOINTS = JSON.parse(process.env.GRAPHQL_ENDPOINTS);
-
 interface LayoutProps {
   children: React.ReactNode;
+  pageContext: { endpoint: GraphQLEndPoint };
 }
 const Layout: React.FC<LayoutProps> = ({ children, pageContext }) => {
   if (pageContext.endpoint) {
@@ -67,6 +69,7 @@ export default Layout;
 
 interface NavBarProps {
   className?: string;
+  endpoint: GraphQLEndPoint;
 }
 export const NavBar: React.FC<NavBarProps> = ({ className, endpoint }) => {
   const hostId = getId('tooltipHost');
@@ -126,6 +129,7 @@ export const NavBar: React.FC<NavBarProps> = ({ className, endpoint }) => {
             placeholder="Select an endpoint"
             defaultSelectedKey={endpoint.name}
             options={options}
+            // @ts-ignore
             onRenderTitle={_onRenderTitle}
             onChanged={item => {
               navigate(`/${item.key}/`);
