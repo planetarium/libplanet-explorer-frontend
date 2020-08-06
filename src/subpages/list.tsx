@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { css } from 'emotion';
 import { navigate } from 'gatsby';
-import { Checkbox, DefaultButton, Link } from 'office-ui-fabric-react';
+import { Checkbox, DefaultButton, Link } from '@fluentui/react';
 import {
   DetailsList,
   DetailsListLayoutMode,
   SelectionMode,
   IColumn,
-} from 'office-ui-fabric-react/lib/DetailsList';
-import { ShimmeredDetailsList } from 'office-ui-fabric-react/lib/ShimmeredDetailsList';
+} from '@fluentui/react/lib/DetailsList';
+import { ShimmeredDetailsList } from '@fluentui/react/lib/ShimmeredDetailsList';
 import { Block, BlockListComponent } from '../generated/graphql';
 import useSearchParams from '../misc/useSearchParams';
 import Timestamp from '../components/Timestamp';
@@ -195,7 +195,9 @@ const BlockList: React.FC<BlockListProps> = ({ blocks, loading }) => {
       isSortedDescending: true,
       data: 'string',
       isPadded: true,
-      onRender: ({ miner }) => <Link href={`./account/?${miner}`}>{miner}</Link>,
+      onRender: ({ miner }) => (
+        <Link href={`./account/?${miner}`}>{miner}</Link>
+      ),
     },
     {
       key: 'columnTimeTaken',
@@ -226,7 +228,9 @@ const BlockList: React.FC<BlockListProps> = ({ blocks, loading }) => {
       isSortedDescending: true,
       data: 'string',
       isPadded: true,
-      onRender: ({ difficulty }) => <>{parseInt(difficulty).toLocaleString()}</>,
+      onRender: ({ difficulty }) => (
+        <>{parseInt(difficulty).toLocaleString()}</>
+      ),
     },
     {
       key: 'columnTxNumber',

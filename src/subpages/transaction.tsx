@@ -1,7 +1,7 @@
 import React from 'react';
 import useQueryString from '../misc/useQueryString';
 import { TransactionByIdComponent } from '../generated/graphql';
-import { Link } from 'office-ui-fabric-react';
+import { Link } from '@fluentui/react';
 import Timestamp from '../components/Timestamp';
 
 interface TransactionPageProps {

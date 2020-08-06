@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'office-ui-fabric-react';
+import { Link } from '@fluentui/react';
 import { navigate } from 'gatsby';
 import useQueryString from '../misc/useQueryString';
 import {
@@ -7,7 +7,7 @@ import {
   DetailsListLayoutMode,
   SelectionMode,
   IColumn,
-} from 'office-ui-fabric-react/lib/DetailsList';
+} from '@fluentui/react/lib/DetailsList';
 import { BlockByHashComponent, Transaction } from '../generated/graphql';
 import Timestamp from '../components/Timestamp';
 
