@@ -249,7 +249,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks, loading }) => {
   return (
     <ShimmeredDetailsList
       setKey="set"
-      items={loading ? [] : blocks.slice(0, -1)}
+      items={loading ? [] : blocks}
       columns={columns}
       selectionMode={SelectionMode.none}
       layoutMode={DetailsListLayoutMode.justified}
