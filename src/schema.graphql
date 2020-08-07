@@ -34,6 +34,7 @@ type BlockQuery {
     offset: Int = 0
     limit: Int = null
     excludeEmptyTxs: Boolean = false
+    miner: Address = null
   ): [Block!]!
 }
 

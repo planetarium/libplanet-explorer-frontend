@@ -21,9 +21,20 @@ fragment TransactionCommon on Transaction {
   updatedAddresses
 }
 
-query BlockList($offset: Int!, $limit: Int!, $excludeEmptyTxs: Boolean!) {
+query BlockList(
+  $offset: Int!
+  $limit: Int!
+  $excludeEmptyTxs: Boolean!
+  $miner: Address
+) {
   blockQuery {
-    blocks(desc: true, offset: $offset, limit: $limit, excludeEmptyTxs: $excludeEmptyTxs) {
+    blocks(
+      desc: true
+      offset: $offset
+      limit: $limit
+      excludeEmptyTxs: $excludeEmptyTxs
+      miner: $miner
+    ) {
       ...BlockCommon
       miner
       transactions {
@@ -49,9 +60,21 @@ query BlockByHash($hash: ID) {
   }
 }
 
-query TransactionList($signer: Address, $involvedAddress: Address, $desc: Boolean!, $offset: Int!, $limit: Int!) {
+query TransactionList(
+  $signer: Address
+  $involvedAddress: Address
+  $desc: Boolean!
+  $offset: Int!
+  $limit: Int!
+) {
   transactionQuery {
-    transactions(signer: $signer, involvedAddress: $involvedAddress, desc: $desc, offset: $offset, limit: $limit) {
+    transactions(
+      signer: $signer
+      involvedAddress: $involvedAddress
+      desc: $desc
+      offset: $offset
+      limit: $limit
+    ) {
       ...TransactionCommon
     }
   }
@@ -66,7 +89,7 @@ query TransactionById($id: ID) {
 }
 
 query TransactionsByAccount($involvedAddress: Address) {
-  transactionQuery{
+  transactionQuery {
     transactions(involvedAddress: $involvedAddress, desc: true) {
       ...TransactionCommon
     }
