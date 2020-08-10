@@ -13,9 +13,7 @@ import { Block, BlockListComponent } from '../generated/graphql';
 import useSearchParams from '../misc/useSearchParams';
 import Timestamp from '../components/Timestamp';
 
-interface IndexPageProps {
-  location: Location;
-}
+import { IndexPageProps } from '../pages/index';
 
 const POLL_INTERVAL = 2000;
 
@@ -72,7 +70,7 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
               ? data.blockQuery.blocks.map(block => block!.difficulty)
               : null;
           let difficulty = 0;
-          if (difficulty != null && difficulties) {
+          if (difficulties) {
             difficulty =
               difficulties.reduce((d, sum) => d + sum, 0) / difficulties.length;
           }
@@ -82,7 +80,7 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
               ? data.blockQuery.blocks.map(block => block!.transactions.length)
               : null;
           let totalTxNumber = 0;
-          if (difficulty != null && difficulties) {
+          if (txNumbers) {
             totalTxNumber = txNumbers.reduce((a, b) => a + b, 0);
           }
           return (
@@ -93,9 +91,7 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
                   <p>Average interval in this page</p>
                 </div>
                 <div className="card" key="difficulty">
-                  <strong>
-                    {Number(parseInt(difficulty)).toLocaleString()}
-                  </strong>
+                  <strong>{difficulty.toLocaleString()}</strong>
                   <p>Average difficulty in this page</p>
                 </div>
                 <div className="card" key="total-tx-number">
@@ -134,7 +130,7 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
 
 interface BlockListProps {
   blocks: Pick<Block, 'hash' | 'index' | 'timestamp' | 'difficulty'>[];
-  loading: NonNullable<Boolean>;
+  loading: NonNullable<boolean>;
 }
 
 const BlockList: React.FC<BlockListProps> = ({ blocks, loading }) => {
