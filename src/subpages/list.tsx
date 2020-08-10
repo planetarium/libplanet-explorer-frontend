@@ -70,7 +70,7 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
               ? data.blockQuery.blocks.map(block => block!.difficulty)
               : null;
           let difficulty = 0;
-          if (difficulty != null && difficulties) {
+          if (difficulties) {
             difficulty =
               difficulties.reduce((d, sum) => d + sum, 0) / difficulties.length;
           }
@@ -80,7 +80,7 @@ const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
               ? data.blockQuery.blocks.map(block => block!.transactions.length)
               : null;
           let totalTxNumber = 0;
-          if (difficulty != null && difficulties && txNumbers) {
+          if (txNumbers) {
             totalTxNumber = txNumbers.reduce((a, b) => a + b, 0);
           }
           return (
