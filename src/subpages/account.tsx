@@ -1,31 +1,42 @@
-import React, { Children } from 'react';
-import useQueryString from '../misc/useQueryString';
+import React, { Children, useState } from 'react';
 import { navigate } from 'gatsby-link';
-import { Link } from '@fluentui/react';
 import {
-  DetailsList,
+  Link,
   DetailsListLayoutMode,
   SelectionMode,
+  DetailsList,
+  Checkbox,
   IColumn,
-} from '@fluentui/react/lib/DetailsList';
+} from '@fluentui/react';
+
 import Wrapper from '../components/Wrapper';
+import BlockList from '../components/BlockList';
+import OffsetSwitch from '../components/OffsetSwitch';
+
 import {
   Transaction,
   TransactionsByAccountComponent,
   Block,
-  BlockListByMinerComponent,
+  BlockListComponent,
 } from '../generated/graphql';
+
+import { IndexPageProps } from '../pages';
+
+import useQueryString from '../misc/useQueryString';
+import useOffset, { limit } from '../misc/useOffset';
+import { columns } from '../misc/columns';
 import Timestamp from '../components/Timestamp';
 
-interface AccountPageProps {
-  location: Location;
-}
+type AccountPageProps = IndexPageProps;
 
 const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
-  const [queryString, setQueryString] = useQueryString(location);
+  const [queryString] = useQueryString(location);
+
+  const { offset, olderHandler, newerHandler } = useOffset(location);
+  const [excludeEmptyTxs, setExcludeEmptyTxs] = useState(false);
   return (
     <Wrapper>
-      <h1>{`Account Details`}</h1>
+      <h1>Account Details</h1>
       <p>
         Account Number: <b>{queryString}</b>
       </p>
@@ -104,27 +115,38 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
           );
         }}
       </TransactionsByAccountComponent>
-      <BlockListByMinerComponent variables={{ miner: queryString, offset: 0 }}>
+      <h2>Mined Blocks</h2>
+      <BlockListComponent
+        variables={{ offset, limit, excludeEmptyTxs, miner: queryString }}>
         {({ data, loading, error }) => {
           if (error) {
             console.error(error);
-            return <p>error!</p>;
+            return <p>{error.message}</p>;
           }
-          if (!data || !data.blockQuery || !data.blockQuery.blocks)
-            return <h2>Mined Blocks: Loading..</h2>;
-          const { blocks } = data.blockQuery;
+          const blocks =
+            data && data.blockQuery && data.blockQuery.blocks
+              ? (data.blockQuery.blocks as Block[])
+              : null;
           return (
             <>
-              <h2>Mined Blocks: {blocks.length}</h2>
-              {blocks.length > 0 ? (
-                <BlockList blocks={blocks as Block[]} />
-              ) : (
-                <div>No mined blocks</div>
-              )}
+              <Checkbox
+                label="Include blocks having any tx"
+                checked={excludeEmptyTxs}
+                disabled={loading}
+                onChange={() => {
+                  setExcludeEmptyTxs(!excludeEmptyTxs);
+                }}
+              />
+              <OffsetSwitch
+                olderHandler={olderHandler}
+                newerHandler={newerHandler}
+                disable={{ older: loading, newer: loading || offset < 1 }}
+              />
+              <BlockList blocks={blocks} loading={loading} columns={columns} />
             </>
           );
         }}
-      </BlockListByMinerComponent>
+      </BlockListComponent>
     </Wrapper>
   );
 };
@@ -165,7 +187,9 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       isPadded: true,
       // FIXME: We'd better to use absolute paths and make Gatsby automatically
       // to rebase these absolute paths on the PATH_PREFIX configuration.
-      onRender: ({ id }) => <Link href={`../transaction/?${id}`}>{id}</Link>,
+      onRender: ({ id }: Transaction) => (
+        <Link href={`../transaction/?${id}`}>{id}</Link>
+      ),
     },
     {
       key: 'columnSignature',
@@ -192,7 +216,7 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       isSortedDescending: true,
       data: 'number',
       isPadded: true,
-      onRender: ({ signer }) => (
+      onRender: ({ signer }: Transaction) => (
         // FIXME: We'd better to use absolute paths and make Gatsby automatically
         // to rebase these absolute paths on the PATH_PREFIX configuration.
         <Link href={`./?${signer}`}>{signer}</Link>
@@ -210,7 +234,9 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       isSortedDescending: true,
       data: 'number',
       isPadded: true,
-      onRender: ({ timestamp }) => <Timestamp timestamp={timestamp} />,
+      onRender: ({ timestamp }: Transaction) => (
+        <Timestamp timestamp={timestamp} />
+      ),
     },
   ];
 
@@ -219,91 +245,13 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       items={transactions}
       columns={columns}
       selectionMode={SelectionMode.none}
-      getKey={tx => tx.id}
+      getKey={(tx: Transaction) => tx.id}
       setKey="set"
       layoutMode={DetailsListLayoutMode.justified}
       isHeaderVisible={true}
       // FIXME: We'd better to use absolute paths and make Gatsby automatically
       // to rebase these absolute paths on the PATH_PREFIX configuration.
-      onItemInvoked={({ id }) => navigate(`../transaction/?${id}`)}
-    />
-  );
-};
-
-interface BlockListProps {
-  blocks: Block[];
-}
-
-export const BlockList: React.FC<BlockListProps> = ({ blocks }) => {
-  const columns: IColumn[] = [
-    {
-      key: 'columnIndex',
-      name: 'Index',
-      fieldName: 'index',
-      iconName: 'NumberSymbol',
-      isIconOnly: true,
-      minWidth: 5,
-      maxWidth: 41,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: true,
-      data: 'string',
-      isPadded: true,
-      onRender: ({ index }) => <>{Number(index).toLocaleString()}</>,
-    },
-    {
-      key: 'columnHash',
-      name: 'Block Hash',
-      fieldName: 'hash',
-      minWidth: 5,
-      maxWidth: 450,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: false,
-      data: 'string',
-      isPadded: true,
-      onRender: ({ hash }) => <Link href={`./block/?${hash}`}>{hash}</Link>,
-    },
-    {
-      key: 'columnTimestamp',
-      name: 'Timestamp',
-      fieldName: 'timestamp',
-      minWidth: 100,
-      maxWidth: 200,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: true,
-      data: 'string',
-      isPadded: true,
-      onRender: ({ timestamp }) => <Timestamp timestamp={timestamp} />,
-    },
-    {
-      key: 'columnDifficulty',
-      name: 'Difficulty',
-      minWidth: 50,
-      maxWidth: 200,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: true,
-      data: 'string',
-      isPadded: true,
-      onRender: ({ difficulty }) => (
-        <>{parseInt(difficulty).toLocaleString()}</>
-      ),
-    },
-  ];
-  return (
-    <DetailsList
-      items={blocks}
-      columns={columns}
-      selectionMode={SelectionMode.none}
-      layoutMode={DetailsListLayoutMode.justified}
-      isHeaderVisible={true}
-      onItemInvoked={block => navigate(`/search/?${block.hash}`)}
+      onItemInvoked={({ id }: Transaction) => navigate(`../transaction/?${id}`)}
     />
   );
 };
