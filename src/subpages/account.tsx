@@ -1,29 +1,42 @@
-import React from 'react';
-import useQueryString from '../misc/useQueryString';
+import React, { useState } from 'react';
 import { navigate } from 'gatsby-link';
-import { Link } from '@fluentui/react';
 import {
-  DetailsList,
+  Link,
   DetailsListLayoutMode,
   SelectionMode,
+  DetailsList,
+  Checkbox,
   IColumn,
-} from '@fluentui/react/lib/DetailsList';
+} from '@fluentui/react';
+
 import Wrapper from '../components/Wrapper';
+import List, { BlockListProps } from '../components/List';
+import OffsetSwitch from '../components/OffsetSwitch';
+
 import {
   Transaction,
   TransactionsByAccountComponent,
+  Block,
+  BlockListComponent,
 } from '../generated/graphql';
+
+import { IndexPageProps } from '../pages';
+
+import useQueryString from '../misc/useQueryString';
+import useOffset, { limit } from '../misc/useOffset';
+import { columns } from '../misc/columns';
 import Timestamp from '../components/Timestamp';
 
-interface AccountPageProps {
-  location: Location;
-}
+type AccountPageProps = IndexPageProps;
 
 const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
-  const [queryString, setQueryString] = useQueryString(location);
+  const [queryString] = useQueryString(location);
+
+  const { offset, olderHandler, newerHandler } = useOffset(location);
+  const [excludeEmptyTxs, setExcludeEmptyTxs] = useState(false);
   return (
     <Wrapper>
-      <h1>{`Account Details`}</h1>
+      <h1>Account Details</h1>
       <p>
         Account Number: <b>{queryString}</b>
       </p>
@@ -102,6 +115,38 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
           );
         }}
       </TransactionsByAccountComponent>
+      <h2>Mined Blocks</h2>
+      <BlockListComponent
+        variables={{ offset, limit, excludeEmptyTxs, miner: queryString }}>
+        {({ data, loading, error }) => {
+          if (error) {
+            console.error(error);
+            return <p>{error.message}</p>;
+          }
+          const blocks =
+            data && data.blockQuery && data.blockQuery.blocks
+              ? (data.blockQuery.blocks as Block[])
+              : null;
+          return (
+            <>
+              <Checkbox
+                label="Include blocks having any tx"
+                checked={excludeEmptyTxs}
+                disabled={loading}
+                onChange={() => {
+                  setExcludeEmptyTxs(!excludeEmptyTxs);
+                }}
+              />
+              <OffsetSwitch
+                olderHandler={olderHandler}
+                newerHandler={newerHandler}
+                disable={{ older: loading, newer: loading || offset < 1 }}
+              />
+              <BlockList blocks={blocks} loading={loading} columns={columns} />
+            </>
+          );
+        }}
+      </BlockListComponent>
     </Wrapper>
   );
 };
@@ -142,7 +187,9 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       isPadded: true,
       // FIXME: We'd better to use absolute paths and make Gatsby automatically
       // to rebase these absolute paths on the PATH_PREFIX configuration.
-      onRender: ({ id }) => <Link href={`../transaction/?${id}`}>{id}</Link>,
+      onRender: ({ id }: Transaction) => (
+        <Link href={`../transaction/?${id}`}>{id}</Link>
+      ),
     },
     {
       key: 'columnSignature',
@@ -169,7 +216,7 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       isSortedDescending: true,
       data: 'number',
       isPadded: true,
-      onRender: ({ signer }) => (
+      onRender: ({ signer }: Transaction) => (
         // FIXME: We'd better to use absolute paths and make Gatsby automatically
         // to rebase these absolute paths on the PATH_PREFIX configuration.
         <Link href={`./?${signer}`}>{signer}</Link>
@@ -187,7 +234,9 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       isSortedDescending: true,
       data: 'number',
       isPadded: true,
-      onRender: ({ timestamp }) => <Timestamp timestamp={timestamp} />,
+      onRender: ({ timestamp }: Transaction) => (
+        <Timestamp timestamp={timestamp} />
+      ),
     },
   ];
 
@@ -196,15 +245,23 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
       items={transactions}
       columns={columns}
       selectionMode={SelectionMode.none}
-      getKey={tx => tx.id}
+      getKey={(tx: Transaction) => tx.id}
       setKey="set"
       layoutMode={DetailsListLayoutMode.justified}
       isHeaderVisible={true}
       // FIXME: We'd better to use absolute paths and make Gatsby automatically
       // to rebase these absolute paths on the PATH_PREFIX configuration.
-      onItemInvoked={({ id }) => navigate(`../transaction/?${id}`)}
+      onItemInvoked={({ id }: Transaction) => navigate(`../transaction/?${id}`)}
     />
   );
 };
 
 export default AccountPage;
+
+const BlockList: React.FC<BlockListProps> = ({ blocks, ...props }) => (
+  <List
+    items={blocks}
+    {...props}
+    onItemInvoked={block => navigate(`/search/?${block.hash}`)}
+  />
+);

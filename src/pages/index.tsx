@@ -1,7 +1,11 @@
 import React from 'react';
 import Wrapper from '../components/Wrapper';
 
-const GRAPHQL_ENDPOINTS = JSON.parse(process.env.GRAPHQL_ENDPOINTS);
+import { GRAPHQL_ENDPOINTS } from '../misc/graphQLEndPoint';
+
+export interface IndexPageProps {
+  location: Location;
+}
 
 const IndexPage: React.FC<IndexPageProps> = ({ location }) => {
   return (
