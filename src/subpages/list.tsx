@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { navigate } from 'gatsby';
 
-import { Checkbox, IColumn, DefaultButton } from '@fluentui/react';
+import { Checkbox, IColumn } from '@fluentui/react';
 
 import { Block, BlockListComponent } from '../generated/graphql';
 
@@ -14,8 +14,6 @@ import OffsetSwitch from '../components/OffsetSwitch';
 import { IndexPageProps } from '../pages/index';
 
 type ListPageProps = IndexPageProps;
-
-const POLL_INTERVAL = 2000;
 
 const ListPage: React.FC<ListPageProps> = ({ location }) => {
   const { offset, olderHandler, newerHandler } = useOffset(location);

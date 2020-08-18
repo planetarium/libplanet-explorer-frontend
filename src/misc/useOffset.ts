@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import useSearchParams from './useSearchParams';
 
 export const limit = 21;

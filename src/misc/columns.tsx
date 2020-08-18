@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from '@fluentui/react';
-import { IColumn } from '@fluentui/react/lib/DetailsList';
 
 import Timestamp from '../components/Timestamp';
 import { Block } from '../generated/graphql';

@@ -1,4 +1,4 @@
-import React, { Children, useState } from 'react';
+import React, { useState } from 'react';
 import { navigate } from 'gatsby-link';
 import {
   Link,
