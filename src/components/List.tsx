@@ -1,5 +1,4 @@
 import React from 'react';
-import { navigate } from 'gatsby';
 import {
   DetailsListLayoutMode,
   SelectionMode,
@@ -8,25 +7,35 @@ import {
 import { ShimmeredDetailsList } from '@fluentui/react/lib/ShimmeredDetailsList';
 import { Block } from '../generated/graphql';
 
-interface BlockListProps {
-  blocks: Block[] | null;
+interface ListProps {
+  items: any[] | null;
   loading: boolean;
   columns: IColumn[];
+  onItemInvoked: (item: any) => void;
 }
 
-const POLL_INTERVAL = 2000;
-
-const BlockList: React.FC<BlockListProps> = ({ blocks, loading, columns }) => (
+const List: React.FC<ListProps> = ({
+  items,
+  loading,
+  columns,
+  onItemInvoked,
+}) => (
   <ShimmeredDetailsList
     setKey="set"
-    items={blocks === null || loading ? [] : blocks}
+    items={items === null || loading ? [] : items}
     columns={columns}
     selectionMode={SelectionMode.none}
     layoutMode={DetailsListLayoutMode.justified}
     isHeaderVisible={true}
     enableShimmer={loading}
-    onItemInvoked={block => navigate(`/search/?${block.hash}`)}
+    onItemInvoked={onItemInvoked}
   />
 );
 
-export default BlockList;
+export default List;
+
+export type OmitListProps = Omit<ListProps, 'onItemInvoked' | 'items'>;
+
+export interface BlockListProps extends OmitListProps {
+  blocks: Block[] | null;
+}

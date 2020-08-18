@@ -10,7 +10,7 @@ import {
 } from '@fluentui/react';
 
 import Wrapper from '../components/Wrapper';
-import BlockList from '../components/BlockList';
+import List, { BlockListProps } from '../components/List';
 import OffsetSwitch from '../components/OffsetSwitch';
 
 import {
@@ -257,3 +257,11 @@ const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
 };
 
 export default AccountPage;
+
+const BlockList: React.FC<BlockListProps> = ({ blocks, ...props }) => (
+  <List
+    items={blocks}
+    {...props}
+    onItemInvoked={block => navigate(`/search/?${block.hash}`)}
+  />
+);

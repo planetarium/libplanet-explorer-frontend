@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { navigate } from 'gatsby';
+
 import { Checkbox, IColumn, DefaultButton } from '@fluentui/react';
 
 import { Block, BlockListComponent } from '../generated/graphql';
@@ -6,7 +8,7 @@ import { Block, BlockListComponent } from '../generated/graphql';
 import useOffset, { limit } from '../misc/useOffset';
 import { columns, commonProps } from '../misc/columns';
 
-import BlockList from '../components/BlockList';
+import List, { BlockListProps } from '../components/List';
 import OffsetSwitch from '../components/OffsetSwitch';
 
 import { IndexPageProps } from '../pages/index';
@@ -36,26 +38,6 @@ const ListPage: React.FC<ListPageProps> = ({ location }) => {
               ? (data.blockQuery.blocks as Block[])
               : null;
 
-          const timeTaken: IColumn = {
-            key: 'columnTimeTaken',
-            name: 'Time Taken',
-            minWidth: 50,
-            maxWidth: 200,
-            ...commonProps,
-            isSortedDescending: true,
-            data: 'string',
-            isPadded: true,
-            onRender: (block: Block, index) => {
-              if (blocks === null) throw Error('blocks is null');
-              if (index === undefined) throw Error('index is null');
-              // FIX TODO: beforeBlock index is not available
-              const beforeBlock =
-                blocks[Math.min(index + 1, blocks.length - 1)];
-              const beforeTimestamp = Date.parse(beforeBlock.timestamp);
-              const nowTimestamp = Date.parse(block.timestamp);
-              return <>{(nowTimestamp - beforeTimestamp) / 1000}</>;
-            },
-          };
           return (
             <>
               <SummaryCards blocks={blocks} />
@@ -132,3 +114,34 @@ const Cards: React.FC<CardsProps> = ({
     </div>
   </div>
 );
+
+const BlockList: React.FC<BlockListProps> = ({ blocks, loading, columns }) => {
+  const timeTaken: IColumn = {
+    key: 'columnTimeTaken',
+    name: 'Time Taken',
+    minWidth: 50,
+    maxWidth: 200,
+    ...commonProps,
+    isSortedDescending: true,
+    data: 'string',
+    isPadded: true,
+    onRender: (block: Block, index) => {
+      if (blocks === null) throw Error('blocks is null');
+      if (index === undefined) throw Error('index is null');
+      const beforeBlock = blocks[Math.min(index + 1, blocks.length - 1)];
+      const beforeTimestamp = Date.parse(beforeBlock.timestamp);
+      const nowTimestamp = Date.parse(block.timestamp);
+      return <>{(nowTimestamp - beforeTimestamp) / 1000}</>;
+    },
+  };
+
+  if (blocks !== null) columns.splice(4, 1, timeTaken);
+  return (
+    <List
+      items={blocks}
+      loading={loading}
+      columns={columns}
+      onItemInvoked={block => navigate(`/search/?${block.hash}`)}
+    />
+  );
+};
