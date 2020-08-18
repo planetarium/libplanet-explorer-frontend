@@ -18,7 +18,7 @@ export const columns = [
     iconName: 'NumberSymbol',
     isIconOnly: true,
     minWidth: 5,
-    maxWidth: 41,
+    maxWidth: 50,
     ...commonProps,
     isSortedDescending: true,
     data: 'string',
