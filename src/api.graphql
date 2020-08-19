@@ -44,14 +44,6 @@ query BlockList(
   }
 }
 
-query BlockListByMiner($miner: Address) {
-  blockQuery {
-    blocks(miner: $miner) {
-      ...BlockCommon
-    }
-  }
-}
-
 query BlockByHash($hash: ID) {
   blockQuery {
     block(hash: $hash) {
@@ -96,9 +88,18 @@ query TransactionById($id: ID) {
   }
 }
 
-query TransactionsByAccount($involvedAddress: Address) {
+query TransactionsByAccount(
+  $involvedAddress: Address!
+  $offset: Int!
+  $limit: Int!
+) {
   transactionQuery {
-    transactions(involvedAddress: $involvedAddress, desc: true) {
+    transactions(
+      involvedAddress: $involvedAddress
+      desc: true
+      offset: $offset
+      limit: $limit
+    ) {
       ...TransactionCommon
     }
   }
