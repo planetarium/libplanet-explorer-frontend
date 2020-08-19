@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from '@fluentui/react';
 
 import Timestamp from '../components/Timestamp';
-import { Block } from '../generated/graphql';
+import { Block, Transaction } from '../generated/graphql';
 
 export const commonProps = {
   isRowHeader: true,
@@ -10,7 +10,7 @@ export const commonProps = {
   isSorted: false,
 };
 
-export const columns = [
+export const mineColumns = [
   {
     key: 'columnIndex',
     name: 'Index',
@@ -88,5 +88,76 @@ export const columns = [
     data: 'number',
     isPadded: true,
     onRender: ({ transactions }: Block) => <>{transactions.length}</>,
+  },
+];
+
+export const txColumns = [
+  {
+    key: 'columnNonce',
+    name: 'Nonce',
+    fieldName: 'nonce',
+    minWidth: 5,
+    maxWidth: 50,
+    ...commonProps,
+    isSortedDescending: true,
+    data: 'string',
+    isPadded: true,
+  },
+  {
+    key: 'columnId',
+    name: 'ID',
+    fieldName: 'id',
+    minWidth: 100,
+    maxWidth: 200,
+    ...commonProps,
+    isSortedDescending: true,
+    data: 'number',
+    isPadded: true,
+    // FIXME: We'd better to use absolute paths and make Gatsby automatically
+    // to rebase these absolute paths on the PATH_PREFIX configuration.
+    onRender: ({ id }: Transaction) => (
+      <Link href={`../transaction/?${id}`}>{id}</Link>
+    ),
+  },
+  {
+    key: 'columnSignature',
+    name: 'Signature',
+    fieldName: 'signature',
+    minWidth: 100,
+    maxWidth: 200,
+    ...commonProps,
+    isSortedDescending: true,
+    data: 'number',
+    isPadded: true,
+  },
+  {
+    key: 'columnSigner',
+    name: 'Signer',
+    fieldName: 'signer',
+    minWidth: 100,
+    maxWidth: 200,
+    ...commonProps,
+    isSortedDescending: true,
+    data: 'number',
+    isPadded: true,
+    onRender: ({ signer }: Transaction) => (
+      // FIXME: We'd better to use absolute paths and make Gatsby automatically
+      // to rebase these absolute paths on the PATH_PREFIX configuration.
+      <Link href={`./?${signer}`}>{signer}</Link>
+    ),
+  },
+  {
+    key: 'columnTimestamp',
+    name: 'Timestamp',
+    fieldName: 'timestamp',
+    minWidth: 100,
+    maxWidth: 200,
+    ...commonProps,
+    isSortedDescending: true,
+    data: 'number',
+    isPadded: true,
+    onRender: ({ timestamp }: Transaction) => (
+      <Timestamp timestamp={timestamp} />
+    ),
   },
 ];

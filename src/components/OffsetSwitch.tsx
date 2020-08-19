@@ -4,8 +4,8 @@ import { css } from 'emotion';
 import { DefaultButton } from '@fluentui/react';
 
 interface OffsetSwitchProps {
-  newerHandler: () => void;
-  olderHandler: () => void;
+  newerHandler?: () => void;
+  olderHandler?: () => void;
   disable: { older: boolean; newer: boolean };
 }
 
