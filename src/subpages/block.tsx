@@ -16,7 +16,7 @@ interface BlockPageProps {
 }
 
 const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
-  const [queryString, setQueryString] = useQueryString(location);
+  const [queryString] = useQueryString(location);
   const hash = queryString;
   return (
     <BlockByHashComponent variables={{ hash }}>
@@ -37,6 +37,7 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
               </p>
             </>
           );
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const { block } = data!.blockQuery!;
         if (!block)
           return (

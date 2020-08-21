@@ -9,7 +9,7 @@ interface TransactionPageProps {
 }
 
 const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
-  const [queryString, setQueryString] = useQueryString(location);
+  const [queryString] = useQueryString(location);
   const id = queryString;
   return (
     <TransactionByIdComponent variables={{ id }}>
@@ -30,6 +30,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
               </p>
             </>
           );
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         const { transaction } = data!.transactionQuery!;
         if (!transaction)
           return (
@@ -94,7 +95,10 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
                         <dt>{argument.key}</dt>
                         <dd>
                           <pre>
-                            <code> {JSON.stringify(argument.value, null, 2)} </code>
+                            <code>
+                              {' '}
+                              {JSON.stringify(argument.value, null, 2)}{' '}
+                            </code>
                           </pre>
                         </dd>
                       </React.Fragment>

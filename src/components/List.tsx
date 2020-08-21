@@ -8,9 +8,11 @@ import { ShimmeredDetailsList } from '@fluentui/react/lib/ShimmeredDetailsList';
 import { Block } from '../generated/graphql';
 
 interface ListProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   items: any[] | null;
   loading: boolean;
   columns: IColumn[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onItemInvoked: (item: any) => void;
   notFoundMessage?: string;
 }

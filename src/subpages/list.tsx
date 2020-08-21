@@ -79,7 +79,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ blocks }) => {
   const difficultyAverage =
     difficulties.reduce((d, sum) => d + sum, 0) / difficulties.length;
 
-  const txNumbers = blocks.map(block => block!.transactions.length);
+  const txNumbers = blocks.map(block => block.transactions.length);
   const totalTxNumber = txNumbers.reduce((a, b) => a + b, 0);
   return (
     <Cards
