@@ -171,19 +171,19 @@ const TransactionListWrap: React.FC<TransactionListWrapProps> = ({
   loading,
 }) => (
   <>
-    <h2>Signed Transactions {counter(signed)}</h2>
+    <h2>Signed Transactions: {counter(signed)}</h2>
     <TransactionList
       loading={loading}
       transactions={signed ? signed : null}
       notFoundMessage={'No Signed Transactions'}
     />
-    <h2>Involved Transactions {counter(involved)}</h2>
+    <h2>Involved Transactions: {counter(involved)}</h2>
     <TransactionList
       loading={loading}
       transactions={involved ? involved : null}
       notFoundMessage={'No Involved Transactions'}
     />
-    <h2>Missing Nonces {counter(missingNonces)}</h2>
+    <h2>Missing Nonces: {counter(missingNonces)}</h2>
     {missingNonces ? (
       missingNonces.length > 0 ? (
         missingNonces.map(nonce => <p>{nonce}</p>)
@@ -191,13 +191,13 @@ const TransactionListWrap: React.FC<TransactionListWrapProps> = ({
         <div>No missing nonces.</div>
       )
     ) : (
-      'Loading..'
+      'Loading…'
     )}
   </>
 );
 
 function counter(items?: any[]) {
-  return items !== undefined && items.length > 0 && `: ${items.length}`;
+  return items !== undefined && items.length > 0 && items.length;
 }
 
 interface TransactionListProps
