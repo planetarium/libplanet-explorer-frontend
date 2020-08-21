@@ -1,4 +1,4 @@
-name: Type Check
+name: CI
 on: [push, pull_request]
 
 jobs:
@@ -16,3 +16,5 @@ jobs:
         run: npm run prebuild
       - name: Type Check
         run: npm run tsc
+      - name: Run ESLint
+        run: npx eslint --ext .ts,tsx src
