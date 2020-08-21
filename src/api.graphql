@@ -90,8 +90,8 @@ query TransactionById($id: ID) {
 
 query TransactionsByAccount(
   $involvedAddress: Address!
-  $offset: Int!
-  $limit: Int!
+  $offset: Int
+  $limit: Int
 ) {
   transactionQuery {
     transactions(

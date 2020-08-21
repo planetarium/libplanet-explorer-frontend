@@ -26,8 +26,16 @@ import { IndexPageProps } from '../pages';
 import useQueryString from '../misc/useQueryString';
 import useOffset, { limit } from '../misc/useOffset';
 import { mineColumns, txColumns } from '../misc/columns';
+import { func } from 'prop-types';
+
+import styled from '@emotion/styled';
 
 type AccountPageProps = IndexPageProps;
+
+const Ul = styled.ul`
+  list-style: none;
+  padding: 0;
+`;
 
 const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
   const hash = useQueryString(location)[0].slice(0, 42);
@@ -44,6 +52,47 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
       <p>
         Account Number: <b>{hash}</b>
       </p>
+
+      <h2>Transactions count</h2>
+
+      <TransactionsByAccountComponent variables={{ involvedAddress: hash }}>
+        {({ data, loading, error }) => {
+          if (error) {
+            console.error(error);
+            return <p>{error.message}</p>;
+          }
+
+          if (loading)
+            return (
+              <Ul>
+                <li>Signed Transaction: Loading…</li>
+                <li>Involved Transaction: Loading…</li>
+                <li>missingNonces: Loading…</li>
+              </Ul>
+            );
+
+          const transactions =
+            data && data.transactionQuery && data.transactionQuery.transactions
+              ? data.transactionQuery.transactions
+              : null;
+
+          if (transactions === null) throw Error('transactions query failed');
+
+          const {
+            signedTransactions,
+            involvedTransactions,
+            missingNonces,
+          } = splitTransactions(transactions, hash);
+
+          return (
+            <Ul>
+              <li>Signed Transaction: {signedTransactions.length}</li>
+              <li>Involved Transaction: {involvedTransactions.length}</li>
+              <li>missingNonces: {missingNonces.length}</li>
+            </Ul>
+          );
+        }}
+      </TransactionsByAccountComponent>
 
       <TransactionsByAccountComponent
         variables={{ offset: txOffset, limit, involvedAddress: hash }}>
@@ -68,29 +117,11 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
 
           if (transactions === null) throw Error('transactions query failed');
 
-          const signedTransactions: Transaction[] = [],
-            involvedTransactions: Transaction[] = [];
-          transactions.forEach(tx => {
-            if (tx.signer === hash) {
-              signedTransactions.push(tx);
-            } else {
-              involvedTransactions.push(tx);
-            }
-          });
-
-          const missingNonces: number[] = [];
-          for (let i = 1; i < signedTransactions.length; ++i) {
-            const prevNonce = signedTransactions[i - 1].nonce;
-            const nonce = signedTransactions[i].nonce;
-            if (prevNonce === nonce - 1) continue;
-            for (
-              let missingNonce = prevNonce + 1;
-              missingNonce < nonce;
-              ++missingNonce
-            ) {
-              missingNonces.push(missingNonce);
-            }
-          }
+          const {
+            signedTransactions,
+            involvedTransactions,
+            missingNonces,
+          } = splitTransactions(transactions, hash);
 
           return (
             <>
@@ -224,3 +255,30 @@ const BlockList: React.FC<BlockListProps> = ({ blocks, ...props }) => (
     onItemInvoked={block => navigate(`/search/?${block.hash}`)}
   />
 );
+
+function splitTransactions(transactions: Transaction[], hash: string) {
+  const signedTransactions: Transaction[] = [],
+    involvedTransactions: Transaction[] = [];
+  transactions.forEach(tx => {
+    if (tx.signer === hash) {
+      signedTransactions.push(tx);
+    } else {
+      involvedTransactions.push(tx);
+    }
+  });
+
+  const missingNonces: number[] = [];
+  for (let i = 1; i < signedTransactions.length; ++i) {
+    const prevNonce = signedTransactions[i - 1].nonce;
+    const nonce = signedTransactions[i].nonce;
+    if (prevNonce === nonce - 1) continue;
+    for (
+      let missingNonce = prevNonce + 1;
+      missingNonce < nonce;
+      ++missingNonce
+    ) {
+      missingNonces.push(missingNonce);
+    }
+  }
+  return { signedTransactions, involvedTransactions, missingNonces };
+}
