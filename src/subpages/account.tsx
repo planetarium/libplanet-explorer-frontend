@@ -10,8 +10,9 @@ import {
 } from '@fluentui/react';
 
 import Wrapper from '../components/Wrapper';
-import List, { BlockListProps } from '../components/List';
+import List, { OmitListProps, BlockListProps } from '../components/List';
 import OffsetSwitch from '../components/OffsetSwitch';
+import Timestamp from '../components/Timestamp';
 
 import {
   Transaction,
@@ -24,100 +25,127 @@ import { IndexPageProps } from '../pages';
 
 import useQueryString from '../misc/useQueryString';
 import useOffset, { limit } from '../misc/useOffset';
-import { columns } from '../misc/columns';
-import Timestamp from '../components/Timestamp';
+import { mineColumns, txColumns } from '../misc/columns';
+import { func } from 'prop-types';
+
+import styled from '@emotion/styled';
 
 type AccountPageProps = IndexPageProps;
 
-const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
-  const [queryString] = useQueryString(location);
+const Ul = styled.ul`
+  list-style: none;
+  padding: 0;
+`;
 
-  const { offset, olderHandler, newerHandler } = useOffset(location);
+const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
+  const hash = useQueryString(location)[0].slice(0, 42);
+
+  const [txOffset, txOlderHandler, txNewerHandler] = useOffset(location, 'tx');
+  const [mineOffset, mineOlderHandler, mineNewerHandler] = useOffset(
+    location,
+    'mine'
+  );
   const [excludeEmptyTxs, setExcludeEmptyTxs] = useState(false);
   return (
     <Wrapper>
       <h1>Account Details</h1>
       <p>
-        Account Number: <b>{queryString}</b>
+        Account Number: <b>{hash}</b>
       </p>
 
-      <TransactionsByAccountComponent
-        variables={{ involvedAddress: queryString }}>
+      <h2>Transactions count</h2>
+
+      <TransactionsByAccountComponent variables={{ involvedAddress: hash }}>
         {({ data, loading, error }) => {
-          if (loading) return <p>loading&hellip;</p>;
-          if (error) return <p>error!</p>;
-          const { transactions } = data!.transactionQuery!;
-          if (!transactions) {
-            return <p>There are no transactions.</p>;
+          if (error) {
+            console.error(error);
+            return <p>{error.message}</p>;
           }
 
-          const signedTransactions: Transaction[] = [],
-            involvedTransactions: Transaction[] = [];
-          transactions.forEach(tx => {
-            if (tx.signer === queryString) {
-              signedTransactions.push(tx);
-            } else {
-              involvedTransactions.push(tx);
-            }
-          });
+          if (loading)
+            return (
+              <Ul>
+                <li>Signed Transaction: Loading…</li>
+                <li>Involved Transaction: Loading…</li>
+                <li>missingNonces: Loading…</li>
+              </Ul>
+            );
 
-          const missingNonces: number[] = [];
-          for (let i = 1; i < signedTransactions.length; ++i) {
-            const prevNonce = signedTransactions[i - 1].nonce;
-            const nonce = signedTransactions[i].nonce;
-            if (prevNonce === nonce - 1) continue;
-            for (
-              let missingNonce = prevNonce + 1;
-              missingNonce < nonce;
-              ++missingNonce
-            ) {
-              missingNonces.push(missingNonce);
-            }
+          const transactions =
+            data && data.transactionQuery && data.transactionQuery.transactions
+              ? data.transactionQuery.transactions
+              : null;
+
+          if (transactions === null) throw Error('transactions query failed');
+
+          const {
+            signedTransactions,
+            involvedTransactions,
+            missingNonces,
+          } = splitTransactions(transactions, hash);
+
+          return (
+            <Ul>
+              <li>Signed Transaction: {signedTransactions.length}</li>
+              <li>Involved Transaction: {involvedTransactions.length}</li>
+              <li>missingNonces: {missingNonces.length}</li>
+            </Ul>
+          );
+        }}
+      </TransactionsByAccountComponent>
+
+      <TransactionsByAccountComponent
+        variables={{ offset: txOffset, limit, involvedAddress: hash }}>
+        {({ data, loading, error }) => {
+          if (error) {
+            console.error(error);
+            return <p>{error.message}</p>;
           }
 
-          const numOfSigned = signedTransactions.length;
-          const numOfInvolved = involvedTransactions.length;
-          const numOfMissingNonces = missingNonces.length;
+          if (loading)
+            return (
+              <>
+                <OffsetSwitch disable={{ older: true, newer: true }} />
+                <TransactionListWrap loading={true} />
+              </>
+            );
+
+          const transactions =
+            data && data.transactionQuery && data.transactionQuery.transactions
+              ? data.transactionQuery.transactions
+              : null;
+
+          if (transactions === null) throw Error('transactions query failed');
+
+          const {
+            signedTransactions,
+            involvedTransactions,
+            missingNonces,
+          } = splitTransactions(transactions, hash);
 
           return (
             <>
-              <h2>Signed Transactions: {numOfSigned}</h2>
-              {numOfSigned > 0 ? (
-                <TransactionsList
-                  transactions={
-                    loading
-                      ? []
-                      : (signedTransactions as NonNullable<Transaction[]>)
-                  }
-                />
-              ) : (
-                <div>No transactions of this type</div>
-              )}
-              <h2>Involved Transactions: {numOfInvolved}</h2>
-              {numOfInvolved ? (
-                <TransactionsList
-                  transactions={
-                    loading
-                      ? []
-                      : (involvedTransactions as NonNullable<Transaction[]>)
-                  }
-                />
-              ) : (
-                <div>No transactions of this type</div>
-              )}
-              <h2>Missing Nonces: {numOfMissingNonces}</h2>
-              {numOfMissingNonces ? (
-                missingNonces.map(nonce => <p>{nonce}</p>)
-              ) : (
-                <div>No missing nonces.</div>
-              )}
+              <OffsetSwitch
+                olderHandler={txOlderHandler}
+                newerHandler={txNewerHandler}
+                disable={{
+                  older: loading || transactions.length < limit,
+                  newer: loading || txOffset === 0,
+                }}
+              />
+              <TransactionListWrap
+                loading={false}
+                signed={signedTransactions}
+                involved={involvedTransactions}
+                missingNonces={missingNonces}
+              />
             </>
           );
         }}
       </TransactionsByAccountComponent>
       <h2>Mined Blocks</h2>
       <BlockListComponent
-        variables={{ offset, limit, excludeEmptyTxs, miner: queryString }}>
+        variables={{ offset: mineOffset, limit, excludeEmptyTxs, miner: hash }}>
         {({ data, loading, error }) => {
           if (error) {
             console.error(error);
@@ -138,11 +166,18 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
                 }}
               />
               <OffsetSwitch
-                olderHandler={olderHandler}
-                newerHandler={newerHandler}
-                disable={{ older: loading, newer: loading || offset < 1 }}
+                olderHandler={mineOlderHandler}
+                newerHandler={mineNewerHandler}
+                disable={{
+                  older: loading || (!!blocks && blocks.length < limit),
+                  newer: loading || mineOffset === 0,
+                }}
               />
-              <BlockList blocks={blocks} loading={loading} columns={columns} />
+              <BlockList
+                blocks={blocks}
+                loading={loading}
+                columns={mineColumns}
+              />
             </>
           );
         }}
@@ -151,112 +186,67 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
   );
 };
 
-interface TxListProps {
-  transactions: Pick<
-    Transaction,
-    'id' | 'nonce' | 'signature' | 'signer' | 'timestamp'
-  >[];
+export default AccountPage;
+
+interface TransactionListWrapProps {
+  signed?: Transaction[];
+  involved?: Transaction[];
+  missingNonces?: number[];
+  loading: boolean;
 }
 
-const TransactionsList: React.FC<TxListProps> = ({ transactions }) => {
-  const columns: IColumn[] = [
-    {
-      key: 'coulmnNonce',
-      name: 'Nonce',
-      fieldName: 'nonce',
-      minWidth: 5,
-      maxWidth: 50,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: true,
-      data: 'string',
-      isPadded: true,
-    },
-    {
-      key: 'columnId',
-      name: 'ID',
-      fieldName: 'id',
-      minWidth: 100,
-      maxWidth: 200,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: true,
-      data: 'number',
-      isPadded: true,
-      // FIXME: We'd better to use absolute paths and make Gatsby automatically
-      // to rebase these absolute paths on the PATH_PREFIX configuration.
-      onRender: ({ id }: Transaction) => (
-        <Link href={`../transaction/?${id}`}>{id}</Link>
-      ),
-    },
-    {
-      key: 'columnSignature',
-      name: 'Signature',
-      fieldName: 'signature',
-      minWidth: 100,
-      maxWidth: 200,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: true,
-      data: 'number',
-      isPadded: true,
-    },
-    {
-      key: 'columnSigner',
-      name: 'Signer',
-      fieldName: 'signer',
-      minWidth: 100,
-      maxWidth: 200,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: true,
-      data: 'number',
-      isPadded: true,
-      onRender: ({ signer }: Transaction) => (
-        // FIXME: We'd better to use absolute paths and make Gatsby automatically
-        // to rebase these absolute paths on the PATH_PREFIX configuration.
-        <Link href={`./?${signer}`}>{signer}</Link>
-      ),
-    },
-    {
-      key: 'columnTimestamp',
-      name: 'Timestamp',
-      fieldName: 'timestamp',
-      minWidth: 100,
-      maxWidth: 200,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: true,
-      data: 'number',
-      isPadded: true,
-      onRender: ({ timestamp }: Transaction) => (
-        <Timestamp timestamp={timestamp} />
-      ),
-    },
-  ];
-
-  return (
-    <DetailsList
-      items={transactions}
-      columns={columns}
-      selectionMode={SelectionMode.none}
-      getKey={(tx: Transaction) => tx.id}
-      setKey="set"
-      layoutMode={DetailsListLayoutMode.justified}
-      isHeaderVisible={true}
-      // FIXME: We'd better to use absolute paths and make Gatsby automatically
-      // to rebase these absolute paths on the PATH_PREFIX configuration.
-      onItemInvoked={({ id }: Transaction) => navigate(`../transaction/?${id}`)}
+const TransactionListWrap: React.FC<TransactionListWrapProps> = ({
+  signed,
+  involved,
+  missingNonces,
+  loading,
+}) => (
+  <>
+    <h2>Signed Transactions: {counter(signed)}</h2>
+    <TransactionList
+      loading={loading}
+      transactions={signed ? signed : null}
+      notFoundMessage={'No Signed Transactions'}
     />
-  );
-};
+    <h2>Involved Transactions: {counter(involved)}</h2>
+    <TransactionList
+      loading={loading}
+      transactions={involved ? involved : null}
+      notFoundMessage={'No Involved Transactions'}
+    />
+    <h2>Missing Nonces: {counter(missingNonces)}</h2>
+    {missingNonces ? (
+      missingNonces.length > 0 ? (
+        missingNonces.map(nonce => <p>{nonce}</p>)
+      ) : (
+        <div>No missing nonces.</div>
+      )
+    ) : (
+      'Loading…'
+    )}
+  </>
+);
 
-export default AccountPage;
+function counter(items?: any[]) {
+  return items !== undefined && items.length > 0 && items.length;
+}
+
+interface TransactionListProps
+  extends Omit<OmitListProps, 'columns' | 'items'> {
+  transactions: Transaction[] | null;
+}
+
+export const TransactionList: React.FC<TransactionListProps> = ({
+  transactions,
+  ...props
+}) => (
+  <List
+    items={transactions}
+    {...props}
+    columns={txColumns}
+    onItemInvoked={block => navigate(`/search/?${block.hash}`)}
+  />
+);
 
 const BlockList: React.FC<BlockListProps> = ({ blocks, ...props }) => (
   <List
@@ -265,3 +255,30 @@ const BlockList: React.FC<BlockListProps> = ({ blocks, ...props }) => (
     onItemInvoked={block => navigate(`/search/?${block.hash}`)}
   />
 );
+
+function splitTransactions(transactions: Transaction[], hash: string) {
+  const signedTransactions: Transaction[] = [],
+    involvedTransactions: Transaction[] = [];
+  transactions.forEach(tx => {
+    if (tx.signer === hash) {
+      signedTransactions.push(tx);
+    } else {
+      involvedTransactions.push(tx);
+    }
+  });
+
+  const missingNonces: number[] = [];
+  for (let i = 1; i < signedTransactions.length; ++i) {
+    const prevNonce = signedTransactions[i - 1].nonce;
+    const nonce = signedTransactions[i].nonce;
+    if (prevNonce === nonce - 1) continue;
+    for (
+      let missingNonce = prevNonce + 1;
+      missingNonce < nonce;
+      ++missingNonce
+    ) {
+      missingNonces.push(missingNonce);
+    }
+  }
+  return { signedTransactions, involvedTransactions, missingNonces };
+}

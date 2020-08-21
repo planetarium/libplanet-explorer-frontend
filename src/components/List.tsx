@@ -12,6 +12,7 @@ interface ListProps {
   loading: boolean;
   columns: IColumn[];
   onItemInvoked: (item: any) => void;
+  notFoundMessage?: string;
 }
 
 const List: React.FC<ListProps> = ({
@@ -19,18 +20,23 @@ const List: React.FC<ListProps> = ({
   loading,
   columns,
   onItemInvoked,
-}) => (
-  <ShimmeredDetailsList
-    setKey="set"
-    items={items === null || loading ? [] : items}
-    columns={columns}
-    selectionMode={SelectionMode.none}
-    layoutMode={DetailsListLayoutMode.justified}
-    isHeaderVisible={true}
-    enableShimmer={loading}
-    onItemInvoked={onItemInvoked}
-  />
-);
+  notFoundMessage,
+}) => {
+  if (!loading && notFoundMessage && items && items.length === 0)
+    return <p>{notFoundMessage}</p>;
+  return (
+    <ShimmeredDetailsList
+      setKey="set"
+      items={items === null || loading ? [] : items}
+      columns={columns}
+      selectionMode={SelectionMode.none}
+      layoutMode={DetailsListLayoutMode.justified}
+      isHeaderVisible={true}
+      enableShimmer={loading}
+      onItemInvoked={onItemInvoked}
+    />
+  );
+};
 
 export default List;
 
