@@ -17,4 +17,4 @@ jobs:
       - name: Type Check
         run: npm run tsc
       - name: Run ESLint
-        run: npx eslint --ext .ts,tsx src
+        run: npx eslint --ext .ts,.tsx src
