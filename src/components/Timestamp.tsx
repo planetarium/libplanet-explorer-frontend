@@ -21,6 +21,7 @@ const Timestamp: React.FC<TimestampProps> = ({ timestamp }) => {
     now.getMonth() == date.getMonth() &&
     now.getDate() == date.getDate()
   ) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { year, month, day, ...timeStyle } = formatOptions;
     return (
       <time dateTime={date.toISOString()} title={date.toLocaleString()}>

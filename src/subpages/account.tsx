@@ -1,18 +1,10 @@
 import React, { useState } from 'react';
 import { navigate } from 'gatsby-link';
-import {
-  Link,
-  DetailsListLayoutMode,
-  SelectionMode,
-  DetailsList,
-  Checkbox,
-  IColumn,
-} from '@fluentui/react';
+import { Checkbox } from '@fluentui/react';
 
 import Wrapper from '../components/Wrapper';
 import List, { OmitListProps, BlockListProps } from '../components/List';
 import OffsetSwitch from '../components/OffsetSwitch';
-import Timestamp from '../components/Timestamp';
 
 import {
   Transaction,
@@ -26,7 +18,6 @@ import { IndexPageProps } from '../pages';
 import useQueryString from '../misc/useQueryString';
 import useOffset, { limit } from '../misc/useOffset';
 import { mineColumns, txColumns } from '../misc/columns';
-import { func } from 'prop-types';
 
 import styled from '@emotion/styled';
 
@@ -217,7 +208,7 @@ const TransactionListWrap: React.FC<TransactionListWrapProps> = ({
     <h2>Missing Nonces: {counter(missingNonces)}</h2>
     {missingNonces ? (
       missingNonces.length > 0 ? (
-        missingNonces.map(nonce => <p>{nonce}</p>)
+        missingNonces.map(nonce => <p key={nonce}>{nonce}</p>)
       ) : (
         <div>No missing nonces.</div>
       )
@@ -227,9 +218,8 @@ const TransactionListWrap: React.FC<TransactionListWrapProps> = ({
   </>
 );
 
-function counter(items?: any[]) {
-  return items !== undefined && items.length > 0 && items.length;
-}
+const counter = (items?: unknown[]) =>
+  items !== undefined && items.length > 0 && items.length;
 
 interface TransactionListProps
   extends Omit<OmitListProps, 'columns' | 'items'> {
@@ -252,7 +242,7 @@ const BlockList: React.FC<BlockListProps> = ({ blocks, ...props }) => (
   <List
     items={blocks}
     {...props}
-    onItemInvoked={block => navigate(`/search/?${block.hash}`)}
+    onItemInvoked={(block: Block) => navigate(`/search/?${block.hash}`)}
   />
 );
 

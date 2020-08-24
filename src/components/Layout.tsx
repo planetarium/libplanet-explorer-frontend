@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { css, cx } from 'emotion';
 import styled from '@emotion/styled';
 import { ApolloProvider } from 'react-apollo';
 import ApolloClient from 'apollo-boost';
-import { Icon, Label, SearchBox, IRenderFunction } from '@fluentui/react';
+import { Icon, SearchBox } from '@fluentui/react';
 import {
   TooltipHost,
   TooltipDelay,
@@ -11,15 +10,13 @@ import {
 } from '@fluentui/react/lib/Tooltip';
 import {
   Dropdown,
-  DropdownMenuItemType,
   IDropdownStyles,
   IDropdownOption,
 } from '@fluentui/react/lib/Dropdown';
-import { getId } from '@fluentui/react/lib/Utilities';
 
 import { GraphQLEndPoint, GRAPHQL_ENDPOINTS } from '../misc/graphQLEndPoint';
 
-const logo = require('../static/img/logo.svg');
+import logo from '../static/img/logo.svg';
 
 import Wrapper from './Wrapper';
 import { navigate } from 'gatsby-link';
@@ -30,6 +27,7 @@ interface LayoutProps {
 }
 const Layout: React.FC<LayoutProps> = ({ children, pageContext }) => {
   if (pageContext.endpoint) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [client, setClient] = useState<ApolloClient<any> | null>(null);
     useEffect(() => {
       setClient(
@@ -72,7 +70,6 @@ interface NavBarProps {
   endpoint: GraphQLEndPoint;
 }
 export const NavBar: React.FC<NavBarProps> = ({ className, endpoint }) => {
-  const hostId = getId('tooltipHost');
   const onSearch = (value: string) => {
     if (value.match(/^[0-9a-fA-F]{64}$/)) {
       navigate(`/search/?${value}`);
@@ -166,7 +163,4 @@ const NavSearchBox = styled(SearchBox)`
 `;
 const NetworkNameContainer = styled.div`
   margin-left: 10px;
-`;
-const NetworkNameIcon = styled(Icon)`
-  margin-right: 5px;
 `;
