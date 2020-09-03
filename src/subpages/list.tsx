@@ -15,6 +15,8 @@ import { IndexPageProps } from '../pages/index';
 
 type ListPageProps = IndexPageProps;
 
+const POLL_INTERVAL = 2000;
+
 const ListPage: React.FC<ListPageProps> = ({ location }) => {
   const [offset, olderHandler, newerHandler] = useOffset(location);
   const [excludeEmptyTxs, setExcludeEmptyTxs] = useState(false);
@@ -25,7 +27,8 @@ const ListPage: React.FC<ListPageProps> = ({ location }) => {
         checked={excludeEmptyTxs}
         onChange={() => setExcludeEmptyTxs(!excludeEmptyTxs)}
       />
-      <BlockListComponent variables={{ offset, limit, excludeEmptyTxs }}>
+      <BlockListComponent variables={{ offset, limit, excludeEmptyTxs }}
+                          pollInterval={POLL_INTERVAL}>
         {({ data, loading, error }) => {
           if (error) {
             console.error(error);
