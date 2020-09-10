@@ -36,3 +36,7 @@ h1 {
 .ms-Link {
   font-family: 'Consolas', monospace;
 }
+
+code {
+  font-family: 'Consolas', monospace;
+}
