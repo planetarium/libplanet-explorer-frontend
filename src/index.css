@@ -32,3 +32,11 @@ h1 {
 .nav {
   margin-bottom: 10px;
 }
+
+.ms-Link {
+  font-family: 'Consolas', monospace;
+}
+
+code {
+  font-family: 'Consolas', monospace;
+}
