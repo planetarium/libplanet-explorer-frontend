@@ -33,10 +33,11 @@ h1 {
   margin-bottom: 10px;
 }
 
+code,
 .ms-Link {
   font-family: 'Consolas', monospace;
 }
 
 code {
-  font-family: 'Consolas', monospace;
+  word-break: break-all;
 }
