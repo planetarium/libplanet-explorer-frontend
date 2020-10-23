@@ -77,6 +77,10 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
               <dd>
                 <Timestamp timestamp={block.timestamp} />
               </dd>
+              <dt>State Root Hash</dt>
+              <dd>
+                <code>{block.stateRootHash}</code>
+              </dd>
               <dt>Previous hash</dt>
               <dd>
                 {block.previousBlock ? (
