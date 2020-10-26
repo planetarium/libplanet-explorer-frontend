@@ -18,6 +18,7 @@ type Block {
   miner: Address!
   nonce: ByteString!
   previousBlock: Block
+  stateRootHash: ByteString
   timestamp: DateTimeOffset!
   transactions: [Transaction!]!
 }
