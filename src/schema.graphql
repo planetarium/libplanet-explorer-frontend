@@ -3,12 +3,8 @@ schema {
 }
 
 type Action {
-  arguments: [ActionArgumentType!]!
-}
-
-type ActionArgumentType {
-  key: String!
-  value: String!
+  inspection: String!
+  raw(encode: String = "hex"): String!
 }
 
 type Block {
