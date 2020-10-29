@@ -6,12 +6,6 @@ fragment BlockCommon on Block {
 }
 
 fragment TransactionCommon on Transaction {
-  actions {
-    arguments {
-      key
-      value
-    }
-  }
   id
   nonce
   publicKey
@@ -85,6 +79,9 @@ query TransactionById($id: ID) {
   transactionQuery {
     transaction(id: $id) {
       ...TransactionCommon
+      actions {
+        raw(encode: "base64")
+      }
       blockRef {
         ...BlockCommon
       }

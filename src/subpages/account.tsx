@@ -11,6 +11,7 @@ import {
   TransactionsByAccountComponent,
   Block,
   BlockListComponent,
+  TransactionCommonFragment,
 } from '../generated/graphql';
 
 import { IndexPageProps } from '../pages';
@@ -180,8 +181,8 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
 export default AccountPage;
 
 interface TransactionListWrapProps {
-  signed?: Transaction[];
-  involved?: Transaction[];
+  signed?: TransactionCommonFragment[];
+  involved?: TransactionCommonFragment[];
   missingNonces?: number[];
   loading: boolean;
 }
@@ -223,7 +224,7 @@ const counter = (items?: unknown[]) =>
 
 interface TransactionListProps
   extends Omit<OmitListProps, 'columns' | 'items'> {
-  transactions: Transaction[] | null;
+  transactions: TransactionCommonFragment[] | null;
 }
 
 export const TransactionList: React.FC<TransactionListProps> = ({
@@ -246,9 +247,9 @@ const BlockList: React.FC<BlockListProps> = ({ blocks, ...props }) => (
   />
 );
 
-function splitTransactions(transactions: Transaction[], hash: string) {
-  const signedTransactions: Transaction[] = [],
-    involvedTransactions: Transaction[] = [];
+function splitTransactions(transactions: TransactionCommonFragment[], hash: string) {
+  const signedTransactions: TransactionCommonFragment[] = [],
+    involvedTransactions: TransactionCommonFragment[] = [];
   transactions.forEach(tx => {
     if (tx.signer === hash) {
       signedTransactions.push(tx);
