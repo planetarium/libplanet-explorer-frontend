@@ -85,6 +85,9 @@ query TransactionById($id: ID) {
   transactionQuery {
     transaction(id: $id) {
       ...TransactionCommon
+      blockRef {
+        ...BlockCommon
+      }
     }
   }
 }

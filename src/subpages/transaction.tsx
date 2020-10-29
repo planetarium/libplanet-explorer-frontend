@@ -41,6 +41,17 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
               </p>
             </>
           );
+
+        const blockRef =
+          transaction.blockRef === [] || transaction.blockRef === null
+            ? (<p>{"No block references were found."}</p>)
+            : transaction.blockRef.map((block, index) => (
+              <dd key={index}>
+                <Link href={`../block/?${block.hash}`}>
+                  {block.hash}
+                </Link>
+              </dd>
+            ));
         // FIXME: We'd better to use absolute paths and make Gatsby to
         // automatically rebase these absolute paths on the PATH_PREFIX
         // configuration.
@@ -86,6 +97,8 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
                   </Link>
                 </dd>
               ))}
+              <dt>Block Reference</dt>
+              {blockRef}
               <dt>Actions</dt>
               {transaction.actions.map((action, index) => (
                 <dd key={index}>
