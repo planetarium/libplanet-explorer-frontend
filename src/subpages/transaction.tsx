@@ -18,6 +18,8 @@ function convertToObject(value: BencodexValue | undefined): any {
     return value.map(v => convertToObject(v));
   } else if (value instanceof Uint8Array) {
     return "<binary> " + value.toString('hex');
+  } else if (typeof value === 'bigint') {
+    return Number(value);
   } else {
     return value;
   }
