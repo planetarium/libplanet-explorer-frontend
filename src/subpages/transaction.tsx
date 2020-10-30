@@ -3,8 +3,8 @@ import useQueryString from '../misc/useQueryString';
 import { TransactionByIdComponent } from '../generated/graphql';
 import { Link } from '@fluentui/react';
 import Timestamp from '../components/Timestamp';
-import { decode, BencodexValue } from "bencodex";
-import JSONTree from "react-json-tree";
+import { decode, BencodexValue } from 'bencodex';
+import JSONTree from 'react-json-tree';
 
 interface TransactionPageProps {
   location: Location;
@@ -13,11 +13,15 @@ interface TransactionPageProps {
 // FIXME: do not use any type.
 function convertToObject(value: BencodexValue | undefined): any {
   if (value instanceof Map) {
-    return Object.fromEntries(Array.from(value).map(v => [v[0], convertToObject(v[1])]));
+    return Object.fromEntries(
+      Array.from(value).map(v => [v[0], convertToObject(v[1])])
+    );
   } else if (value instanceof Array) {
     return value.map(v => convertToObject(v));
   } else if (value instanceof Uint8Array) {
-    return "<binary> " + value.toString('hex');
+    return '<binary> ' + value.toString('hex');
+  } else if (typeof value === 'bigint') {
+    return Number(value);
   } else {
     return value;
   }
@@ -43,7 +47,7 @@ const jsonTreeTheme = {
   base0C: '#963E4C',
   base0D: '#96883E',
   base0E: '#4C963E',
-  base0F: '#3E965B'
+  base0F: '#3E965B',
 };
 
 const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
@@ -81,28 +85,30 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
           );
 
         const blockRef =
-          transaction.blockRef === [] || transaction.blockRef === null
-            ? (<p>{"No block references were found."}</p>)
-            : transaction.blockRef.map((block, index) => (
+          transaction.blockRef === [] || transaction.blockRef === null ? (
+            <p>{'No block references were found.'}</p>
+          ) : (
+            transaction.blockRef.map((block, index) => (
               <dd key={index}>
-                <Link href={`../block/?${block.hash}`}>
-                  {block.hash}
-                </Link>
+                <Link href={`../block/?${block.hash}`}>{block.hash}</Link>
               </dd>
-            ));
+            ))
+          );
 
-        const actions =
-          transaction.actions.map((action, index) => (
-            <dd key={index}>
-              <dl>
-                <JSONTree
-                  data={convertToObject(decode(Buffer.from(action.raw, 'base64')))}
-                  theme={jsonTreeTheme}
-                  invertTheme={false}
-                  hideRoot={true}/>
-              </dl>
-            </dd>
-          ));
+        const actions = transaction.actions.map((action, index) => (
+          <dd key={index}>
+            <dl>
+              <JSONTree
+                data={convertToObject(
+                  decode(Buffer.from(action.raw, 'base64'))
+                )}
+                theme={jsonTreeTheme}
+                invertTheme={false}
+                hideRoot={true}
+              />
+            </dl>
+          </dd>
+        ));
 
         // FIXME: We'd better to use absolute paths and make Gatsby to
         // automatically rebase these absolute paths on the PATH_PREFIX
