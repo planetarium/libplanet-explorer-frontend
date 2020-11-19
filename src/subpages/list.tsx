@@ -6,7 +6,7 @@ import { Checkbox, IColumn } from '@fluentui/react';
 import { Block, BlockListComponent } from '../generated/graphql';
 
 import useOffset, { limit } from '../misc/useOffset';
-import { mineColumns, commonProps } from '../misc/columns';
+import { mainMineColumns, commonProps } from '../misc/columns';
 
 import List, { BlockListProps } from '../components/List';
 import OffsetSwitch from '../components/OffsetSwitch';
@@ -27,8 +27,9 @@ const ListPage: React.FC<ListPageProps> = ({ location }) => {
         checked={excludeEmptyTxs}
         onChange={() => setExcludeEmptyTxs(!excludeEmptyTxs)}
       />
-      <BlockListComponent variables={{ offset, limit, excludeEmptyTxs }}
-                          pollInterval={POLL_INTERVAL}>
+      <BlockListComponent
+        variables={{ offset, limit, excludeEmptyTxs }}
+        pollInterval={POLL_INTERVAL}>
         {({ data, loading, error }) => {
           if (error) {
             console.error(error);
@@ -50,7 +51,7 @@ const ListPage: React.FC<ListPageProps> = ({ location }) => {
               <BlockList
                 blocks={blocks}
                 loading={loading}
-                columns={mineColumns}
+                columns={mainMineColumns}
               />
             </>
           );

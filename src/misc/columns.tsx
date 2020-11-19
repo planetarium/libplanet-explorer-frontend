@@ -10,7 +10,7 @@ export const commonProps = {
   isSorted: false,
 };
 
-export const mineColumns = [
+export const mainMineColumns = [
   {
     key: 'columnIndex',
     name: 'Index',
@@ -63,6 +63,87 @@ export const mineColumns = [
     isPadded: true,
     onRender: ({ miner }: Block) => (
       <Link href={`./account/?${miner}`}>{miner}</Link>
+    ),
+  },
+  {
+    key: 'columnDifficulty',
+    name: 'Difficulty',
+    minWidth: 50,
+    maxWidth: 200,
+    ...commonProps,
+    isSortedDescending: true,
+    data: 'string',
+    isPadded: true,
+    onRender: ({ difficulty }: Block) => (
+      <>{Math.floor(difficulty).toLocaleString()}</>
+    ),
+  },
+  {
+    key: 'columnTxNumber',
+    name: 'Tx #',
+    minWidth: 5,
+    maxWidth: 40,
+    ...commonProps,
+    isSortedDescending: false,
+    data: 'number',
+    isPadded: true,
+    onRender: ({ transactions }: Block) => <>{transactions.length}</>,
+  },
+];
+
+export const accountMineColumns = [
+  {
+    key: 'columnIndex',
+    name: 'Index',
+    fieldName: 'index',
+    iconName: 'NumberSymbol',
+    isIconOnly: true,
+    minWidth: 5,
+    maxWidth: 50,
+    ...commonProps,
+    isSortedDescending: true,
+    data: 'string',
+    isPadded: true,
+    onRender: ({ index }: Block) => <>{Number(index).toLocaleString()}</>,
+  },
+  {
+    key: 'columnHash',
+    name: 'Block Hash',
+    fieldName: 'hash',
+    minWidth: 5,
+    maxWidth: 450,
+    ...commonProps,
+    isSortedDescending: false,
+    data: 'string',
+    isPadded: true,
+    onRender: ({ hash }: Block) => (
+      <Link href={`../block/?${hash}`}>{hash}</Link>
+    ),
+  },
+  {
+    key: 'columnTimestamp',
+    name: 'Timestamp',
+    fieldName: 'timestamp',
+    minWidth: 100,
+    maxWidth: 200,
+    ...commonProps,
+    isSortedDescending: true,
+    data: 'string',
+    isPadded: true,
+    onRender: ({ timestamp }: Block) => <Timestamp timestamp={timestamp} />,
+  },
+  {
+    key: 'columnMiner',
+    name: 'MinerX',
+    fieldName: 'miner',
+    minWidth: 123,
+    maxWidth: 450,
+    ...commonProps,
+    isSortedDescending: true,
+    data: 'string',
+    isPadded: true,
+    onRender: ({ miner }: Block) => (
+      <Link href={`../account/?${miner}`}>{miner}</Link>
     ),
   },
   {
