@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { navigate } from 'gatsby';
 
-import { Checkbox, IColumn } from '@fluentui/react';
+import { Checkbox } from '@fluentui/react';
 
 import { Block, BlockListComponent } from '../generated/graphql';
 
 import useOffset, { limit } from '../misc/useOffset';
-import { mainMineColumns, commonProps } from '../misc/columns';
+import { mainMineColumns } from '../misc/columns';
 
 import List, { BlockListProps } from '../components/List';
 import OffsetSwitch from '../components/OffsetSwitch';
