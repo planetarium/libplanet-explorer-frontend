@@ -79,6 +79,23 @@ export const mainMineColumns = [
     ),
   },
   {
+    key: 'columnTimeTaken',
+    name: 'Time Taken',
+    minWidth: 50,
+    maxWidth: 200,
+    ...commonProps,
+    data: 'string',
+    isPadded: true,
+    onRender: ({ timestamp, previousBlock }: Block) => {
+      if (previousBlock === null || previousBlock === undefined) {
+        return <>{0}</>;
+      }
+      const beforeTimestamp = Date.parse(previousBlock.timestamp);
+      const nowTimestamp = Date.parse(timestamp);
+      return <>{(nowTimestamp - beforeTimestamp) / 1000}</>;
+    },
+  },
+  {
     key: 'columnTxNumber',
     name: 'Tx #',
     minWidth: 5,
@@ -158,6 +175,23 @@ export const accountMineColumns = [
     onRender: ({ difficulty }: Block) => (
       <>{Math.floor(difficulty).toLocaleString()}</>
     ),
+  },
+  {
+    key: 'columnTimeTaken',
+    name: 'Time Taken',
+    minWidth: 50,
+    maxWidth: 200,
+    ...commonProps,
+    data: 'string',
+    isPadded: true,
+    onRender: ({ timestamp, previousBlock }: Block) => {
+      if (previousBlock === null || previousBlock === undefined) {
+        return <>{0}</>;
+      }
+      const beforeTimestamp = Date.parse(previousBlock.timestamp);
+      const nowTimestamp = Date.parse(timestamp);
+      return <>{(nowTimestamp - beforeTimestamp) / 1000}</>;
+    },
   },
   {
     key: 'columnTxNumber',
