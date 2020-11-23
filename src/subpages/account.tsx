@@ -18,7 +18,7 @@ import { IndexPageProps } from '../pages';
 
 import useQueryString from '../misc/useQueryString';
 import useOffset, { limit } from '../misc/useOffset';
-import { mineColumns, txColumns } from '../misc/columns';
+import { accountMineColumns, txColumns } from '../misc/columns';
 
 import styled from '@emotion/styled';
 
@@ -168,7 +168,7 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
               <BlockList
                 blocks={blocks}
                 loading={loading}
-                columns={mineColumns}
+                columns={accountMineColumns}
               />
             </>
           );
@@ -247,7 +247,10 @@ const BlockList: React.FC<BlockListProps> = ({ blocks, ...props }) => (
   />
 );
 
-function splitTransactions(transactions: TransactionCommonFragment[], hash: string) {
+function splitTransactions(
+  transactions: TransactionCommonFragment[],
+  hash: string
+) {
   const signedTransactions: TransactionCommonFragment[] = [],
     involvedTransactions: TransactionCommonFragment[] = [];
   transactions.forEach(tx => {
