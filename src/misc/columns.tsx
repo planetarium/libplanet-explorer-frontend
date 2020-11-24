@@ -151,7 +151,7 @@ export const accountMineColumns = [
   },
   {
     key: 'columnMiner',
-    name: 'MinerX',
+    name: 'Miner',
     fieldName: 'miner',
     minWidth: 123,
     maxWidth: 450,
