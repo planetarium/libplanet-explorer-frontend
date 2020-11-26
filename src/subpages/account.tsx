@@ -47,7 +47,8 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
 
       <h2>Transactions count</h2>
 
-      <TransactionsByAccountComponent variables={{ involvedAddress: hash }}>
+      <TransactionsByAccountComponent
+        variables={{ offset: txOffset, limit: 101, involvedAddress: hash }}>
         {({ data, loading, error }) => {
           if (error) {
             console.error(error);
@@ -78,9 +79,22 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
 
           return (
             <Ul>
-              <li>Signed Transaction: {signedTransactions.length}</li>
-              <li>Involved Transaction: {involvedTransactions.length}</li>
-              <li>missingNonces: {missingNonces.length}</li>
+              <li>
+                Signed Transaction:{' '}
+                {signedTransactions.length === 101
+                  ? '100+'
+                  : signedTransactions.length}
+              </li>
+              <li>
+                Involved Transaction:{' '}
+                {involvedTransactions.length === 101
+                  ? '100+'
+                  : involvedTransactions.length}
+              </li>
+              <li>
+                missingNonces:{' '}
+                {missingNonces.length === 101 ? '100+' : missingNonces.length}
+              </li>
             </Ul>
           );
         }}
