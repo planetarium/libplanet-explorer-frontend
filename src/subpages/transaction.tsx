@@ -97,16 +97,12 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
 
         const actions = transaction.actions.map(action => (
           <dd key={action.raw}>
-            <dl>
-              <JSONTree
-                data={convertToObject(
-                  decode(Buffer.from(action.raw, 'base64'))
-                )}
-                theme={jsonTreeTheme}
-                invertTheme={false}
-                hideRoot={true}
-              />
-            </dl>
+            <JSONTree
+              data={convertToObject(decode(Buffer.from(action.raw, 'base64')))}
+              theme={jsonTreeTheme}
+              invertTheme={false}
+              hideRoot={true}
+            />
           </dd>
         ));
 
