@@ -88,25 +88,21 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
           transaction.blockRef === [] || transaction.blockRef === null ? (
             <p>{'No block references were found.'}</p>
           ) : (
-            transaction.blockRef.map((block, index) => (
-              <dd key={index}>
+            transaction.blockRef.map(block => (
+              <dd key={block.hash}>
                 <Link href={`../block/?${block.hash}`}>{block.hash}</Link>
               </dd>
             ))
           );
 
-        const actions = transaction.actions.map((action, index) => (
-          <dd key={index}>
-            <dl>
-              <JSONTree
-                data={convertToObject(
-                  decode(Buffer.from(action.raw, 'base64'))
-                )}
-                theme={jsonTreeTheme}
-                invertTheme={false}
-                hideRoot={true}
-              />
-            </dl>
+        const actions = transaction.actions.map(action => (
+          <dd key={action.raw}>
+            <JSONTree
+              data={convertToObject(decode(Buffer.from(action.raw, 'base64')))}
+              theme={jsonTreeTheme}
+              invertTheme={false}
+              hideRoot={true}
+            />
           </dd>
         ));
 
@@ -143,8 +139,8 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
                 <Timestamp timestamp={transaction.timestamp} />
               </dd>
               <dt>Updated Addresses</dt>
-              {transaction.updatedAddresses.map((address, index) => (
-                <dd key={index}>
+              {transaction.updatedAddresses.map(address => (
+                <dd key={address}>
                   {/*
                   FIXME: We'd better to use absolute paths and make Gatsby to
                   automatically rebase these absolute paths on the PATH_PREFIX
