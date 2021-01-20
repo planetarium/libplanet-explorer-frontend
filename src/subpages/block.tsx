@@ -96,6 +96,8 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
               </dd>
               <dt>Difficulty</dt>
               <dd>{block.difficulty}</dd>
+              <dt>Total Difficulty</dt>
+              <dd>{block.totalDifficulty}</dd>
               <dt>Transactions</dt>
               {block.transactions.length > 0 ? (
                 <TxList
