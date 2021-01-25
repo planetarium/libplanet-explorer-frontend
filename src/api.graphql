@@ -3,6 +3,7 @@ fragment BlockCommon on Block {
   index
   difficulty
   timestamp
+  totalDifficulty
 }
 
 fragment TransactionCommon on Transaction {
