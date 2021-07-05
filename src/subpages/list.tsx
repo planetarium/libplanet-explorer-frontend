@@ -16,6 +16,7 @@ import { IndexPageProps } from '../pages/index';
 type ListPageProps = IndexPageProps;
 
 const POLL_INTERVAL = 2000;
+const ROUND_DIGITS = 4;
 
 const ListPage: React.FC<ListPageProps> = ({ location }) => {
   const [offset, olderHandler, newerHandler] = useOffset(location);
@@ -107,7 +108,7 @@ const Cards: React.FC<CardsProps> = ({
 }) => (
   <div className="cards">
     <div className="card" key="interval">
-      <strong>{interval}</strong> sec
+      <strong>{interval.toFixed(ROUND_DIGITS)}</strong> sec
       <p>Average interval in this page</p>
     </div>
     <div className="card" key="difficultyAverage">

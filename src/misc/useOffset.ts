@@ -1,6 +1,6 @@
 import useSearchParams from './useSearchParams';
 
-export const limit = 21;
+export const limit = 50;
 export default function useOffset(location: Location, keyName = 'offset') {
   const [searchParams, setSearchParams] = useSearchParams(location);
   const offset = keyName in searchParams ? searchParams[keyName] : 0;
