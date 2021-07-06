@@ -1,13 +1,9 @@
 Libplanet Explorer Frontend
 ===========================
 
-[![GitHub Actions Status][github-actions-badge]][github-actions]
-
 This project is a user-facing web app, which renders data provided by
 a [Libplanet Explorer server][] instance.
 
-[github-actions-badge]: https://github.com/planetarium/libplanet-explorer-frontend/workflows/Deployment/badge.svg
-[github-actions]: https://github.com/planetarium/libplanet-explorer-frontend/actions
 [Libplanet Explorer server]: https://github.com/planetarium/libplanet-explorer
 
 
