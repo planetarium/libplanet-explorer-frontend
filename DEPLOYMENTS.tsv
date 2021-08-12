@@ -1,5 +1,5 @@
 9c-internal	https://d3n1gito7w9cnj.cloudfront.net/graphql/
 9c-beta	https://d1zsk6g8ut9q8x.cloudfront.net/graphql/
 9c-main	https://d131807iozwu1d.cloudfront.net/graphql/
-9c-audit	https://d1mj1rmwxvmgva.cloudfront.net/graphql/
+9c-audit	http://a4335ba280a3e4cb0a8f374d46963ccc-1335127617.ap-northeast-2.elb.amazonaws.com:31235/graphql/
 localhost	http://localhost:5000/graphql/
