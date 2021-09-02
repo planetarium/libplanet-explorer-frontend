@@ -1,5 +1,5 @@
 schema {
-  query: Query
+  query: StandaloneQuery
 }
 
 type Action {
@@ -20,9 +20,13 @@ type Block {
   transactions: [Transaction!]!
 }
 
+type StandaloneQuery {
+  chainQuery: Query!
+}
+
 type Query {
-  blockQuery: BlockQuery
-  transactionQuery: TransactionQuery
+  blockQuery: BlockQuery!
+  transactionQuery: TransactionQuery!
 }
 
 type BlockQuery {

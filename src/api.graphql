@@ -22,38 +22,42 @@ query BlockList(
   $excludeEmptyTxs: Boolean!
   $miner: Address
 ) {
-  blockQuery {
-    blocks(
-      desc: true
-      offset: $offset
-      limit: $limit
-      excludeEmptyTxs: $excludeEmptyTxs
-      miner: $miner
-    ) {
-      ...BlockCommon
-      miner
-      previousBlock {
-        timestamp
-      }
-      transactions {
-        id
+  chainQuery {
+    blockQuery {
+      blocks (
+        desc: true
+        offset: $offset
+        limit: $limit
+        excludeEmptyTxs: $excludeEmptyTxs
+        miner: $miner
+      ) {
+        ...BlockCommon
+        miner
+        previousBlock {
+          timestamp
+        }
+        transactions {
+          id
+        }
       }
     }
   }
 }
 
 query BlockByHash($hash: ID) {
-  blockQuery {
-    block(hash: $hash) {
-      ...BlockCommon
-      miner
-      nonce
-      stateRootHash
-      previousBlock {
-        hash
-      }
-      transactions {
-        ...TransactionCommon
+  chainQuery {
+    blockQuery {
+      block(hash: $hash) {
+        ...BlockCommon
+        miner
+        nonce
+        stateRootHash
+        previousBlock {
+          hash
+        }
+        transactions {
+          ...TransactionCommon
+        }
       }
     }
   }
@@ -66,28 +70,32 @@ query TransactionList(
   $offset: Int!
   $limit: Int!
 ) {
-  transactionQuery {
-    transactions(
-      signer: $signer
-      involvedAddress: $involvedAddress
-      desc: $desc
-      offset: $offset
-      limit: $limit
-    ) {
-      ...TransactionCommon
+  chainQuery {
+    transactionQuery {
+      transactions(
+        signer: $signer
+        involvedAddress: $involvedAddress
+        desc: $desc
+        offset: $offset
+        limit: $limit
+      ) {
+        ...TransactionCommon
+      }
     }
   }
 }
 
 query TransactionById($id: ID) {
-  transactionQuery {
-    transaction(id: $id) {
-      ...TransactionCommon
-      actions {
-        raw(encode: "base64")
-      }
-      blockRef {
-        ...BlockCommon
+  chainQuery {
+    transactionQuery {
+      transaction(id: $id) {
+        ...TransactionCommon
+        actions {
+          raw(encode: "base64")
+        }
+        blockRef {
+          ...BlockCommon
+        }
       }
     }
   }
@@ -98,14 +106,16 @@ query TransactionsByAccount(
   $offset: Int
   $limit: Int
 ) {
-  transactionQuery {
-    transactions(
-      involvedAddress: $involvedAddress
-      desc: true
-      offset: $offset
-      limit: $limit
-    ) {
-      ...TransactionCommon
+  chainQuery {
+    transactionQuery {
+      transactions(
+        involvedAddress: $involvedAddress
+        desc: true
+        offset: $offset
+        limit: $limit
+      ) {
+        ...TransactionCommon
+      }
     }
   }
 }
