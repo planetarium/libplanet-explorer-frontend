@@ -38,7 +38,7 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
             </>
           );
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const { block } = data!.blockQuery!;
+        const { block } = data!.chainQuery.blockQuery!;
         if (!block)
           return (
             <>

@@ -73,7 +73,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
             </>
           );
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const { transaction } = data!.transactionQuery!;
+        const { transaction } = data!.chainQuery.transactionQuery!;
         if (!transaction)
           return (
             <>

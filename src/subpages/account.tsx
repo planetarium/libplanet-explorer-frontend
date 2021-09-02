@@ -65,8 +65,8 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
             );
 
           const transactions =
-            data && data.transactionQuery && data.transactionQuery.transactions
-              ? data.transactionQuery.transactions
+            data && data.chainQuery.transactionQuery && data.chainQuery.transactionQuery.transactions
+              ? data.chainQuery.transactionQuery.transactions
               : null;
 
           if (transactions === null) throw Error('transactions query failed');
@@ -117,8 +117,8 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
             );
 
           const transactions =
-            data && data.transactionQuery && data.transactionQuery.transactions
-              ? data.transactionQuery.transactions
+            data && data.chainQuery.transactionQuery && data.chainQuery.transactionQuery.transactions
+              ? data.chainQuery.transactionQuery.transactions
               : null;
 
           if (transactions === null) throw Error('transactions query failed');
@@ -158,8 +158,8 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
             return <p>{error.message}</p>;
           }
           const blocks =
-            data && data.blockQuery && data.blockQuery.blocks
-              ? (data.blockQuery.blocks as Block[])
+            data && data.chainQuery.blockQuery && data.chainQuery.blockQuery.blocks
+              ? (data.chainQuery.blockQuery.blocks as Block[])
               : null;
           return (
             <>
