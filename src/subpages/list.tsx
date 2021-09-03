@@ -36,10 +36,14 @@ const ListPage: React.FC<ListPageProps> = ({ location }) => {
             console.error(error);
             return <p>{error.message}</p>;
           }
-          const blocks =
-            data && data.blockQuery && data.blockQuery.blocks
-              ? (data.blockQuery.blocks as Block[])
-              : null;
+
+          let blocks = null;
+          if (!loading) {
+            blocks =
+              data && data.chainQuery.blockQuery && data.chainQuery.blockQuery.blocks
+                ? (data.chainQuery.blockQuery.blocks as Block[])
+                : null;
+          }
 
           return (
             <>

@@ -7,7 +7,6 @@ import List, { OmitListProps, BlockListProps } from '../components/List';
 import OffsetSwitch from '../components/OffsetSwitch';
 
 import {
-  Transaction,
   TransactionsByAccountComponent,
   Block,
   BlockListComponent,
@@ -55,7 +54,7 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
             return <p>{error.message}</p>;
           }
 
-          if (loading)
+          if (loading) {
             return (
               <Ul>
                 <li>Signed Transaction: Loading…</li>
@@ -63,40 +62,41 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
                 <li>missingNonces: Loading…</li>
               </Ul>
             );
+          } else {
+            const transactions =
+              data && data.chainQuery.transactionQuery && data.chainQuery.transactionQuery.transactions
+                ? data.chainQuery.transactionQuery.transactions
+                : null;
 
-          const transactions =
-            data && data.transactionQuery && data.transactionQuery.transactions
-              ? data.transactionQuery.transactions
-              : null;
+            if (transactions === null) throw Error('transactions query failed');
 
-          if (transactions === null) throw Error('transactions query failed');
+            const {
+              signedTransactions,
+              involvedTransactions,
+              missingNonces,
+            } = splitTransactions(transactions, hash);
 
-          const {
-            signedTransactions,
-            involvedTransactions,
-            missingNonces,
-          } = splitTransactions(transactions, hash);
-
-          return (
-            <Ul>
-              <li>
-                Signed Transaction:{' '}
-                {signedTransactions.length === 101
-                  ? '100+'
-                  : signedTransactions.length}
-              </li>
-              <li>
-                Involved Transaction:{' '}
-                {involvedTransactions.length === 101
-                  ? '100+'
-                  : involvedTransactions.length}
-              </li>
-              <li>
-                missingNonces:{' '}
-                {missingNonces.length === 101 ? '100+' : missingNonces.length}
-              </li>
-            </Ul>
-          );
+            return (
+              <Ul>
+                <li>
+                  Signed Transaction:{' '}
+                  {signedTransactions.length === 101
+                    ? '100+'
+                    : signedTransactions.length}
+                </li>
+                <li>
+                  Involved Transaction:{' '}
+                  {involvedTransactions.length === 101
+                    ? '100+'
+                    : involvedTransactions.length}
+                </li>
+                <li>
+                  missingNonces:{' '}
+                  {missingNonces.length === 101 ? '100+' : missingNonces.length}
+                </li>
+              </Ul>
+            );
+          }
         }}
       </TransactionsByAccountComponent>
 
@@ -108,45 +108,46 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
             return <p>{error.message}</p>;
           }
 
-          if (loading)
+          if (loading) {
             return (
               <>
                 <OffsetSwitch disable={{ older: true, newer: true }} />
                 <TransactionListWrap loading={true} />
               </>
             );
+          } else {
+            const transactions =
+              data && data.chainQuery.transactionQuery && data.chainQuery.transactionQuery.transactions
+                ? data.chainQuery.transactionQuery.transactions
+                : null;
 
-          const transactions =
-            data && data.transactionQuery && data.transactionQuery.transactions
-              ? data.transactionQuery.transactions
-              : null;
+            if (transactions === null) throw Error('transactions query failed');
 
-          if (transactions === null) throw Error('transactions query failed');
+            const {
+              signedTransactions,
+              involvedTransactions,
+              missingNonces,
+            } = splitTransactions(transactions, hash);
 
-          const {
-            signedTransactions,
-            involvedTransactions,
-            missingNonces,
-          } = splitTransactions(transactions, hash);
-
-          return (
-            <>
-              <OffsetSwitch
-                olderHandler={txOlderHandler}
-                newerHandler={txNewerHandler}
-                disable={{
-                  older: loading || transactions.length < limit,
-                  newer: loading || txOffset === 0,
-                }}
-              />
-              <TransactionListWrap
-                loading={false}
-                signed={signedTransactions}
-                involved={involvedTransactions}
-                missingNonces={missingNonces}
-              />
-            </>
-          );
+            return (
+              <>
+                <OffsetSwitch
+                  olderHandler={txOlderHandler}
+                  newerHandler={txNewerHandler}
+                  disable={{
+                    older: loading || transactions.length < limit,
+                    newer: loading || txOffset === 0,
+                  }}
+                />
+                <TransactionListWrap
+                  loading={false}
+                  signed={signedTransactions}
+                  involved={involvedTransactions}
+                  missingNonces={missingNonces}
+                />
+              </>
+            );
+          }
         }}
       </TransactionsByAccountComponent>
       <h2>Mined Blocks</h2>
@@ -157,10 +158,15 @@ const AccountPage: React.FC<AccountPageProps> = ({ location }) => {
             console.error(error);
             return <p>{error.message}</p>;
           }
-          const blocks =
-            data && data.blockQuery && data.blockQuery.blocks
-              ? (data.blockQuery.blocks as Block[])
-              : null;
+
+          let blocks = null;
+          if (!loading) {
+            blocks =
+              data && data.chainQuery.blockQuery && data.chainQuery.blockQuery.blocks
+                ? (data.chainQuery.blockQuery.blocks as Block[])
+                : null;
+          }
+
           return (
             <>
               <Checkbox

@@ -21,6 +21,10 @@ type Block {
 }
 
 type Query {
+  chainQuery: ChainQuery!
+}
+
+type ChainQuery {
   blockQuery: BlockQuery
   transactionQuery: TransactionQuery
 }
@@ -79,7 +83,6 @@ scalar Seconds
 
 type Transaction {
   actions: [Action!]!
-  blockRef: [Block!]
   id: ID!
   nonce: Int!
   publicKey: ByteString!

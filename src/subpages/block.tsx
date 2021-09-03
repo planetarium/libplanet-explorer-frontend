@@ -38,7 +38,7 @@ const BlockPage: React.FC<BlockPageProps> = ({ location }) => {
             </>
           );
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        const { block } = data!.blockQuery!;
+        const { block } = data!.chainQuery.blockQuery!;
         if (!block)
           return (
             <>
@@ -143,7 +143,7 @@ const TxList: React.FC<TxListProps> = ({ txs }) => {
       name: 'Signer',
       fieldName: 'signer',
       minWidth: 50,
-      maxWidth: 250,
+      maxWidth: 300,
       isRowHeader: true,
       isResizable: true,
       isSorted: false,
@@ -162,7 +162,7 @@ const TxList: React.FC<TxListProps> = ({ txs }) => {
       name: 'Timestamp',
       fieldName: 'timestamp',
       minWidth: 50,
-      maxWidth: 200,
+      maxWidth: 100,
       isRowHeader: true,
       isResizable: true,
       isSorted: false,
@@ -172,17 +172,17 @@ const TxList: React.FC<TxListProps> = ({ txs }) => {
       onRender: ({ timestamp }) => <Timestamp timestamp={timestamp} />,
     },
     {
-      key: 'columnActionNumber',
-      name: 'Action #',
-      minWidth: 20,
-      maxWidth: 40,
+      key: 'columnNonceNumber',
+      name: 'Nonce',
+      minWidth: 40,
+      maxWidth: 80,
       isRowHeader: true,
       isResizable: true,
       isSorted: false,
       isSortedDescending: false,
       data: 'number',
       isPadded: true,
-      onRender: tx => <>{tx.actions ? tx.actions.length : '--'}</>,
+      onRender: tx => <>{tx.nonce ? tx.nonce : '--'}</>,
     },
   ];
   return (
