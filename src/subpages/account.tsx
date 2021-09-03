@@ -7,7 +7,6 @@ import List, { OmitListProps, BlockListProps } from '../components/List';
 import OffsetSwitch from '../components/OffsetSwitch';
 
 import {
-  Transaction,
   TransactionsByAccountComponent,
   Block,
   BlockListComponent,

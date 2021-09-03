@@ -11,7 +11,7 @@ interface TransactionPageProps {
 }
 
 // FIXME: do not use any type.
-function convertToObject(value: BencodexValue | undefined): any {
+function convertToObject(value: BencodexValue | undefined): string | boolean | number | undefined | null | {} {
   if (value instanceof Map) {
     return Object.fromEntries(
       Array.from(value).map(v => [v[0], convertToObject(v[1])])
