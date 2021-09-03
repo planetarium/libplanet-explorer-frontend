@@ -32,7 +32,7 @@ function convertToObject(value: BencodexValue | undefined): any {
 const jsonTreeTheme = {
   scheme: 'apathy',
   author: 'jannik siebert (https://github.com/janniks)',
-  base00: '#faf9f8;',
+  base00: '#faf9f8',
   base01: '#0B342D',
   base02: '#184E45',
   base03: '#2B685E',
@@ -82,17 +82,6 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
                 No such transaction: <code>{id}</code>
               </p>
             </>
-          );
-
-        const blockRef =
-          transaction.blockRef === [] || transaction.blockRef === null ? (
-            <p>{'No block references were found.'}</p>
-          ) : (
-            transaction.blockRef.map(block => (
-              <dd key={block.hash}>
-                <Link href={`../block/?${block.hash}`}>{block.hash}</Link>
-              </dd>
-            ))
           );
 
         const actions = transaction.actions.map(action => (
@@ -151,8 +140,6 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
                   </Link>
                 </dd>
               ))}
-              <dt>Block Reference</dt>
-              {blockRef}
               <dt>Actions</dt>
               {actions}
             </dl>

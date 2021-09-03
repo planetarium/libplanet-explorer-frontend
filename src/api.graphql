@@ -93,9 +93,6 @@ query TransactionById($id: ID) {
         actions {
           raw(encode: "base64")
         }
-        blockRef {
-          ...BlockCommon
-        }
       }
     }
   }

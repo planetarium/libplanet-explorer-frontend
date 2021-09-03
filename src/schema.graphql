@@ -83,7 +83,6 @@ scalar Seconds
 
 type Transaction {
   actions: [Action!]!
-  blockRef: [Block!]
   id: ID!
   nonce: Int!
   publicKey: ByteString!
