@@ -1,5 +1,6 @@
 9c-internal	https://d3n1gito7w9cnj.cloudfront.net/graphql/
 9c-main	https://d131807iozwu1d.cloudfront.net/graphql/
+9c-main-test http://a802b7d8b04db41f89584959fb0d033c-293297671.us-east-2.elb.amazonaws.com:31235/graphql/
 9c-community-mining	https://d1h7rqqux58ljb.cloudfront.net/graphql/
-9c-contetn-rating	https://dblbss1cu65au.cloudfront.net/graphql/
+9c-content-rating	https://dblbss1cu65au.cloudfront.net/graphql/
 localhost	http://localhost:5000/graphql/
