@@ -3,7 +3,7 @@ import useSearchParams from './useSearchParams';
 export const limit = 50;
 export default function useOffset(location: Location, keyName = 'offset') {
   const [searchParams, setSearchParams] = useSearchParams(location);
-  const offset = keyName in searchParams ? searchParams[keyName] : 0;
+  const offset = keyName in searchParams ? parseInt(searchParams[keyName]) : 0;
   const setOffset = (offset: number) => {
     if (offset < 1) {
       delete searchParams[keyName];
