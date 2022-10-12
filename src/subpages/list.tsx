@@ -18,7 +18,7 @@ type ListPageProps = IndexPageProps;
 const POLL_INTERVAL = 2000;
 const ROUND_DIGITS = 4;
 
-const ListPage: React.FC<ListPageProps> = ({ location }) => {
+const ListPage: React.FC<ListPageProps> = ({ location, ...props }) => {
   const [offset, olderHandler, newerHandler] = useOffset(location);
   const [excludeEmptyTxs, setExcludeEmptyTxs] = useState(false);
   return (
@@ -56,7 +56,8 @@ const ListPage: React.FC<ListPageProps> = ({ location }) => {
               <BlockList
                 blocks={blocks}
                 loading={loading}
-                columns={mainMineColumns}
+                columns={(mainMineColumns(props.pageContext.endpoint.name))}
+                endpointName={props.pageContext.endpoint.name}
               />
             </>
           );
@@ -126,13 +127,18 @@ const Cards: React.FC<CardsProps> = ({
   </div>
 );
 
-const BlockList: React.FC<BlockListProps> = ({ blocks, loading, columns }) => {
+const BlockList: React.FC<BlockListProps> = ({
+  blocks,
+  loading,
+  columns,
+  endpointName,
+}) => {
   return (
     <List
       items={blocks}
       loading={loading}
       columns={columns}
-      onItemInvoked={block => navigate(`/search/?${block.hash}`)}
+      onItemInvoked={block => navigate(`/${endpointName}/block/?${block.hash}`)}
     />
   );
 };

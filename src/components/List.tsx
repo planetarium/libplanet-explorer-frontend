@@ -46,4 +46,5 @@ export type OmitListProps = Omit<ListProps, 'onItemInvoked' | 'items'>;
 
 export interface BlockListProps extends OmitListProps {
   blocks: Block[] | null;
+  endpointName: string;
 }

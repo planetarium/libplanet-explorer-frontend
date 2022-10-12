@@ -72,7 +72,7 @@ interface NavBarProps {
 export const NavBar: React.FC<NavBarProps> = ({ className, endpoint }) => {
   const onSearch = (value: string) => {
     if (value.match(/^[0-9a-fA-F]{64}$/)) {
-      navigate(`/search/?${value}`);
+      navigate(`/${endpoint.name}/search/?${value}`);
     } else {
       alert('Wrong hash!');
     }

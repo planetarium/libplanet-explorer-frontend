@@ -10,7 +10,7 @@ export const commonProps = {
   isSorted: false,
 };
 
-export const mainMineColumns = [
+export const mainMineColumns = (endpointName: string) => [
   {
     key: 'columnIndex',
     name: 'Index',
@@ -36,7 +36,7 @@ export const mainMineColumns = [
     data: 'string',
     isPadded: true,
     onRender: ({ hash }: Block) => (
-      <Link href={`./block/?${hash}`}>{hash}</Link>
+      <Link href={`/${endpointName}/block/?${hash}`}>{hash}</Link>
     ),
   },
   {
@@ -62,7 +62,7 @@ export const mainMineColumns = [
     data: 'string',
     isPadded: true,
     onRender: ({ miner }: Block) => (
-      <Link href={`./account/?${miner}`}>{miner}</Link>
+      <Link href={`/${endpointName}/account/?${miner}`}>{miner}</Link>
     ),
   },
   {
@@ -108,7 +108,7 @@ export const mainMineColumns = [
   },
 ];
 
-export const accountMineColumns = [
+export const accountMineColumns = (endpointName: string) => [
   {
     key: 'columnIndex',
     name: 'Index',
@@ -134,7 +134,7 @@ export const accountMineColumns = [
     data: 'string',
     isPadded: true,
     onRender: ({ hash }: Block) => (
-      <Link href={`../block/?${hash}`}>{hash}</Link>
+      <Link href={`/${endpointName}/block/?${hash}`}>{hash}</Link>
     ),
   },
   {
@@ -160,7 +160,7 @@ export const accountMineColumns = [
     data: 'string',
     isPadded: true,
     onRender: ({ miner }: Block) => (
-      <Link href={`../account/?${miner}`}>{miner}</Link>
+      <Link href={`/${endpointName}/account/?${miner}`}>{miner}</Link>
     ),
   },
   {
@@ -206,7 +206,7 @@ export const accountMineColumns = [
   },
 ];
 
-export const txColumns = [
+export const txColumns = (endpointName: string) => [
   {
     key: 'columnNonce',
     name: 'Nonce',
@@ -228,10 +228,8 @@ export const txColumns = [
     isSortedDescending: true,
     data: 'number',
     isPadded: true,
-    // FIXME: We'd better to use absolute paths and make Gatsby automatically
-    // to rebase these absolute paths on the PATH_PREFIX configuration.
     onRender: ({ id }: Transaction) => (
-      <Link href={`../transaction/?${id}`}>{id}</Link>
+      <Link href={`/${endpointName}/transaction/?${id}`}>{id}</Link>
     ),
   },
   {
@@ -256,9 +254,7 @@ export const txColumns = [
     data: 'number',
     isPadded: true,
     onRender: ({ signer }: Transaction) => (
-      // FIXME: We'd better to use absolute paths and make Gatsby automatically
-      // to rebase these absolute paths on the PATH_PREFIX configuration.
-      <Link href={`./?${signer}`}>{signer}</Link>
+      <Link href={`/${endpointName}/?${signer}`}>{signer}</Link>
     ),
   },
   {

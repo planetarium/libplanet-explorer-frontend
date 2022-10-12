@@ -3,8 +3,10 @@ import Wrapper from '../components/Wrapper';
 
 import { GRAPHQL_ENDPOINTS } from '../misc/graphQLEndPoint';
 
+// FIXME: use PageProps from Gatsby
 export interface IndexPageProps {
   location: Location;
+  pageContext: any;
 }
 
 const IndexPage: React.FC<IndexPageProps> = () => (
