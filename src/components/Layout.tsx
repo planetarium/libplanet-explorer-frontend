@@ -71,10 +71,13 @@ interface NavBarProps {
 }
 export const NavBar: React.FC<NavBarProps> = ({ className, endpoint }) => {
   const onSearch = (value: string) => {
+    value = value.trim();
     if (value.match(/^[0-9a-fA-F]{64}$/)) {
       navigate(`/${endpoint.name}/search/?${value}`);
+    } else if (value.match(/^0x[0-9a-fA-F]{40}$/)) {
+      navigate(`/${endpoint.name}/account/?${value}`);
     } else {
-      alert('Wrong hash!');
+      alert('Invalid search string.');
     }
   };
 
@@ -120,7 +123,7 @@ export const NavBar: React.FC<NavBarProps> = ({ className, endpoint }) => {
         <LogoLink href={`/${endpoint.name}/`}>
           <LogoImg src={logo} />
         </LogoLink>
-        <NavSearchBox placeholder="Block Hash / TxID" onSearch={onSearch} />
+        <NavSearchBox placeholder="Block Hash / TxID / Address starting with 0x" onSearch={onSearch} />
         <NetworkNameContainer>
           <Dropdown
             placeholder="Select an endpoint"
