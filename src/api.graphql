@@ -115,8 +115,16 @@ query TransactionsByAccount(
 ) {
   chainQuery {
     transactionQuery {
-      transactions(
+      involvedTransactions: transactions(
         involvedAddress: $involvedAddress
+        desc: true
+        offset: $offset
+        limit: $limit
+      ) {
+        ...TransactionCommon
+      }
+      signedTransactions: transactions(
+        signer: $involvedAddress
         desc: true
         offset: $offset
         limit: $limit
