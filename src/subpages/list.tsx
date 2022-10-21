@@ -8,7 +8,7 @@ import { Block, BlockListComponent } from '../generated/graphql';
 import useOffset, { limit } from '../misc/useOffset';
 import { mainMineColumns } from '../misc/columns';
 
-import List, { BlockListProps } from '../components/List';
+import { BlockList } from '../components/List';
 import OffsetSwitch from '../components/OffsetSwitch';
 
 import { IndexPageProps } from '../pages/index';
@@ -126,19 +126,3 @@ const Cards: React.FC<CardsProps> = ({
     </div>
   </div>
 );
-
-const BlockList: React.FC<BlockListProps> = ({
-  blocks,
-  loading,
-  columns,
-  endpointName,
-}) => {
-  return (
-    <List
-      items={blocks}
-      loading={loading}
-      columns={columns}
-      onItemInvoked={block => navigate(`/${endpointName}/block/?${block.hash}`)}
-    />
-  );
-};

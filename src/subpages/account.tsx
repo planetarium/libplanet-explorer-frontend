@@ -3,7 +3,7 @@ import { navigate } from 'gatsby';
 import { Checkbox } from '@fluentui/react';
 
 import Wrapper from '../components/Wrapper';
-import List, { OmitListProps, BlockListProps } from '../components/List';
+import { BlockList, TransactionList } from '../components/List';
 import OffsetSwitch from '../components/OffsetSwitch';
 
 import {
@@ -195,6 +195,7 @@ const TransactionListWrap: React.FC<TransactionListWrapProps> = ({
       transactions={signed ? signed : null}
       notFoundMessage={'No Signed Transactions'}
       endpointName={endpointName}
+      columns={accountTxColumns(endpointName)}
     />
     <h2>Involved Transactions{counter(involved)}</h2>
     <TransactionList
@@ -202,44 +203,10 @@ const TransactionListWrap: React.FC<TransactionListWrapProps> = ({
       transactions={involved ? involved : null}
       notFoundMessage={'No Involved Transactions'}
       endpointName={endpointName}
+      columns={accountTxColumns(endpointName)}
     />
   </>
 );
 
 const counter = (items?: unknown[]) =>
   items !== undefined && items.length > 0 && `: ${items.length}`;
-
-interface TransactionListProps
-  extends Omit<OmitListProps, 'columns' | 'items'> {
-  transactions: TransactionCommonFragment[] | null;
-  endpointName: string;
-}
-
-export const TransactionList: React.FC<TransactionListProps> = ({
-  transactions,
-  endpointName,
-  ...props
-}) => (
-  <List
-    items={transactions}
-    {...props}
-    columns={accountTxColumns(endpointName)}
-    onItemInvoked={(transaction: Transaction) =>
-      navigate(`/${endpointName}/transaction/?${transaction.id}`)
-    }
-  />
-);
-
-const BlockList: React.FC<BlockListProps> = ({
-  blocks,
-  endpointName,
-  ...props
-}) => (
-  <List
-    items={blocks}
-    {...props}
-    onItemInvoked={(block: Block) =>
-      navigate(`/${endpointName}/block/?${block.hash}`)
-    }
-  />
-);

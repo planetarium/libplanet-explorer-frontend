@@ -13,6 +13,7 @@ import Timestamp from '../components/Timestamp';
 import { listTxColumns } from '../misc/columns';
 
 import { IndexPageProps } from '../pages/index';
+import { TransactionList } from '../components/List';
 
 type BlockPageProps = IndexPageProps;
 
@@ -95,9 +96,11 @@ const BlockPage: React.FC<BlockPageProps> = ({ location, ...props }) => {
               <dd>{block.totalDifficulty}</dd>
               <dt>Transactions</dt>
               {block.transactions.length > 0 ? (
-                <TxList
-                  txs={block.transactions as NonNullable<Transaction[]>}
+                <TransactionList
+                  transactions={block.transactions as NonNullable<Transaction[]>}
                   endpointName={props.pageContext.endpoint.name}
+                  loading={loading}
+                  columns={listTxColumns}
                 />
               ) : (
                 <dd>
@@ -109,26 +112,6 @@ const BlockPage: React.FC<BlockPageProps> = ({ location, ...props }) => {
         );
       }}
     </BlockByHashComponent>
-  );
-};
-
-interface TxListProps {
-  txs: Pick<Transaction, 'id' | 'signer' | 'timestamp'>[];
-  endpointName: string;
-}
-
-const TxList: React.FC<TxListProps> = ({ txs, endpointName }) => {
-  return (
-    <DetailsList
-      items={txs}
-      columns={listTxColumns}
-      selectionMode={SelectionMode.none}
-      getKey={tx => tx.id}
-      setKey="set"
-      layoutMode={DetailsListLayoutMode.justified}
-      isHeaderVisible={true}
-      onItemInvoked={tx => navigate(`/${endpointName}/transaction/?${tx.id}`)}
-    />
   );
 };
 
