@@ -10,7 +10,7 @@ a [Libplanet Explorer server][] instance.
 Development (without server)
 ----------------------------
 
-First of all, open *.env.development* file and change the value of
+First, copy *.env.example* to *.env.development*, and open the copied *.env.development* file and change the value of
 `GRAPHQL_ENDPOINT_URI` to refer to our demo server.  The demo server URI can be
 found in the first line of *DEPLOYMENTS.tsv*.
 
@@ -33,7 +33,7 @@ then follow the instruction in its README:
 <https://github.com/planetarium/libplanet-explorer>
 
 If you are sure that your server is ready (check *localhost:5000*)
-build the app:
+copy *.env.example* to *.env.development* and build the app:
 
 ~~~~ bash
 npm install

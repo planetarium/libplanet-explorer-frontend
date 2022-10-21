@@ -11,3 +11,5 @@ node_modules/
 public/
 src/generated
 
+# development config
+/.env.development
