@@ -1,14 +1,22 @@
 import React, { useState } from 'react';
-import { navigate } from 'gatsby';
 
-import { Checkbox } from '@fluentui/react';
+import {
+  Checkbox,
+  Pivot,
+  PivotItem,
+} from '@fluentui/react';
 
-import { Block, BlockListComponent } from '../generated/graphql';
+import {
+  Block,
+  BlockListComponent,
+  Transaction,
+  TransactionListComponent,
+} from '../generated/graphql';
 
 import useOffset, { limit } from '../misc/useOffset';
-import { mainMineColumns } from '../misc/columns';
+import { listTxColumns, mainMineColumns } from '../misc/columns';
 
-import { BlockList } from '../components/List';
+import { BlockList, TransactionList } from '../components/List';
 import OffsetSwitch from '../components/OffsetSwitch';
 
 import { IndexPageProps } from '../pages/index';
@@ -21,6 +29,9 @@ const ROUND_DIGITS = 4;
 const ListPage: React.FC<ListPageProps> = ({ location, ...props }) => {
   const [offset, olderHandler, newerHandler] = useOffset(location);
   const [excludeEmptyTxs, setExcludeEmptyTxs] = useState(false);
+  const [blocks, setBlocks] = useState<Block[] | null>(null);
+  const [blocksLoading, setBlocksLoading] = useState(false);
+  const [transactionsLoading, setTransactionsLoading] = useState(false);
   return (
     <main>
       <Checkbox
@@ -28,41 +39,82 @@ const ListPage: React.FC<ListPageProps> = ({ location, ...props }) => {
         checked={excludeEmptyTxs}
         onChange={() => setExcludeEmptyTxs(!excludeEmptyTxs)}
       />
-      <BlockListComponent
-        variables={{ offset, limit, excludeEmptyTxs }}
-        pollInterval={POLL_INTERVAL}>
-        {({ data, loading, error }) => {
-          if (error) {
-            console.error(error);
-            return <p>{error.message}</p>;
-          }
-
-          let blocks = null;
-          if (!loading) {
-            blocks =
-              data && data.chainQuery.blockQuery && data.chainQuery.blockQuery.blocks
-                ? (data.chainQuery.blockQuery.blocks as Block[])
-                : null;
-          }
-
-          return (
-            <>
-              <SummaryCards blocks={blocks} />
-              <OffsetSwitch
-                olderHandler={olderHandler}
-                newerHandler={newerHandler}
-                disable={{ older: loading, newer: loading || offset < 1 }}
-              />
-              <BlockList
-                blocks={blocks}
-                loading={loading}
-                columns={(mainMineColumns(props.pageContext.endpoint.name))}
-                endpointName={props.pageContext.endpoint.name}
-              />
-            </>
-          );
+      <SummaryCards blocks={blocks} />
+      <OffsetSwitch
+        olderHandler={olderHandler}
+        newerHandler={newerHandler}
+        disable={{
+          older: blocksLoading || transactionsLoading,
+          newer: blocksLoading || transactionsLoading || offset < 1,
         }}
-      </BlockListComponent>
+      />
+      <Pivot>
+        <PivotItem headerText='Blocks'>
+          <BlockListComponent
+            variables={{ offset, limit, excludeEmptyTxs }}
+            pollInterval={POLL_INTERVAL}>
+            {({ data, loading, error }) => {
+              setBlocksLoading(loading);
+              if (error) {
+                console.error(error);
+                return <p>{error.message}</p>;
+              }
+
+              if (!loading) {
+                setBlocks(
+                  data &&
+                    data.chainQuery.blockQuery &&
+                    data.chainQuery.blockQuery.blocks
+                    ? (data.chainQuery.blockQuery.blocks as Block[])
+                    : null
+                );
+              }
+
+              return (
+                <BlockList
+                  blocks={blocks}
+                  loading={loading}
+                  columns={(mainMineColumns(props.pageContext.endpoint.name))}
+                  endpointName={props.pageContext.endpoint.name}
+                />
+              );
+            }}
+          </BlockListComponent>
+        </PivotItem>
+        <PivotItem headerText='Transactions'>
+          <TransactionListComponent
+            variables={{ offset, limit, desc: true }}
+            pollInterval={POLL_INTERVAL}>
+            {({ data, loading, error }) => {
+              setTransactionsLoading(loading);
+              if (error) {
+                console.error(error);
+                return <p>{error.message}</p>;
+              }
+
+              let transactions = null;
+              if (!loading) {
+                transactions =
+                  data &&
+                  data.chainQuery.transactionQuery &&
+                  data.chainQuery.transactionQuery.transactions
+                    ? (data.chainQuery.transactionQuery
+                        .transactions as Transaction[])
+                    : null;
+              }
+
+              return (
+                <TransactionList
+                  columns={listTxColumns}
+                  endpointName={props.pageContext.endpoint.name}
+                  loading={loading}
+                  transactions={transactions}
+                />
+              );
+            }}
+          </TransactionListComponent>
+        </PivotItem>
+      </Pivot>
     </main>
   );
 };

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { navigate } from 'gatsby';
 import { Checkbox } from '@fluentui/react';
 
 import Wrapper from '../components/Wrapper';
@@ -10,7 +9,6 @@ import {
   TransactionsByAccountComponent,
   Block,
   BlockListComponent,
-  Transaction,
   TransactionCommonFragment,
 } from '../generated/graphql';
 

@@ -1,13 +1,6 @@
 import React from 'react';
 import { Link } from '@fluentui/react';
-import { navigate } from 'gatsby';
 import useQueryString from '../misc/useQueryString';
-import {
-  DetailsList,
-  DetailsListLayoutMode,
-  SelectionMode,
-  IColumn,
-} from '@fluentui/react/lib/DetailsList';
 import { BlockByHashComponent, Transaction } from '../generated/graphql';
 import Timestamp from '../components/Timestamp';
 import { listTxColumns } from '../misc/columns';
