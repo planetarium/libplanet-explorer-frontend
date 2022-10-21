@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { navigate } from 'gatsby-link';
+import { navigate } from 'gatsby';
 import { Checkbox } from '@fluentui/react';
 
 import Wrapper from '../components/Wrapper';
@@ -18,7 +18,7 @@ import { IndexPageProps } from '../pages';
 
 import useQueryString from '../misc/useQueryString';
 import useOffset, { limit } from '../misc/useOffset';
-import { accountMineColumns, txColumns } from '../misc/columns';
+import { accountMineColumns, accountTxColumns } from '../misc/columns';
 
 import styled from '@emotion/styled';
 
@@ -223,7 +223,7 @@ export const TransactionList: React.FC<TransactionListProps> = ({
   <List
     items={transactions}
     {...props}
-    columns={txColumns(endpointName)}
+    columns={accountTxColumns(endpointName)}
     onItemInvoked={(transaction: Transaction) =>
       navigate(`/${endpointName}/transaction/?${transaction.id}`)
     }

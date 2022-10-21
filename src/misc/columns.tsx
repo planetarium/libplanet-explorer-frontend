@@ -206,7 +206,7 @@ export const accountMineColumns = (endpointName: string) => [
   },
 ];
 
-export const txColumns = (endpointName: string) => [
+export const accountTxColumns = (endpointName: string) => [
   {
     key: 'columnNonce',
     name: 'Nonce',
@@ -270,5 +270,74 @@ export const txColumns = (endpointName: string) => [
     onRender: ({ timestamp }: Transaction) => (
       <Timestamp timestamp={timestamp} />
     ),
+  },
+];
+
+export const listTxColumns = [
+  {
+    key: 'columnId',
+    name: 'Id',
+    fieldName: 'id',
+    minWidth: 50,
+    maxWidth: 300,
+    isRowHeader: true,
+    isResizable: true,
+    isSorted: false,
+    isSortedDescending: true,
+    data: 'string',
+    isPadded: true,
+    // FIXME: We'd better to use absolute paths and make Gatsby automatically
+    // to rebase these absolute paths on the PATH_PREFIX configuration.
+    onRender: ({ id }: Transaction) => (
+      <Link href={`../transaction/?${id}`}>{id}</Link>
+    ),
+  },
+  {
+    key: 'columnSigner',
+    name: 'Signer',
+    fieldName: 'signer',
+    minWidth: 50,
+    maxWidth: 300,
+    isRowHeader: true,
+    isResizable: true,
+    isSorted: false,
+    isSortedDescending: false,
+    data: 'string',
+    isPadded: true,
+    onRender: ({ signer }: Transaction) => (
+      // FIXME: We'd better to use absolute paths and make Gatsby to
+      // automatically rebase these absolute paths on the PATH_PREFIX
+      // configuration.
+      <Link href={`../account/?${signer}`}>{signer}</Link>
+    ),
+  },
+  {
+    key: 'columnTimestamp',
+    name: 'Timestamp',
+    fieldName: 'timestamp',
+    minWidth: 50,
+    maxWidth: 100,
+    isRowHeader: true,
+    isResizable: true,
+    isSorted: false,
+    isSortedDescending: true,
+    data: 'string',
+    isPadded: true,
+    onRender: ({ timestamp }: Transaction) => (
+      <Timestamp timestamp={timestamp} />
+    ),
+  },
+  {
+    key: 'columnNonceNumber',
+    name: 'Nonce',
+    minWidth: 40,
+    maxWidth: 80,
+    isRowHeader: true,
+    isResizable: true,
+    isSorted: false,
+    isSortedDescending: false,
+    data: 'number',
+    isPadded: true,
+    onRender: (tx: Transaction) => <>{tx.nonce ? tx.nonce : '--'}</>,
   },
 ];

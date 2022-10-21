@@ -10,6 +10,7 @@ import {
 } from '@fluentui/react/lib/DetailsList';
 import { BlockByHashComponent, Transaction } from '../generated/graphql';
 import Timestamp from '../components/Timestamp';
+import { listTxColumns } from '../misc/columns';
 
 import { IndexPageProps } from '../pages/index';
 
@@ -117,69 +118,10 @@ interface TxListProps {
 }
 
 const TxList: React.FC<TxListProps> = ({ txs, endpointName }) => {
-  const columns: IColumn[] = [
-    {
-      key: 'columnId',
-      name: 'Id',
-      fieldName: 'id',
-      minWidth: 50,
-      maxWidth: 300,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: true,
-      data: 'string',
-      isPadded: true,
-      onRender: ({ id }) => <Link href={`/${endpointName}/transaction/?${id}`}>{id}</Link>,
-    },
-    {
-      key: 'columnSigner',
-      name: 'Signer',
-      fieldName: 'signer',
-      minWidth: 50,
-      maxWidth: 300,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: false,
-      data: 'string',
-      isPadded: true,
-      onRender: ({ signer }) => (
-        <Link href={`/${endpointName}/account/?${signer}`}>{signer}</Link>
-      ),
-    },
-    {
-      key: 'columnTimestamp',
-      name: 'Timestamp',
-      fieldName: 'timestamp',
-      minWidth: 50,
-      maxWidth: 100,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: true,
-      data: 'string',
-      isPadded: true,
-      onRender: ({ timestamp }) => <Timestamp timestamp={timestamp} />,
-    },
-    {
-      key: 'columnNonceNumber',
-      name: 'Nonce',
-      minWidth: 40,
-      maxWidth: 80,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: false,
-      data: 'number',
-      isPadded: true,
-      onRender: tx => <>{tx.nonce ? tx.nonce : '--'}</>,
-    },
-  ];
   return (
     <DetailsList
       items={txs}
-      columns={columns}
+      columns={listTxColumns}
       selectionMode={SelectionMode.none}
       getKey={tx => tx.id}
       setKey="set"
