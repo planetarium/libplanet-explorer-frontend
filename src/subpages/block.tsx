@@ -1,13 +1,6 @@
 import React from 'react';
 import { Link } from '@fluentui/react';
-import { navigate } from 'gatsby';
 import useQueryString from '../misc/useQueryString';
-import {
-  DetailsList,
-  DetailsListLayoutMode,
-  SelectionMode,
-  IColumn,
-} from '@fluentui/react/lib/DetailsList';
 import { BlockByHashComponent, Transaction } from '../generated/graphql';
 import Timestamp from '../components/Timestamp';
 import { listTxColumns } from '../misc/columns';
@@ -100,7 +93,7 @@ const BlockPage: React.FC<BlockPageProps> = ({ location, ...props }) => {
                   transactions={block.transactions as NonNullable<Transaction[]>}
                   endpointName={props.pageContext.endpoint.name}
                   loading={loading}
-                  columns={listTxColumns}
+                  columns={listTxColumns(props.pageContext.endpoint.name)}
                 />
               ) : (
                 <dd>

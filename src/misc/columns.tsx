@@ -254,7 +254,7 @@ export const accountTxColumns = (endpointName: string) => [
     data: 'number',
     isPadded: true,
     onRender: ({ signer }: Transaction) => (
-      <Link href={`/${endpointName}/?${signer}`}>{signer}</Link>
+      <Link href={`/${endpointName}/account/?${signer}`}>{signer}</Link>
     ),
   },
   {
@@ -273,7 +273,7 @@ export const accountTxColumns = (endpointName: string) => [
   },
 ];
 
-export const listTxColumns = [
+export const listTxColumns = (endpointName: string) => [
   {
     key: 'columnId',
     name: 'Id',
@@ -289,7 +289,7 @@ export const listTxColumns = [
     // FIXME: We'd better to use absolute paths and make Gatsby automatically
     // to rebase these absolute paths on the PATH_PREFIX configuration.
     onRender: ({ id }: Transaction) => (
-      <Link href={`../transaction/?${id}`}>{id}</Link>
+      <Link href={`/${endpointName}/transaction/?${id}`}>{id}</Link>
     ),
   },
   {
@@ -308,7 +308,7 @@ export const listTxColumns = [
       // FIXME: We'd better to use absolute paths and make Gatsby to
       // automatically rebase these absolute paths on the PATH_PREFIX
       // configuration.
-      <Link href={`../account/?${signer}`}>{signer}</Link>
+      <Link href={`/${endpointName}/account/?${signer}`}>{signer}</Link>
     ),
   },
   {
