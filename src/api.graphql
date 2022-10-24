@@ -44,7 +44,7 @@ query BlockList(
   }
 }
 
-query BlockByHash($hash: ID) {
+query BlockByHash($hash: ID!) {
   chainQuery {
     blockQuery {
       block(hash: $hash) {
@@ -58,6 +58,16 @@ query BlockByHash($hash: ID) {
         transactions {
           ...TransactionCommon
         }
+      }
+    }
+  }
+}
+
+query BlockByIndex($index: ID!) {
+  chainQuery {
+    blockQuery {
+      block(index: $index) {
+        hash
       }
     }
   }

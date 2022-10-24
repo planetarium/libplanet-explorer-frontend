@@ -8,9 +8,9 @@ type Action {
 }
 
 type Block {
-  difficulty: Int!
+  difficulty: Long!
   hash: ID!
-  index: Int!
+  index: Long!
   miner: Address!
   nonce: ByteString!
   previousBlock: Block
@@ -30,7 +30,10 @@ type ChainQuery {
 }
 
 type BlockQuery {
-  block(hash: ID = null): Block
+  block(
+    hash: ID = null
+    index: ID = null
+  ): Block
   blocks(
     desc: Boolean = false
     offset: Int = 0
@@ -54,6 +57,8 @@ type TransactionQuery {
 scalar Address
 
 scalar ByteString
+
+scalar Long
 
 scalar BigInt
 

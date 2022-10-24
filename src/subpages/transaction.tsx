@@ -6,11 +6,10 @@ import Timestamp from '../components/Timestamp';
 import { decode, BencodexValue } from 'bencodex';
 import JSONTree from 'react-json-tree';
 
-interface TransactionPageProps {
-  location: Location;
-}
+import { IndexPageProps } from '../pages';
 
-// FIXME: do not use any type.
+type TransactionPageProps = IndexPageProps
+
 function convertToObject(value: BencodexValue | undefined): string | boolean | number | undefined | null | {} {
   if (value instanceof Map) {
     return Object.fromEntries(
@@ -50,7 +49,7 @@ const jsonTreeTheme = {
   base0F: '#3E965B',
 };
 
-const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
+const TransactionPage: React.FC<TransactionPageProps> = ({ location, ...props }) => {
   const [queryString] = useQueryString(location);
   const id = queryString;
   return (
@@ -95,10 +94,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
           </dd>
         ));
 
-        // FIXME: We'd better to use absolute paths and make Gatsby to
-        // automatically rebase these absolute paths on the PATH_PREFIX
-        // configuration.
-        const signerLink = `../account/?${transaction.signer}`;
+        const signerLink = `/${props.pageContext.endpoint.name}/account/?${transaction.signer}`;
         return (
           <>
             <h2>Transaction Details</h2>
@@ -130,12 +126,7 @@ const TransactionPage: React.FC<TransactionPageProps> = ({ location }) => {
               <dt>Updated Addresses</dt>
               {transaction.updatedAddresses.map(address => (
                 <dd key={address}>
-                  {/*
-                  FIXME: We'd better to use absolute paths and make Gatsby to
-                  automatically rebase these absolute paths on the PATH_PREFIX
-                  configuration.
-                  */}
-                  <Link href={`../account/?${address}`}>
+                  <Link href={`/${props.pageContext.endpoint.name}/account/?${address}`}>
                     <code>{address}</code>
                   </Link>
                 </dd>
