@@ -1,17 +1,12 @@
 import React from 'react';
 import { Link } from '@fluentui/react';
-import { navigate } from 'gatsby';
 import useQueryString from '../misc/useQueryString';
-import {
-  DetailsList,
-  DetailsListLayoutMode,
-  SelectionMode,
-  IColumn,
-} from '@fluentui/react/lib/DetailsList';
 import { BlockByHashComponent, Transaction } from '../generated/graphql';
 import Timestamp from '../components/Timestamp';
+import { listTxColumns } from '../misc/columns';
 
 import { IndexPageProps } from '../pages/index';
+import { TransactionList } from '../components/List';
 
 type BlockPageProps = IndexPageProps;
 
@@ -94,9 +89,11 @@ const BlockPage: React.FC<BlockPageProps> = ({ location, ...props }) => {
               <dd>{block.totalDifficulty}</dd>
               <dt>Transactions</dt>
               {block.transactions.length > 0 ? (
-                <TxList
-                  txs={block.transactions as NonNullable<Transaction[]>}
+                <TransactionList
+                  transactions={block.transactions as NonNullable<Transaction[]>}
                   endpointName={props.pageContext.endpoint.name}
+                  loading={loading}
+                  columns={listTxColumns(props.pageContext.endpoint.name)}
                 />
               ) : (
                 <dd>
@@ -108,85 +105,6 @@ const BlockPage: React.FC<BlockPageProps> = ({ location, ...props }) => {
         );
       }}
     </BlockByHashComponent>
-  );
-};
-
-interface TxListProps {
-  txs: Pick<Transaction, 'id' | 'signer' | 'timestamp'>[];
-  endpointName: string;
-}
-
-const TxList: React.FC<TxListProps> = ({ txs, endpointName }) => {
-  const columns: IColumn[] = [
-    {
-      key: 'columnId',
-      name: 'Id',
-      fieldName: 'id',
-      minWidth: 50,
-      maxWidth: 300,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: true,
-      data: 'string',
-      isPadded: true,
-      onRender: ({ id }) => <Link href={`/${endpointName}/transaction/?${id}`}>{id}</Link>,
-    },
-    {
-      key: 'columnSigner',
-      name: 'Signer',
-      fieldName: 'signer',
-      minWidth: 50,
-      maxWidth: 300,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: false,
-      data: 'string',
-      isPadded: true,
-      onRender: ({ signer }) => (
-        <Link href={`/${endpointName}/account/?${signer}`}>{signer}</Link>
-      ),
-    },
-    {
-      key: 'columnTimestamp',
-      name: 'Timestamp',
-      fieldName: 'timestamp',
-      minWidth: 50,
-      maxWidth: 100,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: true,
-      data: 'string',
-      isPadded: true,
-      onRender: ({ timestamp }) => <Timestamp timestamp={timestamp} />,
-    },
-    {
-      key: 'columnNonceNumber',
-      name: 'Nonce',
-      minWidth: 40,
-      maxWidth: 80,
-      isRowHeader: true,
-      isResizable: true,
-      isSorted: false,
-      isSortedDescending: false,
-      data: 'number',
-      isPadded: true,
-      onRender: tx => <>{tx.nonce ? tx.nonce : '--'}</>,
-    },
-  ];
-  return (
-    <DetailsList
-      items={txs}
-      columns={columns}
-      selectionMode={SelectionMode.none}
-      getKey={tx => tx.id}
-      setKey="set"
-      layoutMode={DetailsListLayoutMode.justified}
-      isHeaderVisible={true}
-      onItemInvoked={tx => navigate(`/${endpointName}/transaction/?${tx.id}`)}
-    />
   );
 };
 

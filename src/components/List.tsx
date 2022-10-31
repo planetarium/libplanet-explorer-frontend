@@ -1,11 +1,16 @@
 import React from 'react';
+import { navigate } from 'gatsby';
 import {
   DetailsListLayoutMode,
   SelectionMode,
   IColumn,
 } from '@fluentui/react/lib/DetailsList';
 import { ShimmeredDetailsList } from '@fluentui/react/lib/ShimmeredDetailsList';
-import { Block } from '../generated/graphql';
+import {
+  Block,
+  Transaction,
+  TransactionCommonFragment,
+} from '../generated/graphql';
 
 interface ListProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -44,7 +49,44 @@ export default List;
 
 export type OmitListProps = Omit<ListProps, 'onItemInvoked' | 'items'>;
 
-export interface BlockListProps extends OmitListProps {
+interface BlockListProps extends OmitListProps {
   blocks: Block[] | null;
   endpointName: string;
 }
+
+export const BlockList: React.FC<BlockListProps> = ({
+  blocks,
+  endpointName,
+  ...props
+}) => (
+  <List
+    items={blocks}
+    {...props}
+    onItemInvoked={(block: Block) =>
+      navigate(`/${endpointName}/block/?${block.hash}`)
+    }
+  />
+);
+
+interface TransactionListProps
+  extends Omit<OmitListProps, 'columns' | 'items'> {
+  transactions: TransactionCommonFragment[] | null;
+  endpointName: string;
+  columns: IColumn[];
+}
+
+export const TransactionList: React.FC<TransactionListProps> = ({
+  transactions,
+  endpointName,
+  columns,
+  ...props
+}) => (
+  <List
+    items={transactions}
+    {...props}
+    columns={columns}
+    onItemInvoked={(transaction: Transaction) =>
+      navigate(`/${endpointName}/transaction/?${transaction.id}`)
+    }
+  />
+);
