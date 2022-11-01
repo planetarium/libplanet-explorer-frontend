@@ -1,15 +1,42 @@
-# macOS
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+#!.yarn/sdks  # ignore sdks, as it seems to be for zero-installs
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+src/gql
+
+# misc
 .DS_Store
-
-# editor
+*.pem
 .vscode/
 
-# gatsby
-.cache/
-.vscode/
-node_modules/
-public/
-src/generated
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
-# development config
-/.env.development
+# local env files
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts

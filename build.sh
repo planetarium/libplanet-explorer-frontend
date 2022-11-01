@@ -1,7 +1,8 @@
 #!/bin/bash
+# Cloudflare Pages deploy script
 
 # Install deps
-npm install
+yarn
 
 # Export endpoint uris to .env.production
 COUNT=0
@@ -17,7 +18,7 @@ VAR_ENV+="]";
 echo "$VAR_ENV" > ".env.production"
 
 # Then build Gatsby site into public (default path)
-npm run build
+yarn build
 
 # Export CNAME
 echo "$DOMAIN" > public/CNAME
