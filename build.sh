@@ -6,7 +6,7 @@ yarn
 
 # Export endpoint uris to .env.production
 COUNT=0
-VAR_ENV="GRAPHQL_ENDPOINTS=["
+VAR_ENV="NEXT_PUBLIC_GRAPHQL_ENDPOINTS=["
 
 while IFS=$'\t' read -r -a tuple; do
   (( COUNT++ ))

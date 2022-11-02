@@ -27,8 +27,8 @@ Also, if you are using an IDE, you might need to setup the editor SDK on yarn fo
 Development (without server)
 ----------------------------
 
-Copy *.env.development* (which contains the defaults) to *.env.local*, and open the copied *.env.development* file and change the value of
-`GRAPHQL_ENDPOINT_URI` to refer to our demo server.  The demo server URI can be
+Copy *.env.development* (which contains the defaults) to *.env.local*, and open the copied *.env.development* file and change the
+`NEXT_PUBLIC_GRAPHQL_ENDPOINTS` list to refer to our demo server.  The demo server URI can be
 found in the first line of *DEPLOYMENTS.tsv*.
 
 Then, install the dependencies and build the app:
@@ -66,10 +66,7 @@ Production
 Make a *.env.local* configuration and then build:
 
 ~~~~ bash
-{
-  echo NETWORK_NAME=example
-  echo GRAPHQL_ENDPOINT_URI=https://example.com/graphql/
-} > .env.local
 yarn
 yarn build
+yarn export
 ~~~~

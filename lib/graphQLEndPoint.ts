@@ -5,12 +5,12 @@ export interface GraphQLEndPoint {
   uri: string;
 }
 
-if (process.env.GRAPHQL_ENDPOINTS === undefined) {
-  throw Error('GRAPHQL_ENDPOINTS environment variable is required');
+if (process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINTS === undefined) {
+  throw Error('NEXT_PUBLIC_GRAPHQL_ENDPOINTS environment variable is required');
 }
 
 export const GRAPHQL_ENDPOINTS = JSON.parse(
-  process.env.GRAPHQL_ENDPOINTS
+  process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINTS
 ) as GraphQLEndPoint[];
 
 export function getEndpointByName(name: string) {
