@@ -1,20 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import { ApolloProvider, useApolloClient } from '@apollo/client/react';
+import { ApolloClient, InMemoryCache } from '@apollo/client';
 import styled from '@emotion/styled';
-import { ApolloProvider, useApolloClient } from 'react-apollo';
-import ApolloClient from 'apollo-boost';
-import { Icon, SearchBox } from '@fluentui/react';
 import {
-  TooltipHost,
-  TooltipDelay,
   DirectionalHint,
-} from '@fluentui/react/lib/Tooltip';
-import {
   Dropdown,
   IDropdownStyles,
   IDropdownOption,
-} from '@fluentui/react/lib/Dropdown';
+  IRenderFunction,
+  Icon,
+  NeutralColors,
+  SearchBox,
+  TooltipDelay,
+  TooltipHost,
+} from '@fluentui/react';
 
-import { GraphQLEndPoint, GRAPHQL_ENDPOINTS } from '../misc/graphQLEndPoint';
+import {
+  getEndpointFromQuery,
+  GraphQLEndPoint,
+  GRAPHQL_ENDPOINTS,
+} from 'lib/graphQLEndPoint';
 import {
   BlockByIndexQuery,
   BlockByIndexDocument,
@@ -22,109 +29,94 @@ import {
   BlockByHashDocument,
   TransactionByIdQuery,
   TransactionByIdDocument,
-} from '../generated/graphql';
+} from 'src/gql/graphql';
 
-import logo from '../static/img/logo.svg';
+import Wrapper from 'components/Wrapper';
+import { CommonPageProps } from 'lib/staticGeneration';
 
-import Wrapper from './Wrapper';
-import { navigate } from 'gatsby-link';
-
-interface LayoutProps {
-  children: React.ReactNode;
-  pageContext: { endpoint: GraphQLEndPoint };
-}
-const Layout: React.FC<LayoutProps> = ({ children, pageContext }) => {
-  if (pageContext.endpoint) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [client, setClient] = useState<ApolloClient<any> | null>(null);
-    useEffect(() => {
+export default function Layout({
+  children,
+  staticEndpoint,
+}: CommonPageProps & {
+  children: ReactNode;
+}) {
+  const { isReady, query } = useRouter();
+  const [endpoint, setEndpoint] = useState(staticEndpoint);
+  const [client, setClient] = useState<ApolloClient<object> | null>(null);
+  useEffect(() => {
+    if (!endpoint && isReady) {
+      setEndpoint(getEndpointFromQuery(query));
+    }
+  }, [endpoint, isReady, query]);
+  useEffect(() => {
+    if (endpoint) {
       setClient(
         new ApolloClient({
-          uri: pageContext.endpoint.uri,
+          cache: new InMemoryCache(),
+          uri: endpoint?.uri,
         })
       );
-    }, [setClient, pageContext]);
+    }
+  }, [endpoint]);
+  if (endpoint) {
     if (!client) return null;
 
     return (
       <ApolloProvider client={client}>
-        <LayoutContainer className="ms-bgColor-gray10">
-          <NavBar
-            className="ms-bgColor-gray190"
-            endpoint={pageContext.endpoint}
-          />
+        <LayoutContainer>
+          <NavBar endpoint={endpoint} />
           <Wrapper>{children}</Wrapper>
         </LayoutContainer>
       </ApolloProvider>
     );
   } else {
     // redirect to the first endpoint
-    return (
-      <LayoutContainer className="ms-bgColor-gray10">
-        {children}
-      </LayoutContainer>
-    );
+    return <LayoutContainer>{children}</LayoutContainer>;
   }
-};
+}
 
 const dropdownStyles: Partial<IDropdownStyles> = {
   dropdown: { width: 120 },
 };
 
-export default Layout;
-
-interface NavBarProps {
-  className?: string;
-  endpoint: GraphQLEndPoint;
-}
-export const NavBar: React.FC<NavBarProps> = ({ className, endpoint }) => {
+export function NavBar({ endpoint }: { endpoint: GraphQLEndPoint }) {
   const client = useApolloClient();
+  const { push } = useRouter();
   const onSearch = async (value: string) => {
     value = value.trim();
     if (value.match(/^[0-9a-fA-F]{64}$/)) {
-      const data = await client.query<BlockByHashQuery>({
-        query: BlockByHashDocument,
-        variables: {hash: value},
-      }).catch(() => null);
-      if (
-        data
-        && data.data.chainQuery.blockQuery
-        && data.data.chainQuery.blockQuery.block
-        && data.data.chainQuery.blockQuery.block.hash
-      ) {
-        navigate(`/${endpoint.name}/block/?${value}`);
+      const data = await client
+        .query<BlockByHashQuery>({
+          query: BlockByHashDocument,
+          variables: { hash: value },
+        })
+        .catch(() => null);
+      if (data?.data.chainQuery.blockQuery?.block) {
+        push(`/${endpoint.name}/block/?${value}`);
         return;
       }
-      const txData = await client.query<TransactionByIdQuery>({
-        query: TransactionByIdDocument,
-        variables: {id: value},
-      }).catch(() => null);
-      if (
-        txData
-        && txData.data.chainQuery.transactionQuery
-        && txData.data.chainQuery.transactionQuery.transaction
-        && txData.data.chainQuery.transactionQuery.transaction.id
-      ) {
-        navigate(`/${endpoint.name}/transaction/?${value}`);
+      const txData = await client
+        .query<TransactionByIdQuery>({
+          query: TransactionByIdDocument,
+          variables: { id: value },
+        })
+        .catch(() => null);
+      if (txData?.data.chainQuery.transactionQuery?.transaction) {
+        push(`/${endpoint.name}/transaction/?${value}`);
         return;
       }
-      alert('There are no blocks or transactions with the given hash.')
+      alert('There are no blocks or transactions with the given hash.');
     } else if (value.match(/^0x[0-9a-fA-F]{40}$/)) {
-      navigate(`/${endpoint.name}/account/?${value}`);
+      push(`/${endpoint.name}/account/?${value}`);
     } else if (value.match(/^[0-9]+$/)) {
       try {
         const data = await client.query<BlockByIndexQuery>({
           query: BlockByIndexDocument,
-          variables: {index: value},
-        })
-        const hash = data.data.chainQuery.blockQuery
-          && data.data.chainQuery.blockQuery.block
-          && data.data.chainQuery.blockQuery.block.hash
-          ? data.data.chainQuery.blockQuery.block.hash
-          : null;
-        if (hash)
-        {
-          navigate(`/${endpoint.name}/block/?${hash}`);
+          variables: { index: value },
+        });
+        const hash = data.data.chainQuery.blockQuery?.block?.hash;
+        if (hash) {
+          push(`/${endpoint.name}/block/?${hash}`);
         } else {
           alert('No such block available.');
         }
@@ -147,16 +139,19 @@ export const NavBar: React.FC<NavBarProps> = ({ className, endpoint }) => {
     };
   });
 
-  const _onRenderTitle = (options: IDropdownOption[]): JSX.Element => {
-    const option = options[0];
-
+  const _onRenderTitle: IRenderFunction<IDropdownOption[]> = (
+    props?: IDropdownOption[]
+  ): JSX.Element => {
+    if (!props) return <></>;
+    const option = props[0];
     return (
       <TooltipHost
         tooltipProps={{
           onRenderContent: () => <div>{option.data.uri}</div>,
         }}
         delay={TooltipDelay.zero}
-        directionalHint={DirectionalHint.bottomCenter}>
+        directionalHint={DirectionalHint.bottomCenter}
+      >
         <div>
           {option.data && option.data.icon && (
             <Icon
@@ -173,34 +168,39 @@ export const NavBar: React.FC<NavBarProps> = ({ className, endpoint }) => {
   };
 
   return (
-    <nav className={className}>
+    <StyledNav>
       <NavWrapper>
         <LogoLink href={`/${endpoint.name}/`}>
-          <LogoImg src={logo} />
+          <LogoImg src="/logo.svg" />
         </LogoLink>
-        <NavSearchBox placeholder="Block Hash / Block Index / TxID / Address starting with 0x" onSearch={onSearch} />
+        <NavSearchBox
+          placeholder="Block Hash / Block Index / TxID / Address starting with 0x"
+          onSearch={onSearch}
+        />
         <NetworkNameContainer>
           <Dropdown
             placeholder="Select an endpoint"
             defaultSelectedKey={endpoint.name}
             options={options}
-            // @ts-ignore
             onRenderTitle={_onRenderTitle}
-            onChanged={item => {
-              navigate(`/${item.key}/`);
+            onChange={(_, option) => {
+              if (option) {
+                push(`/${option.key}/`);
+              }
             }}
             styles={dropdownStyles}
           />
         </NetworkNameContainer>
       </NavWrapper>
-    </nav>
+    </StyledNav>
   );
-};
+}
 
 const LayoutContainer = styled.div`
   min-height: 100vh;
   font-family: 'Segoe UI', 'Segoe UI Web (West European)', 'Segoe UI',
     -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+  background-color: ${NeutralColors.gray10};
 `;
 const NavWrapper = styled(Wrapper)`
   padding: 0;
@@ -208,7 +208,7 @@ const NavWrapper = styled(Wrapper)`
   justify-content: flex-start;
   align-items: center;
 `;
-const LogoLink = styled.a`
+const LogoLink = styled(Link)`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -221,4 +221,7 @@ const NavSearchBox = styled(SearchBox)`
 `;
 const NetworkNameContainer = styled.div`
   margin-left: 10px;
+`;
+const StyledNav = styled.nav`
+  background-color: ${NeutralColors.gray190};
 `;
