@@ -1,16 +1,12 @@
-import React from 'react';
-import { navigate } from 'gatsby';
+import { useRouter } from 'next/router';
 import {
   DetailsListLayoutMode,
-  SelectionMode,
   IColumn,
-} from '@fluentui/react/lib/DetailsList';
-import { ShimmeredDetailsList } from '@fluentui/react/lib/ShimmeredDetailsList';
-import {
-  Block,
-  Transaction,
-  TransactionCommonFragment,
-} from '../generated/graphql';
+  SelectionMode,
+  ShimmeredDetailsList,
+} from '@fluentui/react';
+import { Block, Transaction, TransactionCommonFragment } from 'src/gql/graphql';
+import { GraphQLEndPoint } from 'lib/graphQLEndPoint';
 
 interface ListProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -22,14 +18,14 @@ interface ListProps {
   notFoundMessage?: string;
 }
 
-const List: React.FC<ListProps> = ({
+function List({
   items,
   loading,
   columns,
   onItemInvoked,
   notFoundMessage,
-}) => {
-  if (!loading && notFoundMessage && items && items.length === 0)
+}: ListProps) {
+  if (!loading && notFoundMessage && items?.length === 0)
     return <p>{notFoundMessage}</p>;
   return (
     <ShimmeredDetailsList
@@ -43,7 +39,7 @@ const List: React.FC<ListProps> = ({
       onItemInvoked={onItemInvoked}
     />
   );
-};
+}
 
 export default List;
 
@@ -51,42 +47,44 @@ export type OmitListProps = Omit<ListProps, 'onItemInvoked' | 'items'>;
 
 interface BlockListProps extends OmitListProps {
   blocks: Block[] | null;
-  endpointName: string;
+  endpoint: GraphQLEndPoint;
 }
 
-export const BlockList: React.FC<BlockListProps> = ({
-  blocks,
-  endpointName,
-  ...props
-}) => (
-  <List
-    items={blocks}
-    {...props}
-    onItemInvoked={(block: Block) =>
-      navigate(`/${endpointName}/block/?${block.hash}`)
-    }
-  />
-);
+export function BlockList({ blocks, endpoint, ...props }: BlockListProps) {
+  const { push } = useRouter();
+  return (
+    <List
+      items={blocks}
+      {...props}
+      onItemInvoked={(block: Block) =>
+        push(`/${endpoint.name}/block/?${block.hash}`)
+      }
+    />
+  );
+}
 
 interface TransactionListProps
   extends Omit<OmitListProps, 'columns' | 'items'> {
   transactions: TransactionCommonFragment[] | null;
-  endpointName: string;
+  endpoint: GraphQLEndPoint;
   columns: IColumn[];
 }
 
-export const TransactionList: React.FC<TransactionListProps> = ({
+export function TransactionList({
   transactions,
-  endpointName,
+  endpoint,
   columns,
   ...props
-}) => (
-  <List
-    items={transactions}
-    {...props}
-    columns={columns}
-    onItemInvoked={(transaction: Transaction) =>
-      navigate(`/${endpointName}/transaction/?${transaction.id}`)
-    }
-  />
-);
+}: TransactionListProps) {
+  const { push } = useRouter();
+  return (
+    <List
+      items={transactions}
+      {...props}
+      columns={columns}
+      onItemInvoked={(transaction: Transaction) =>
+        push(`/${endpoint.name}/transaction/?${transaction.id}`)
+      }
+    />
+  );
+}

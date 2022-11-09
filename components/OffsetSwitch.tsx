@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { css } from 'emotion';
+import { css } from '@emotion/css';
 import { DefaultButton } from '@fluentui/react';
 
 interface OffsetSwitchProps {
@@ -20,7 +20,8 @@ const OffsetSwitch: React.FC<OffsetSwitchProps> = ({
       disabled={disable.newer}
       className={css`
         margin-right: 5px;
-      `}>
+      `}
+    >
       &larr; Newer
     </DefaultButton>
     <DefaultButton disabled={disable.older} onClick={olderHandler}>

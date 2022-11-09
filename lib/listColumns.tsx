@@ -1,8 +1,9 @@
 import React from 'react';
-import { Link } from '@fluentui/react';
 
-import Timestamp from '../components/Timestamp';
-import { Block, Transaction } from '../generated/graphql';
+import Link from 'components/Link';
+import Timestamp from 'components/Timestamp';
+import { Block, Transaction } from 'src/gql/graphql';
+import { GraphQLEndPoint } from 'lib/graphQLEndPoint';
 
 export const commonProps = {
   isRowHeader: true,
@@ -10,7 +11,7 @@ export const commonProps = {
   isSorted: false,
 };
 
-export const mainMineColumns = (endpointName: string) => [
+export const mainMineColumns = (endpoint: GraphQLEndPoint) => [
   {
     key: 'columnIndex',
     name: 'Index',
@@ -36,7 +37,7 @@ export const mainMineColumns = (endpointName: string) => [
     data: 'string',
     isPadded: true,
     onRender: ({ hash }: Block) => (
-      <Link href={`/${endpointName}/block/?${hash}`}>{hash}</Link>
+      <Link href={`/${endpoint.name}/block/?${hash}`}>{hash}</Link>
     ),
   },
   {
@@ -62,7 +63,7 @@ export const mainMineColumns = (endpointName: string) => [
     data: 'string',
     isPadded: true,
     onRender: ({ miner }: Block) => (
-      <Link href={`/${endpointName}/account/?${miner}`}>{miner}</Link>
+      <Link href={`/${endpoint.name}/account/?${miner}`}>{miner}</Link>
     ),
   },
   {
@@ -108,7 +109,7 @@ export const mainMineColumns = (endpointName: string) => [
   },
 ];
 
-export const accountMineColumns = (endpointName: string) => [
+export const accountMineColumns = (endpoint: GraphQLEndPoint) => [
   {
     key: 'columnIndex',
     name: 'Index',
@@ -134,7 +135,7 @@ export const accountMineColumns = (endpointName: string) => [
     data: 'string',
     isPadded: true,
     onRender: ({ hash }: Block) => (
-      <Link href={`/${endpointName}/block/?${hash}`}>{hash}</Link>
+      <Link href={`/${endpoint.name}/block/?${hash}`}>{hash}</Link>
     ),
   },
   {
@@ -160,7 +161,7 @@ export const accountMineColumns = (endpointName: string) => [
     data: 'string',
     isPadded: true,
     onRender: ({ miner }: Block) => (
-      <Link href={`/${endpointName}/account/?${miner}`}>{miner}</Link>
+      <Link href={`/${endpoint.name}/account/?${miner}`}>{miner}</Link>
     ),
   },
   {
@@ -206,7 +207,7 @@ export const accountMineColumns = (endpointName: string) => [
   },
 ];
 
-export const accountTxColumns = (endpointName: string) => [
+export const accountTxColumns = (endpoint: GraphQLEndPoint) => [
   {
     key: 'columnNonce',
     name: 'Nonce',
@@ -229,7 +230,7 @@ export const accountTxColumns = (endpointName: string) => [
     data: 'number',
     isPadded: true,
     onRender: ({ id }: Transaction) => (
-      <Link href={`/${endpointName}/transaction/?${id}`}>{id}</Link>
+      <Link href={`/${endpoint.name}/transaction/?${id}`}>{id}</Link>
     ),
   },
   {
@@ -254,7 +255,7 @@ export const accountTxColumns = (endpointName: string) => [
     data: 'number',
     isPadded: true,
     onRender: ({ signer }: Transaction) => (
-      <Link href={`/${endpointName}/account/?${signer}`}>{signer}</Link>
+      <Link href={`/${endpoint.name}/account/?${signer}`}>{signer}</Link>
     ),
   },
   {
@@ -273,7 +274,7 @@ export const accountTxColumns = (endpointName: string) => [
   },
 ];
 
-export const listTxColumns = (endpointName: string) => [
+export const listTxColumns = (endpoint: GraphQLEndPoint) => [
   {
     key: 'columnId',
     name: 'Id',
@@ -286,10 +287,8 @@ export const listTxColumns = (endpointName: string) => [
     isSortedDescending: true,
     data: 'string',
     isPadded: true,
-    // FIXME: We'd better to use absolute paths and make Gatsby automatically
-    // to rebase these absolute paths on the PATH_PREFIX configuration.
     onRender: ({ id }: Transaction) => (
-      <Link href={`/${endpointName}/transaction/?${id}`}>{id}</Link>
+      <Link href={`/${endpoint.name}/transaction/?${id}`}>{id}</Link>
     ),
   },
   {
@@ -305,10 +304,7 @@ export const listTxColumns = (endpointName: string) => [
     data: 'string',
     isPadded: true,
     onRender: ({ signer }: Transaction) => (
-      // FIXME: We'd better to use absolute paths and make Gatsby to
-      // automatically rebase these absolute paths on the PATH_PREFIX
-      // configuration.
-      <Link href={`/${endpointName}/account/?${signer}`}>{signer}</Link>
+      <Link href={`/${endpoint.name}/account/?${signer}`}>{signer}</Link>
     ),
   },
   {
