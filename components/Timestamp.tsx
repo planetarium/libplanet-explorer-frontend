@@ -1,9 +1,5 @@
-import { Scalars } from '../generated/graphql';
+import { Scalars } from 'src/gql/graphql';
 import React from 'react';
-
-interface TimestampProps {
-  timestamp: Scalars['DateTimeOffset'];
-}
 
 const formatOptions: Intl.DateTimeFormatOptions = {
   hour: '2-digit',
@@ -13,7 +9,11 @@ const formatOptions: Intl.DateTimeFormatOptions = {
   day: 'numeric',
 };
 
-const Timestamp: React.FC<TimestampProps> = ({ timestamp }) => {
+export default function Timestamp({
+  timestamp,
+}: {
+  timestamp: Scalars['DateTimeOffset'];
+}) {
   const date = new Date(timestamp);
   const now = new Date();
   if (
@@ -34,6 +34,4 @@ const Timestamp: React.FC<TimestampProps> = ({ timestamp }) => {
       {date.toLocaleString(undefined, formatOptions)}
     </time>
   );
-};
-
-export default Timestamp;
+}
