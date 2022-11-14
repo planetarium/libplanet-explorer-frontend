@@ -15,13 +15,13 @@ while IFS=$'\t' read -r -a tuple; do
 done < DEPLOYMENTS.tsv
 
 VAR_ENV+="]";
-echo "$VAR_ENV" > ".env.production"
+echo "$VAR_ENV" > ".env.production.local"
 
-# Then build Gatsby site into public (default path)
-yarn build
+# Then build NextJS site into out/ (default path)
+yarn codegen && yarn build && yarn export
 
 # Export CNAME
 echo "$DOMAIN" > public/CNAME
 
 # Rename public to _site
-mv public _site
+mv out _site
