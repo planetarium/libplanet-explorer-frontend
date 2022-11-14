@@ -12,9 +12,9 @@ RUN corepack enable && yarn
 COPY . /app
 ARG NODE_ENV
 ENV NODE_ENV $NODE_ENV
-# workaround for error:0308010C:digital envelope routines::unsupported
-ENV NODE_OPTIONS --openssl-legacy-provider
-RUN yarn build
+RUN yarn codegen \
+    && yarn build \
+    && yarn export
 
 
 # Host as static website
