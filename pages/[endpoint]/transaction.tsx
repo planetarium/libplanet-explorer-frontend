@@ -1,25 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import React, { useMemo } from 'react';
 import { decode, BencodexValue } from 'bencodex';
 import { JSONTree } from 'react-json-tree';
 import { useQuery } from '@apollo/client';
 
 import Link from 'components/Link';
 import Timestamp from 'components/Timestamp';
-import { getEndpointFromQuery, GRAPHQL_ENDPOINTS } from 'lib/graphQLEndPoint';
 import {
   CommonPageProps,
   getCommonStaticPaths as getStaticPaths,
   getCommonStaticProps as getStaticProps,
 } from 'lib/staticGeneration';
-import useSearchParams from 'lib/useSearchParams';
-import useIdFromQuery from 'lib/useIdFromQuery';
+import useQueryItemId from 'lib/useQueryItemId';
 
 import {
   Transaction,
   TransactionByIdDocument,
   TransactionByIdQuery,
 } from 'src/gql/graphql';
+import useEndpoint from 'lib/useEndpoint';
 
 type ObjectType =
   | string
@@ -70,109 +68,87 @@ const jsonTreeTheme = {
 };
 
 export default function TransactionPage({ staticEndpoint }: CommonPageProps) {
-  const [pageContent, setPageContent] = useState<JSX.Element>(<></>);
-
-  const [endpoint, setEndpoint] = useState(staticEndpoint);
-  const { isReady, asPath } = useRouter();
-  const [query] = useSearchParams(asPath);
-  const id = useIdFromQuery(query);
+  const endpoint = useEndpoint(staticEndpoint);
+  const id = useQueryItemId();
   const { loading, error, data } = useQuery<TransactionByIdQuery>(
     TransactionByIdDocument,
     {
       variables: { id },
-      skip: !endpoint,
+      skip: !(endpoint && id),
     }
   );
-  useEffect(() => {
-    if (!endpoint && isReady) {
-      setEndpoint(getEndpointFromQuery(query) ?? GRAPHQL_ENDPOINTS[0]);
-    }
-  }, [endpoint, isReady, query]);
-  useEffect(() => {
-    if (!endpoint || loading) {
-      setPageContent(<p>Loading&hellip;</p>);
-      return;
-    }
-    if (error) {
-      setPageContent(
-        <p>
-          Failed to load {id} - {JSON.stringify(error.message)}
-        </p>
-      );
-      return;
-    }
-    const transaction = data?.chainQuery.transactionQuery
-      ?.transaction as Transaction;
-    if (!transaction) {
-      setPageContent(
-        <p>
-          No such transaction: <code>{id}</code>
-        </p>
-      );
-      return;
-    }
-    setPageContent(
-      <>
-        <dl>
-          <dt>Id</dt>
-          <dd>
-            <code>{transaction.id}</code>
-          </dd>
-          <dt>Nonce</dt>
-          <dd>{transaction.nonce} </dd>
-          <dt>Public Key</dt>
-          <dd>
-            <code>{transaction.publicKey}</code>
-          </dd>
-          <dt>Signature</dt>
-          <dd>
-            <code>{transaction.signature}</code>
-          </dd>
-          <dt>Signer</dt>
-          <dd>
-            <Link href={`/${endpoint.name}/account/?${transaction.signer}`}>
-              <code>{transaction.signer}</code>
-            </Link>
-          </dd>
-          <dt>Timestamp</dt>
-          <dd>
-            <Timestamp timestamp={transaction.timestamp} />
-          </dd>
-          <dt>Updated Addresses</dt>
-          {transaction.updatedAddresses.map(address => (
-            <dd key={address}>
-              <Link href={`/${endpoint.name}/account/?${address}`}>
-                <code>{address}</code>
-              </Link>
-            </dd>
-          ))}
-          <dt>Actions</dt>
-          {transaction.actions.map(action => (
-            <dd key={action.raw}>
-              <JSONTree
-                data={convertToObject(
-                  decode(Buffer.from(action.raw, 'base64'))
-                )}
-                theme={jsonTreeTheme}
-                invertTheme={false}
-                hideRoot={true}
-              />
-            </dd>
-          ))}
-        </dl>
-      </>
-    );
-  }, [
-    data?.chainQuery.transactionQuery?.transaction,
-    endpoint,
-    error,
-    id,
-    loading,
-  ]);
+  const transaction = useMemo(
+    () =>
+      (!!endpoint && !loading && !error
+        ? (data?.chainQuery.transactionQuery?.transaction as Transaction) ??
+          null
+        : null) as Transaction,
+    [data?.chainQuery.transactionQuery?.transaction, endpoint, error, loading]
+  );
   return (
     <>
       <h2>Transaction Details</h2>
-      {pageContent}
+      {error ? (
+        <p>
+          Failed to load {id} - {JSON.stringify(error.message)}
+        </p>
+      ) : !endpoint || loading ? (
+        <p>Loading&hellip;</p>
+      ) : !transaction ? (
+        <p>
+          No such transaction: <code>{id}</code>
+        </p>
+      ) : (
+        <>
+          <dl>
+            <dt>Id</dt>
+            <dd>
+              <code>{transaction.id}</code>
+            </dd>
+            <dt>Nonce</dt>
+            <dd>{transaction.nonce} </dd>
+            <dt>Public Key</dt>
+            <dd>
+              <code>{transaction.publicKey}</code>
+            </dd>
+            <dt>Signature</dt>
+            <dd>
+              <code>{transaction.signature}</code>
+            </dd>
+            <dt>Signer</dt>
+            <dd>
+              <Link href={`/${endpoint.name}/account/?${transaction.signer}`}>
+                <code>{transaction.signer}</code>
+              </Link>
+            </dd>
+            <dt>Timestamp</dt>
+            <dd>
+              <Timestamp timestamp={transaction.timestamp} />
+            </dd>
+            <dt>Updated Addresses</dt>
+            {transaction.updatedAddresses.map(address => (
+              <dd key={address}>
+                <Link href={`/${endpoint.name}/account/?${address}`}>
+                  <code>{address}</code>
+                </Link>
+              </dd>
+            ))}
+            <dt>Actions</dt>
+            {transaction.actions.map(action => (
+              <dd key={action.raw}>
+                <JSONTree
+                  data={convertToObject(
+                    decode(Buffer.from(action.raw, 'base64'))
+                  )}
+                  theme={jsonTreeTheme}
+                  invertTheme={false}
+                  hideRoot={true}
+                />
+              </dd>
+            ))}
+          </dl>
+        </>
+      )}
     </>
   );
 }

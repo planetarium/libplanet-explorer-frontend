@@ -1,24 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import React, { useMemo, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { Checkbox, Pivot, PivotItem } from '@fluentui/react';
 
+import ConsoleError from 'components/ConsoleError';
 import { BlockList, TransactionList } from 'components/List';
 import OffsetSwitch from 'components/OffsetSwitch';
 
-import {
-  getEndpointFromQuery,
-  GRAPHQL_ENDPOINTS,
-  nullEndpoint,
-} from 'lib/graphQLEndPoint';
+import { nullEndpoint } from 'lib/graphQLEndPoint';
 import {
   CommonPageProps,
   getCommonStaticPaths as getStaticPaths,
   getCommonStaticProps as getStaticProps,
 } from 'lib/staticGeneration';
 import { listTxColumns, mainMineColumns } from 'lib/listColumns';
+import useEndpoint from 'lib/useEndpoint';
 import useOffset, { limit } from 'lib/useOffset';
-import useSearchParams from 'lib/useSearchParams';
 
 import {
   Block,
@@ -28,18 +24,13 @@ import {
   TransactionListDocument,
   TransactionListQuery,
 } from 'src/gql/graphql';
+
 const POLL_INTERVAL = 2000;
 const ROUND_DIGITS = 4;
 
 export default function Summary({ staticEndpoint }: CommonPageProps) {
-  const [blocks, setBlocks] = useState<Block[] | null>(null);
-  const [blockList, setBlockList] = useState<JSX.Element>(<></>);
-  const [transactionList, setTransactionList] = useState<JSX.Element>(<></>);
-
-  const [endpoint, setEndpoint] = useState(staticEndpoint);
-  const { isReady, asPath } = useRouter();
-  const [query] = useSearchParams(asPath);
-  const [offset, olderHandler, newerHandler] = useOffset(asPath);
+  const endpoint = useEndpoint(staticEndpoint);
+  const [offset, olderHandler, newerHandler] = useOffset();
   const [excludeEmptyTxs, setExcludeEmptyTxs] = useState(false);
   const {
     loading: blocksLoading,
@@ -48,7 +39,7 @@ export default function Summary({ staticEndpoint }: CommonPageProps) {
   } = useQuery<BlockListQuery>(BlockListDocument, {
     variables: { offset, limit, excludeEmptyTxs },
     pollInterval: POLL_INTERVAL,
-    skip: !endpoint,
+    skip: !(endpoint && offset !== undefined),
   });
   const {
     loading: transactionsLoading,
@@ -57,61 +48,33 @@ export default function Summary({ staticEndpoint }: CommonPageProps) {
   } = useQuery<TransactionListQuery>(TransactionListDocument, {
     variables: { offset, limit, desc: true },
     pollInterval: POLL_INTERVAL,
-    skip: !endpoint,
+    skip: !(endpoint && offset !== undefined),
   });
-  useEffect(() => {
-    if (!endpoint && isReady) {
-      setEndpoint(getEndpointFromQuery(query) ?? GRAPHQL_ENDPOINTS[0]);
-    }
-  }, [endpoint, isReady, query]);
-  useEffect(() => {
-    if (blocksError) {
-      console.error(blocksError);
-      setBlockList(<p>{blocksError.message}</p>);
-    } else {
-      setBlocks(
-        blocksLoading
-          ? null
-          : (blocksData?.chainQuery.blockQuery?.blocks as Block[]) ?? null
-      );
-      setBlockList(
-        <BlockList
-          blocks={blocks}
-          loading={!endpoint || blocksLoading}
-          columns={mainMineColumns(endpoint ?? nullEndpoint)}
-          endpoint={endpoint ?? nullEndpoint}
-        />
-      );
-    }
-    if (transactionsError) {
-      console.error(transactionsError);
-      setTransactionList(<p>{transactionsError.message}</p>);
-    } else {
-      setTransactionList(
-        <TransactionList
-          columns={listTxColumns(endpoint ?? nullEndpoint)}
-          endpoint={endpoint ?? nullEndpoint}
-          loading={!endpoint || transactionsLoading}
-          transactions={
-            transactionsLoading
-              ? null
-              : (transactionsData?.chainQuery.transactionQuery?.transactions as
-                  | Transaction[]) ?? null
-          }
-        />
-      );
-    }
-  }, [
-    blocks,
-    blocksData?.chainQuery.blockQuery?.blocks,
-    blocksError,
-    blocksLoading,
-    endpoint,
-    transactionsData?.chainQuery.transactionQuery?.transactions,
-    transactionsError,
-    transactionsLoading,
-  ]);
-
+  const blocks = useMemo(
+    () =>
+      !endpoint || blocksLoading || blocksError
+        ? null
+        : (blocksData?.chainQuery.blockQuery?.blocks as Block[]) ?? null,
+    [
+      blocksData?.chainQuery.blockQuery?.blocks,
+      blocksError,
+      blocksLoading,
+      endpoint,
+    ]
+  );
+  const transactions = useMemo(
+    () =>
+      !endpoint || transactionsLoading || transactionsError
+        ? null
+        : (transactionsData?.chainQuery.transactionQuery
+            ?.transactions as Transaction[]) ?? null,
+    [
+      endpoint,
+      transactionsData?.chainQuery.transactionQuery?.transactions,
+      transactionsError,
+      transactionsLoading,
+    ]
+  );
   return (
     <main>
       <Checkbox
@@ -123,15 +86,48 @@ export default function Summary({ staticEndpoint }: CommonPageProps) {
       <OffsetSwitch
         olderHandler={olderHandler}
         newerHandler={newerHandler}
-        disable={{
-          older: !endpoint || blocksLoading || transactionsLoading,
-          newer:
-            !endpoint || blocksLoading || transactionsLoading || offset < 1,
-        }}
+        disable={
+          !endpoint ||
+          blocksLoading ||
+          transactionsLoading ||
+          offset == undefined
+            ? { older: true, newer: true }
+            : { older: false, newer: offset < 1 }
+        }
       />
       <Pivot>
-        <PivotItem headerText="Blocks">{blockList}</PivotItem>
-        <PivotItem headerText="Transactions">{transactionList}</PivotItem>
+        <PivotItem headerText="Blocks">
+          {blocksError && (
+            <>
+              <ConsoleError>blocksError</ConsoleError>
+              <p>{blocksError.message}</p>
+            </>
+          )}
+          {!blocksError && (
+            <BlockList
+              blocks={blocks}
+              loading={!endpoint || blocksLoading}
+              columns={mainMineColumns(endpoint ?? nullEndpoint)}
+              endpoint={endpoint ?? nullEndpoint}
+            />
+          )}
+        </PivotItem>
+        <PivotItem headerText="Transactions">
+          {transactionsError && (
+            <>
+              <ConsoleError>transactionsError</ConsoleError>
+              <p>{transactionsError.message}</p>
+            </>
+          )}
+          {!transactionsError && (
+            <TransactionList
+              columns={listTxColumns(endpoint ?? nullEndpoint)}
+              endpoint={endpoint ?? nullEndpoint}
+              loading={!endpoint || transactionsLoading}
+              transactions={transactions}
+            />
+          )}
+        </PivotItem>
       </Pivot>
     </main>
   );

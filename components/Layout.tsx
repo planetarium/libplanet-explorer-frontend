@@ -17,11 +17,7 @@ import {
   TooltipHost,
 } from '@fluentui/react';
 
-import {
-  getEndpointFromQuery,
-  GraphQLEndPoint,
-  GRAPHQL_ENDPOINTS,
-} from 'lib/graphQLEndPoint';
+import { GraphQLEndPoint, GRAPHQL_ENDPOINTS } from 'lib/graphQLEndPoint';
 import {
   BlockByIndexQuery,
   BlockByIndexDocument,
@@ -33,7 +29,8 @@ import {
 
 import Wrapper from 'components/Wrapper';
 import { CommonPageProps } from 'lib/staticGeneration';
-import useIdFromQuery from 'lib/useIdFromQuery';
+import useEndpoint from 'lib/useEndpoint';
+import useQueryItemId from 'lib/useQueryItemId';
 
 export default function Layout({
   children,
@@ -41,14 +38,8 @@ export default function Layout({
 }: CommonPageProps & {
   children: ReactNode;
 }) {
-  const { isReady, query } = useRouter();
-  const [endpoint, setEndpoint] = useState(staticEndpoint);
+  const endpoint = useEndpoint(staticEndpoint);
   const [client, setClient] = useState<ApolloClient<object> | null>(null);
-  useEffect(() => {
-    if (!endpoint && isReady) {
-      setEndpoint(getEndpointFromQuery(query));
-    }
-  }, [endpoint, isReady, query]);
   useEffect(() => {
     if (endpoint) {
       setClient(
@@ -82,12 +73,12 @@ const dropdownStyles: Partial<IDropdownStyles> = {
 
 export function NavBar({ endpoint }: { endpoint: GraphQLEndPoint }) {
   const client = useApolloClient();
-  const { push, query } = useRouter();
+  const { push } = useRouter();
   const [searchBoxValue, setSearchBoxValue] = useState('');
-  const queriedId = useIdFromQuery(query);
+  const itemId = useQueryItemId();
   useEffect(() => {
-    setSearchBoxValue(queriedId ?? '');
-  }, [queriedId]);
+    setSearchBoxValue(itemId ?? '');
+  }, [itemId]);
   const onSearch = async (value: string) => {
     value = value.trim();
     if (value.match(/^[0-9a-fA-F]{64}$/)) {

@@ -1,28 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import React, { useMemo, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import styled from '@emotion/styled';
 import { Checkbox } from '@fluentui/react';
 
+import ConsoleError from 'components/ConsoleError';
 import { BlockList, TransactionList } from 'components/List';
 import OffsetSwitch from 'components/OffsetSwitch';
 import Wrapper from 'components/Wrapper';
 
-import {
-  getEndpointFromQuery,
-  GraphQLEndPoint,
-  GRAPHQL_ENDPOINTS,
-  nullEndpoint,
-} from 'lib/graphQLEndPoint';
+import { GraphQLEndPoint, nullEndpoint } from 'lib/graphQLEndPoint';
 import {
   CommonPageProps,
   getCommonStaticPaths as getStaticPaths,
   getCommonStaticProps as getStaticProps,
 } from 'lib/staticGeneration';
 import { accountMineColumns, accountTxColumns } from 'lib/listColumns';
+import useEndpoint from 'lib/useEndpoint';
 import useOffset, { limit } from 'lib/useOffset';
-import useIdFromQuery from 'lib/useIdFromQuery';
-import useSearchParams from 'lib/useSearchParams';
+import useQueryItemId from 'lib/useQueryItemId';
 
 import {
   Block,
@@ -35,18 +30,10 @@ import {
 } from 'src/gql/graphql';
 
 export default function AccountPage({ staticEndpoint }: CommonPageProps) {
-  const [transactionsInfo, setTransactionsInfo] = useState<JSX.Element>(<></>);
-  const [blocksInfo, setBlocksInfo] = useState<JSX.Element>(<></>);
-
-  const [endpoint, setEndpoint] = useState(staticEndpoint);
-  const { isReady, asPath } = useRouter();
-  const [query] = useSearchParams(asPath);
-  const hash = useIdFromQuery(query);
-  const [txOffset, txOlderHandler, txNewerHandler] = useOffset(asPath, 'tx');
-  const [mineOffset, mineOlderHandler, mineNewerHandler] = useOffset(
-    asPath,
-    'mine'
-  );
+  const endpoint = useEndpoint(staticEndpoint);
+  const hash = useQueryItemId();
+  const [txOffset, txOlderHandler, txNewerHandler] = useOffset('tx');
+  const [mineOffset, mineOlderHandler, mineNewerHandler] = useOffset('mine');
   const [excludeEmptyTxs, setExcludeEmptyTxs] = useState(false);
   const {
     loading: transactionsLoading,
@@ -54,7 +41,7 @@ export default function AccountPage({ staticEndpoint }: CommonPageProps) {
     data: transactionsData,
   } = useQuery<TransactionsByAccountQuery>(TransactionsByAccountDocument, {
     variables: { offset: txOffset, limit, involvedAddress: hash },
-    skip: !endpoint,
+    skip: !(endpoint && txOffset !== undefined && hash),
   });
   const {
     loading: blocksLoading,
@@ -62,92 +49,111 @@ export default function AccountPage({ staticEndpoint }: CommonPageProps) {
     data: blocksData,
   } = useQuery<BlockListQuery>(BlockListDocument, {
     variables: { offset: mineOffset, limit, excludeEmptyTxs, miner: hash },
-    skip: !endpoint,
+    skip: !(endpoint && mineOffset !== undefined && hash),
   });
-  useEffect(() => {
-    if (!endpoint && isReady) {
-      setEndpoint(getEndpointFromQuery(query) ?? GRAPHQL_ENDPOINTS[0]);
-    }
-  }, [endpoint, isReady, query]);
-  useEffect(() => {
-    if (transactionsError) {
-      console.log(transactionsError);
-      setTransactionsInfo(<p>{transactionsError.message}</p>);
-    } else if (!endpoint || transactionsLoading) {
-      setTransactionsInfo(
+  const blocks = useMemo(
+    () =>
+      !blocksError && !!endpoint && !blocksLoading
+        ? (blocksData?.chainQuery.blockQuery?.blocks as Block[]) ?? null
+        : null,
+    [
+      blocksData?.chainQuery.blockQuery?.blocks,
+      blocksError,
+      blocksLoading,
+      endpoint,
+    ]
+  );
+  const { involvedTransactions, signedTransactions } = useMemo(() => {
+    const transactionQueryResult =
+      !transactionsError && !!endpoint && !transactionsLoading
+        ? transactionsData?.chainQuery.transactionQuery
+        : null;
+    return {
+      involvedTransactions: transactionQueryResult?.involvedTransactions as
+        | Transaction[],
+      signedTransactions: transactionQueryResult?.signedTransactions as
+        | Transaction[],
+    };
+  }, [
+    endpoint,
+    transactionsData?.chainQuery.transactionQuery,
+    transactionsError,
+    transactionsLoading,
+  ]);
+  return (
+    <Wrapper>
+      <h1>Account Details</h1>
+      <p>
+        Address: <b>{hash}</b>
+      </p>
+
+      <h2>Transactions count</h2>
+
+      {transactionsError ? (
         <>
-          <Ul>
-            <li>Signed Transaction: Loading…</li>
-            <li>Involved Transaction: Loading…</li>
-          </Ul>
-          <OffsetSwitch disable={{ older: true, newer: true }} />
-          <TransactionListWrap
-            loading={true}
-            endpoint={endpoint ?? nullEndpoint}
-          />
+          <ConsoleError>{transactionsError}</ConsoleError>
+          <p>{transactionsError.message}</p>
         </>
-      );
-    } else {
-      const transactionQueryResult =
-        transactionsData?.chainQuery.transactionQuery;
-      const involvedTransactions =
-        transactionQueryResult?.involvedTransactions as Transaction[];
-      const signedTransactions =
-        transactionQueryResult?.signedTransactions as Transaction[];
-
-      if (involvedTransactions === null || signedTransactions === null) {
-        console.log('transactions query failed');
-        setTransactionsInfo(<p>Failed to retrieve transactions.</p>);
-      }
-
-      setTransactionsInfo(
+      ) : !!endpoint &&
+        !transactionsLoading &&
+        (!involvedTransactions || !signedTransactions) ? (
+        <p>Failed to retrieve transactions.</p>
+      ) : (
         <>
           <Ul>
             <li>
               Signed Transaction:{' '}
-              {signedTransactions.length === limit
-                ? (limit - 1).toString() + '+'
-                : signedTransactions.length}
+              {!endpoint || transactionsLoading ? (
+                <>Loading...</>
+              ) : signedTransactions.length === limit ? (
+                (limit - 1).toString() + '+'
+              ) : (
+                signedTransactions.length
+              )}
             </li>
             <li>
               Involved Transaction:{' '}
-              {involvedTransactions.length === limit
-                ? (limit - 1).toString() + '+'
-                : involvedTransactions.length}
+              {!endpoint || transactionsLoading ? (
+                <>Loading...</>
+              ) : involvedTransactions.length === limit ? (
+                (limit - 1).toString() + '+'
+              ) : (
+                involvedTransactions.length
+              )}
             </li>
           </Ul>
           <OffsetSwitch
             olderHandler={txOlderHandler}
             newerHandler={txNewerHandler}
-            disable={{
-              older:
-                transactionsLoading ||
-                new Set(
-                  signedTransactions
-                    .map(tx => tx.id)
-                    .concat(involvedTransactions.map(tx => tx.id))
-                ).size < limit,
-              newer: transactionsLoading || txOffset === 0,
-            }}
+            disable={
+              !endpoint || transactionsLoading
+                ? { older: true, newer: true }
+                : {
+                    older:
+                      new Set(
+                        signedTransactions
+                          .map(tx => tx.id)
+                          .concat(involvedTransactions.map(tx => tx.id))
+                      ).size < limit,
+                    newer: !txOffset,
+                  }
+            }
           />
           <TransactionListWrap
-            loading={false}
+            loading={!endpoint || transactionsLoading}
             signed={signedTransactions}
             involved={involvedTransactions}
             endpoint={endpoint ?? nullEndpoint}
           />
         </>
-      );
-    }
-    if (blocksError) {
-      console.error(blocksError);
-      setBlocksInfo(<p>{blocksError.message}</p>);
-    } else {
-      const blocks =
-        !endpoint || blocksLoading
-          ? null
-          : (blocksData?.chainQuery.blockQuery?.blocks as Block[] | null);
-      setBlocksInfo(
+      )}
+      <h2>Mined Blocks</h2>
+      {blocksError ? (
+        <>
+          <ConsoleError>blocksError</ConsoleError>
+          <p>{blocksError.message}</p>
+        </>
+      ) : (
         <>
           <Checkbox
             label="Include blocks having any tx"
@@ -160,13 +166,14 @@ export default function AccountPage({ staticEndpoint }: CommonPageProps) {
           <OffsetSwitch
             olderHandler={mineOlderHandler}
             newerHandler={mineNewerHandler}
-            disable={{
-              older:
-                !endpoint ||
-                blocksLoading ||
-                (!!blocks && blocks.length < limit),
-              newer: !endpoint || blocksLoading || mineOffset === 0,
-            }}
+            disable={
+              !endpoint || blocksLoading
+                ? { older: true, newer: true }
+                : {
+                    older: !!blocks && blocks.length < limit,
+                    newer: !mineOffset,
+                  }
+            }
           />
           <BlockList
             blocks={blocks}
@@ -175,36 +182,7 @@ export default function AccountPage({ staticEndpoint }: CommonPageProps) {
             endpoint={endpoint ?? nullEndpoint}
           />
         </>
-      );
-    }
-  }, [
-    blocksData?.chainQuery.blockQuery?.blocks,
-    blocksError,
-    blocksLoading,
-    endpoint,
-    excludeEmptyTxs,
-    mineNewerHandler,
-    mineOffset,
-    mineOlderHandler,
-    transactionsData?.chainQuery.transactionQuery,
-    transactionsError,
-    transactionsLoading,
-    txNewerHandler,
-    txOffset,
-    txOlderHandler,
-  ]);
-  return (
-    <Wrapper>
-      <h1>Account Details</h1>
-      <p>
-        Address: <b>{hash}</b>
-      </p>
-
-      <h2>Transactions count</h2>
-
-      {transactionsInfo}
-      <h2>Mined Blocks</h2>
-      {blocksInfo}
+      )}
     </Wrapper>
   );
 }

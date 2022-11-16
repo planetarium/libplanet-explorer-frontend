@@ -1,10 +1,14 @@
-import { useCallback, useMemo } from 'react';
-import { useRouter } from 'next/router';
 import { ParsedUrlQuery, parse } from 'querystring';
 
-export default function useSearchParams(asPath: string) {
-  const { push } = useRouter();
+import { useCallback, useMemo } from 'react';
+import { useRouter } from 'next/router';
+
+export default function useSearchParams() {
+  const { asPath, isReady, push } = useRouter();
   const { pathname, query } = useMemo(() => {
+    if (!isReady) {
+      return { pathname: undefined, query: undefined };
+    }
     const delimiter = asPath.search('\\?');
     return delimiter >= 0
       ? {
@@ -12,13 +16,12 @@ export default function useSearchParams(asPath: string) {
           query: parse(asPath.substring(delimiter + 1)),
         }
       : { pathname: asPath, query: parse('') };
-  }, [asPath]);
+  }, [asPath, isReady]);
   const setSearchParams = useCallback(
     (query: ParsedUrlQuery) => {
-      console.log(`\n\n\n\t\t${pathname}\n${query}\n\n\n`);
-      push({ pathname, query });
+      isReady && push({ pathname, query });
     },
-    [pathname, push]
+    [isReady, pathname, push]
   );
   return [query, setSearchParams] as const;
 }
