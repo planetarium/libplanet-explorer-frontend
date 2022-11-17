@@ -2,7 +2,7 @@ import { ReactNode, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { ApolloProvider, useApolloClient } from '@apollo/client/react';
-import { ApolloClient, InMemoryCache } from '@apollo/client';
+import { ApolloClient, ApolloError, InMemoryCache } from '@apollo/client';
 import styled from '@emotion/styled';
 import {
   DirectionalHint,
@@ -71,6 +71,27 @@ const dropdownStyles: Partial<IDropdownStyles> = {
   dropdown: { width: 120 },
 };
 
+function handleSearchError(error: ApolloError, ignore: Array<string> = []) {
+  if (
+    !error.graphQLErrors.some(error => {
+      const { code } = error.extensions;
+      return !code || !ignore.includes(code as string);
+    })
+  ) {
+    return { data: null, error: false };
+  }
+  if (error.networkError) {
+    alert(
+      'An network error has occured and the error object has been recorded on the console.'
+    );
+  } else
+    alert(
+      'An error has occured and the error object has been recorded on the console.'
+    );
+  console.dir(error);
+  return { data: null, error: true };
+}
+
 export function NavBar({ endpoint }: { endpoint: GraphQLEndPoint }) {
   const client = useApolloClient();
   const { push } = useRouter();
@@ -81,24 +102,33 @@ export function NavBar({ endpoint }: { endpoint: GraphQLEndPoint }) {
   }, [itemId]);
   const onSearch = async (value: string) => {
     value = value.trim();
+    if (value == itemId) {
+      return;
+    }
     if (value.match(/^[0-9a-fA-F]{64}$/)) {
-      const data = await client
+      const { data, error } = await client
         .query<BlockByHashQuery>({
           query: BlockByHashDocument,
           variables: { hash: value },
         })
-        .catch(() => null);
-      if (data?.data.chainQuery.blockQuery?.block) {
+        .catch(e => handleSearchError(e, ['KEY_NOT_FOUND']));
+      if (error) {
+        return;
+      }
+      if (data?.chainQuery.blockQuery?.block) {
         push(`/${endpoint.name}/block/?${value}`);
         return;
       }
-      const txData = await client
+      const { data: txData, error: txError } = await client
         .query<TransactionByIdQuery>({
           query: TransactionByIdDocument,
           variables: { id: value },
         })
-        .catch(() => null);
-      if (txData?.data.chainQuery.transactionQuery?.transaction) {
+        .catch(e => handleSearchError(e, ['KEY_NOT_FOUND']));
+      if (txError) {
+        return;
+      }
+      if (txData?.chainQuery.transactionQuery?.transaction) {
         push(`/${endpoint.name}/transaction/?${value}`);
         return;
       }
@@ -107,11 +137,16 @@ export function NavBar({ endpoint }: { endpoint: GraphQLEndPoint }) {
       push(`/${endpoint.name}/account/?${value}`);
     } else if (value.match(/^[0-9]+$/)) {
       try {
-        const data = await client.query<BlockByIndexQuery>({
-          query: BlockByIndexDocument,
-          variables: { index: value },
-        });
-        const hash = data.data.chainQuery.blockQuery?.block?.hash;
+        const { data, error } = await client
+          .query<BlockByIndexQuery>({
+            query: BlockByIndexDocument,
+            variables: { index: value },
+          })
+          .catch(e => handleSearchError(e, ['ARGUMENT_OUT_OF_RANGE']));
+        if (error) {
+          return;
+        }
+        const hash = data?.chainQuery.blockQuery?.block?.hash;
         if (hash) {
           push(`/${endpoint.name}/block/?${hash}`);
         } else {
