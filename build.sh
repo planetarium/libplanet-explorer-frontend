@@ -17,7 +17,7 @@ done < DEPLOYMENTS.tsv
 VAR_ENV+="]";
 echo "$VAR_ENV" > ".env.production.local"
 
-# Then build NextJS site into out/ (default path)
+# Then build Next.JS site into out/ (default path)
 yarn codegen && yarn build && yarn export
 
 # Export CNAME
