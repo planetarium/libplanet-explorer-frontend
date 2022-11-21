@@ -1,11 +1,12 @@
 #!/bin/bash
+# Cloudflare Pages deploy script
 
 # Install deps
-npm install
+yarn
 
 # Export endpoint uris to .env.production
 COUNT=0
-VAR_ENV="GRAPHQL_ENDPOINTS=["
+VAR_ENV="NEXT_PUBLIC_GRAPHQL_ENDPOINTS=["
 
 while IFS=$'\t' read -r -a tuple; do
   (( COUNT++ ))
@@ -14,13 +15,13 @@ while IFS=$'\t' read -r -a tuple; do
 done < DEPLOYMENTS.tsv
 
 VAR_ENV+="]";
-echo "$VAR_ENV" > ".env.production"
+echo "$VAR_ENV" > ".env.production.local"
 
-# Then build Gatsby site into public (default path)
-npm run build
+# Then build Next.JS site into out/ (default path)
+yarn codegen && yarn build && yarn export
 
 # Export CNAME
 echo "$DOMAIN" > public/CNAME
 
 # Rename public to _site
-mv public _site
+mv out _site

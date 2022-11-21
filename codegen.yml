@@ -2,11 +2,8 @@ overwrite: true
 schema: ./src/schema.graphql
 documents: ./src/api.graphql
 generates:
-  src/generated/graphql.tsx:
-    plugins:
-    - typescript
-    - typescript-operations
-    - typescript-react-apollo
+  src/gql/:
+    preset: client
     config:
       scalars:
         BigInt: BigInt
