@@ -1,5 +1,5 @@
 9c-internal	https://d3n1gito7w9cnj.cloudfront.net/graphql
 9c-main	https://d131807iozwu1d.cloudfront.net/graphql
 9c-previewnet	https://d1v2umn46lfey6.cloudfront.net/graphql
-9c-content-rating	https://dblbss1cu65au.cloudfront.net/graphql
+9c-bridge-audit	https://bridge-audit.planetarium.dev/graphql
 localhost	http://localhost:5000/graphql
