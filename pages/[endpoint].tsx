@@ -135,7 +135,7 @@ export default function Summary({ staticEndpoint }: CommonPageProps) {
 
 function SummaryCards({ blocks }: { blocks: Block[] | null }) {
   if (blocks === null)
-    return <Cards interval={0} totalTxNumber={0} />;
+    return <Cards interval={0} totalBlockProposer={0} totalTxNumber={0} />;
 
   const timestamps: Date[] = blocks.map(block => new Date(block.timestamp));
 
@@ -147,9 +147,11 @@ function SummaryCards({ blocks }: { blocks: Block[] | null }) {
 
   const txNumbers = blocks.map(block => block.transactions.length);
   const totalTxNumber = txNumbers.reduce((a, b) => a + b, 0);
+  const totalBlockProposer = new Set(blocks.map(block => block.miner)).size;
   return (
     <Cards
       interval={interval}
+      totalBlockProposer={totalBlockProposer}
       totalTxNumber={totalTxNumber}
     />
   );
@@ -157,9 +159,11 @@ function SummaryCards({ blocks }: { blocks: Block[] | null }) {
 
 function Cards({
   interval,
+  totalBlockProposer,
   totalTxNumber,
 }: {
   interval: number;
+  totalBlockProposer: number;
   totalTxNumber: number;
 }) {
   return (
@@ -168,9 +172,13 @@ function Cards({
         <strong>{interval.toFixed(ROUND_DIGITS)}</strong> sec
         <p>Average interval in this page</p>
       </div>
+      <div className="card" key="total-block-proposer">
+        <strong>{totalBlockProposer}</strong>
+        <p># of block proposer in this page</p>
+      </div>
       <div className="card" key="total-tx-number">
         <strong>{Math.floor(totalTxNumber).toLocaleString()}</strong>
-        <p>Total txs in this page</p>
+        <p># of transactions in this page</p>
       </div>
     </div>
   );
