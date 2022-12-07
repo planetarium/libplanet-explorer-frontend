@@ -59,7 +59,7 @@ export default function BlockPage({ staticEndpoint }: CommonPageProps) {
             <dd>
               <code>{block.hash}</code>
             </dd>
-            <dt>Miner</dt>
+            <dt>Proposer</dt>
             <dd>
               <Link href={`/${endpoint.name}/account/?${block.miner}`}>
                 <code>{block.miner}</code>

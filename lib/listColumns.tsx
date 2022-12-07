@@ -53,9 +53,9 @@ export const mainMineColumns = (endpoint: GraphQLEndPoint) => [
     onRender: ({ timestamp }: Block) => <Timestamp timestamp={timestamp} />,
   },
   {
-    key: 'columnMiner',
-    name: 'Miner',
-    fieldName: 'miner',
+    key: 'columnProposer',
+    name: 'Proposer',
+    fieldName: 'Proposer',
     minWidth: 100,
     maxWidth: 450,
     ...commonProps,
