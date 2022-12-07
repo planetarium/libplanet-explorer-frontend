@@ -67,19 +67,6 @@ export const mainMineColumns = (endpoint: GraphQLEndPoint) => [
     ),
   },
   {
-    key: 'columnDifficulty',
-    name: 'Difficulty',
-    minWidth: 80,
-    maxWidth: 200,
-    ...commonProps,
-    isSortedDescending: true,
-    data: 'string',
-    isPadded: true,
-    onRender: ({ difficulty }: Block) => (
-      <>{Math.floor(difficulty).toLocaleString()}</>
-    ),
-  },
-  {
     key: 'columnTimeTaken',
     name: 'Time Taken',
     minWidth: 50,
@@ -162,19 +149,6 @@ export const accountMineColumns = (endpoint: GraphQLEndPoint) => [
     isPadded: true,
     onRender: ({ miner }: Block) => (
       <Link href={`/${endpoint.name}/account/?${miner}`}>{miner}</Link>
-    ),
-  },
-  {
-    key: 'columnDifficulty',
-    name: 'Difficulty',
-    minWidth: 50,
-    maxWidth: 200,
-    ...commonProps,
-    isSortedDescending: true,
-    data: 'string',
-    isPadded: true,
-    onRender: ({ difficulty }: Block) => (
-      <>{Math.floor(difficulty).toLocaleString()}</>
     ),
   },
   {

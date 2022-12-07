@@ -135,7 +135,7 @@ export default function Summary({ staticEndpoint }: CommonPageProps) {
 
 function SummaryCards({ blocks }: { blocks: Block[] | null }) {
   if (blocks === null)
-    return <Cards interval={0} difficultyAverage={0} totalTxNumber={0} />;
+    return <Cards interval={0} totalTxNumber={0} />;
 
   const timestamps: Date[] = blocks.map(block => new Date(block.timestamp));
 
@@ -145,16 +145,11 @@ function SummaryCards({ blocks }: { blocks: Block[] | null }) {
   }
   interval /= (timestamps.length - 1) * 1000;
 
-  const difficulties = blocks.map(block => block.difficulty);
-  const difficultyAverage =
-    difficulties.reduce((d, sum) => d + sum, 0) / difficulties.length;
-
   const txNumbers = blocks.map(block => block.transactions.length);
   const totalTxNumber = txNumbers.reduce((a, b) => a + b, 0);
   return (
     <Cards
       interval={interval}
-      difficultyAverage={difficultyAverage}
       totalTxNumber={totalTxNumber}
     />
   );
@@ -162,11 +157,9 @@ function SummaryCards({ blocks }: { blocks: Block[] | null }) {
 
 function Cards({
   interval,
-  difficultyAverage,
   totalTxNumber,
 }: {
   interval: number;
-  difficultyAverage: number;
   totalTxNumber: number;
 }) {
   return (
@@ -174,10 +167,6 @@ function Cards({
       <div className="card" key="interval">
         <strong>{interval.toFixed(ROUND_DIGITS)}</strong> sec
         <p>Average interval in this page</p>
-      </div>
-      <div className="card" key="difficultyAverage">
-        <strong>{Math.floor(difficultyAverage).toLocaleString()}</strong>
-        <p>Average difficulty in this page</p>
       </div>
       <div className="card" key="total-tx-number">
         <strong>{Math.floor(totalTxNumber).toLocaleString()}</strong>
