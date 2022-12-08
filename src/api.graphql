@@ -1,9 +1,7 @@
 fragment BlockCommon on Block {
   hash
   index
-  difficulty
   timestamp
-  totalDifficulty
 }
 
 fragment TransactionCommon on Transaction {
@@ -50,7 +48,6 @@ query BlockByHash($hash: ID!) {
       block(hash: $hash) {
         ...BlockCommon
         miner
-        nonce
         stateRootHash
         previousBlock {
           hash

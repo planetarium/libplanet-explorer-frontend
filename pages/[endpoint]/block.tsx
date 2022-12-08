@@ -59,11 +59,7 @@ export default function BlockPage({ staticEndpoint }: CommonPageProps) {
             <dd>
               <code>{block.hash}</code>
             </dd>
-            <dt>Nonce</dt>
-            <dd>
-              <code>{block.nonce}</code>
-            </dd>
-            <dt>Miner</dt>
+            <dt>Proposer</dt>
             <dd>
               <Link href={`/${endpoint.name}/account/?${block.miner}`}>
                 <code>{block.miner}</code>
@@ -89,10 +85,6 @@ export default function BlockPage({ staticEndpoint }: CommonPageProps) {
                 'N/A'
               )}
             </dd>
-            <dt>Difficulty</dt>
-            <dd>{block.difficulty}</dd>
-            <dt>Total Difficulty</dt>
-            <dd>{block.totalDifficulty.toString()}</dd>
             <dt>Transactions</dt>
             {block.transactions.length > 0 ? (
               <TransactionList

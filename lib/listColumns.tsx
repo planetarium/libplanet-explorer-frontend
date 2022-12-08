@@ -53,9 +53,9 @@ export const mainMineColumns = (endpoint: GraphQLEndPoint) => [
     onRender: ({ timestamp }: Block) => <Timestamp timestamp={timestamp} />,
   },
   {
-    key: 'columnMiner',
-    name: 'Miner',
-    fieldName: 'miner',
+    key: 'columnProposer',
+    name: 'Proposer',
+    fieldName: 'Proposer',
     minWidth: 100,
     maxWidth: 450,
     ...commonProps,
@@ -64,19 +64,6 @@ export const mainMineColumns = (endpoint: GraphQLEndPoint) => [
     isPadded: true,
     onRender: ({ miner }: Block) => (
       <Link href={`/${endpoint.name}/account/?${miner}`}>{miner}</Link>
-    ),
-  },
-  {
-    key: 'columnDifficulty',
-    name: 'Difficulty',
-    minWidth: 80,
-    maxWidth: 200,
-    ...commonProps,
-    isSortedDescending: true,
-    data: 'string',
-    isPadded: true,
-    onRender: ({ difficulty }: Block) => (
-      <>{Math.floor(difficulty).toLocaleString()}</>
     ),
   },
   {
@@ -162,19 +149,6 @@ export const accountMineColumns = (endpoint: GraphQLEndPoint) => [
     isPadded: true,
     onRender: ({ miner }: Block) => (
       <Link href={`/${endpoint.name}/account/?${miner}`}>{miner}</Link>
-    ),
-  },
-  {
-    key: 'columnDifficulty',
-    name: 'Difficulty',
-    minWidth: 50,
-    maxWidth: 200,
-    ...commonProps,
-    isSortedDescending: true,
-    data: 'string',
-    isPadded: true,
-    onRender: ({ difficulty }: Block) => (
-      <>{Math.floor(difficulty).toLocaleString()}</>
     ),
   },
   {
