@@ -5,7 +5,7 @@
   "scripts": {
     "prebuild": "yarn codegen",
     "dev": "run-p \"dev:**\"",
-    "build": "next build",
+    "build": "yarn prebuild && next build",
     "export": "next export",
     "start": "next start",
     "lint": "run-s prettier eslint",
