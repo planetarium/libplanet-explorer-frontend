@@ -10,8 +10,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 18.x
+          cache: yarn
       - name: Install dependencies
-        run: corepack enable && yarn
+        run: corepack enable && yarn --frozen-lockfile
       - name: Generate GraphQL types
         run: yarn prebuild
       - name: Type Check
