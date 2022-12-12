@@ -18,3 +18,9 @@ jobs:
         run: yarn tsc
       - name: Run ESLint
         run: yarn eslint
+      - name: Build static site
+        run: cp .env.development .env.local && yarn build && yarn export
+      - uses: actions/upload-artifact@v3
+        with:
+          name: public_html
+          path: out/
