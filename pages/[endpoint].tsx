@@ -12,7 +12,11 @@ import {
   getCommonStaticPaths as getStaticPaths,
   getCommonStaticProps as getStaticProps,
 } from 'lib/staticGeneration';
-import { listTxColumns, mainMineColumns } from 'lib/listColumns';
+import {
+  listTxColumns,
+  mainMineColumns,
+  ValidatorMetadataList,
+} from 'lib/listColumns';
 import useEndpoint from 'lib/useEndpoint';
 import useOffset, { limit } from 'lib/useOffset';
 
@@ -24,9 +28,11 @@ import {
   TransactionListDocument,
   TransactionListQuery,
 } from 'src/gql/graphql';
+import { useFetch } from 'usehooks-ts';
 
 const POLL_INTERVAL = 2000;
 const ROUND_DIGITS = 4;
+const VAL_META_JSON_URL = `https://9c-dev-cluster-configs.s3.ap-northeast-2.amazonaws.com/pbft-validators.json`;
 
 export default function Summary({ staticEndpoint }: CommonPageProps) {
   const endpoint = useEndpoint(staticEndpoint);
@@ -50,6 +56,8 @@ export default function Summary({ staticEndpoint }: CommonPageProps) {
     pollInterval: POLL_INTERVAL,
     skip: !(endpoint && offset !== undefined),
   });
+  const { data: valdata, error: valerror } =
+    useFetch<ValidatorMetadataList>(VAL_META_JSON_URL);
   const blocks = useMemo(
     () =>
       !endpoint || blocksLoading || blocksError
@@ -107,7 +115,7 @@ export default function Summary({ staticEndpoint }: CommonPageProps) {
             <BlockList
               blocks={blocks}
               loading={!endpoint || blocksLoading}
-              columns={mainMineColumns(endpoint ?? nullEndpoint)}
+              columns={mainMineColumns(endpoint ?? nullEndpoint, valdata)}
               endpoint={endpoint ?? nullEndpoint}
             />
           )}

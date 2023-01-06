@@ -5,13 +5,42 @@ import Timestamp from 'components/Timestamp';
 import { Block, Transaction } from 'src/gql/graphql';
 import { GraphQLEndPoint } from 'lib/graphQLEndPoint';
 
+interface ValidatorMetadata {
+  name: string;
+  address: string;
+  publicKey: string;
+}
+
+const MapWithAddressAndLabel = (
+  address: string,
+  valdata: ValidatorMetadataList
+) => {
+  const validator = valdata.validators.find(x => x.address === address);
+  if (validator) {
+    return (
+      <>
+        {validator.name} ({validator.address})
+      </>
+    );
+  } else {
+    return <>{address}</>;
+  }
+};
+
+export interface ValidatorMetadataList {
+  validators: ValidatorMetadata[];
+}
+
 export const commonProps = {
   isRowHeader: true,
   isResizable: true,
   isSorted: false,
 };
 
-export const mainMineColumns = (endpoint: GraphQLEndPoint) => [
+export const mainMineColumns = (
+  endpoint: GraphQLEndPoint,
+  vals: ValidatorMetadataList | undefined
+) => [
   {
     key: 'columnIndex',
     name: 'Index',
@@ -31,7 +60,7 @@ export const mainMineColumns = (endpoint: GraphQLEndPoint) => [
     name: 'Block Hash',
     fieldName: 'hash',
     minWidth: 5,
-    maxWidth: 450,
+    maxWidth: 100,
     ...commonProps,
     isSortedDescending: false,
     data: 'string',
@@ -45,7 +74,7 @@ export const mainMineColumns = (endpoint: GraphQLEndPoint) => [
     name: 'Timestamp',
     fieldName: 'timestamp',
     minWidth: 60,
-    maxWidth: 200,
+    maxWidth: 100,
     ...commonProps,
     isSortedDescending: true,
     data: 'string',
@@ -63,7 +92,9 @@ export const mainMineColumns = (endpoint: GraphQLEndPoint) => [
     data: 'string',
     isPadded: true,
     onRender: ({ miner }: Block) => (
-      <Link href={`/${endpoint.name}/account/?${miner}`}>{miner}</Link>
+      <Link href={`/${endpoint.name}/account/?${miner}`}>
+        {!vals ? miner : MapWithAddressAndLabel(miner, vals)}
+      </Link>
     ),
   },
   {
