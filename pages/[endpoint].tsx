@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useQuery } from '@apollo/client';
-import { Checkbox, Pivot, PivotItem } from '@fluentui/react';
+import { Checkbox, Pivot, PivotItem, Stack } from '@fluentui/react';
 
 import ConsoleError from 'components/ConsoleError';
 import { BlockList, TransactionList } from 'components/List';
@@ -27,6 +27,8 @@ import {
   Transaction,
   TransactionListDocument,
   TransactionListQuery,
+  StagedTransactionListDocument,
+  StagedTransactionListQuery,
 } from 'src/gql/graphql';
 import { useFetch } from 'usehooks-ts';
 
@@ -52,6 +54,15 @@ export default function Summary({ staticEndpoint }: CommonPageProps) {
     error: transactionsError,
     data: transactionsData,
   } = useQuery<TransactionListQuery>(TransactionListDocument, {
+    variables: { offset, limit, desc: true },
+    pollInterval: POLL_INTERVAL,
+    skip: !(endpoint && offset !== undefined),
+  });
+  const {
+    loading: stagedTxsLoading,
+    error: stagedTxsError,
+    data: stagedTxsData,
+  } = useQuery<StagedTransactionListQuery>(StagedTransactionListDocument, {
     variables: { offset, limit, desc: true },
     pollInterval: POLL_INTERVAL,
     skip: !(endpoint && offset !== undefined),
@@ -83,26 +94,42 @@ export default function Summary({ staticEndpoint }: CommonPageProps) {
       transactionsLoading,
     ]
   );
+  const stagedTxs = useMemo(
+    () =>
+      !endpoint || stagedTxsLoading || stagedTxsError
+        ? null
+        : (stagedTxsData?.chainQuery.transactionQuery
+            ?.stagedTransactions as Transaction[]) ?? null,
+    [
+      endpoint,
+      stagedTxsData?.chainQuery.transactionQuery?.stagedTransactions,
+      stagedTxsError,
+      stagedTxsLoading,
+    ]
+  );
   return (
     <main>
-      <Checkbox
-        label="Include blocks having any tx"
-        checked={excludeEmptyTxs}
-        onChange={() => setExcludeEmptyTxs(!excludeEmptyTxs)}
-      />
       <SummaryCards blocks={blocks} />
-      <OffsetSwitch
-        olderHandler={olderHandler}
-        newerHandler={newerHandler}
-        disable={
-          !endpoint ||
-          blocksLoading ||
-          transactionsLoading ||
-          offset == undefined
-            ? { older: true, newer: true }
-            : { older: false, newer: offset < 1 }
-        }
-      />
+      <Stack horizontal horizontalAlign="space-between">
+        <OffsetSwitch
+          olderHandler={olderHandler}
+          newerHandler={newerHandler}
+          disable={
+            !endpoint ||
+            blocksLoading ||
+            transactionsLoading ||
+            stagedTxsLoading ||
+            offset == undefined
+              ? { older: true, newer: true }
+              : { older: false, newer: offset < 1 }
+          }
+        />
+        <Checkbox
+          label="Include blocks having any tx"
+          checked={excludeEmptyTxs}
+          onChange={() => setExcludeEmptyTxs(!excludeEmptyTxs)}
+        />
+      </Stack>
       <Pivot>
         <PivotItem headerText="Blocks">
           {blocksError && (
@@ -133,6 +160,22 @@ export default function Summary({ staticEndpoint }: CommonPageProps) {
               endpoint={endpoint ?? nullEndpoint}
               loading={!endpoint || transactionsLoading}
               transactions={transactions}
+            />
+          )}
+        </PivotItem>
+        <PivotItem headerText="Staged Txs">
+          {stagedTxsError && (
+            <>
+              <ConsoleError>stagedTxsError</ConsoleError>
+              <p>{stagedTxsError.message}</p>
+            </>
+          )}
+          {!stagedTxsError && (
+            <TransactionList
+              columns={listTxColumns(endpoint ?? nullEndpoint)}
+              endpoint={endpoint ?? nullEndpoint}
+              loading={!endpoint || stagedTxsLoading}
+              transactions={stagedTxs}
             />
           )}
         </PivotItem>

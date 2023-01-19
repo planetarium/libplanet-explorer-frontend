@@ -92,6 +92,28 @@ query TransactionList(
   }
 }
 
+query StagedTransactionList(
+  $signer: Address
+  $involvedAddress: Address
+  $desc: Boolean!
+  $offset: Int!
+  $limit: Int!
+) {
+  chainQuery {
+    transactionQuery {
+      stagedTransactions(
+        signer: $signer
+        involvedAddress: $involvedAddress
+        desc: $desc
+        offset: $offset
+        limit: $limit
+      ) {
+        ...TransactionCommon
+      }
+    }
+  }
+}
+
 query TransactionById($id: ID) {
   chainQuery {
     transactionQuery {
@@ -121,6 +143,33 @@ query TransactionsByAccount(
         ...TransactionCommon
       }
       signedTransactions: transactions(
+        signer: $involvedAddress
+        desc: true
+        offset: $offset
+        limit: $limit
+      ) {
+        ...TransactionCommon
+      }
+    }
+  }
+}
+
+query StagedTransactionsByAccount(
+  $involvedAddress: Address!
+  $offset: Int
+  $limit: Int
+) {
+  chainQuery {
+    transactionQuery {
+      involvedTransactions: stagedTransactions(
+        involvedAddress: $involvedAddress
+        desc: true
+        offset: $offset
+        limit: $limit
+      ) {
+        ...TransactionCommon
+      }
+      signedTransactions: stagedTransactions(
         signer: $involvedAddress
         desc: true
         offset: $offset

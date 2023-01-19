@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import styled from '@emotion/styled';
-import { Checkbox } from '@fluentui/react';
+import { Checkbox, Pivot, PivotItem, Stack } from '@fluentui/react';
 
 import ConsoleError from 'components/ConsoleError';
 import { BlockList, TransactionList } from 'components/List';
@@ -26,31 +26,42 @@ import {
   Transaction,
   TransactionsByAccountDocument,
   TransactionsByAccountQuery,
-  TransactionCommonFragment,
+  StagedTransactionsByAccountDocument,
+  StagedTransactionsByAccountQuery,
 } from 'src/gql/graphql';
 
 export default function AccountPage({ staticEndpoint }: CommonPageProps) {
   const endpoint = useEndpoint(staticEndpoint);
   const hash = useQueryItemId();
-  const [txOffset, txOlderHandler, txNewerHandler] = useOffset('tx');
-  const [mineOffset, mineOlderHandler, mineNewerHandler] = useOffset('mine');
+  const [offset, olderHandler, newerHandler] = useOffset();
   const [excludeEmptyTxs, setExcludeEmptyTxs] = useState(false);
-  const {
-    loading: transactionsLoading,
-    error: transactionsError,
-    data: transactionsData,
-  } = useQuery<TransactionsByAccountQuery>(TransactionsByAccountDocument, {
-    variables: { offset: txOffset, limit, involvedAddress: hash },
-    skip: !(endpoint && txOffset !== undefined && hash),
-  });
   const {
     loading: blocksLoading,
     error: blocksError,
     data: blocksData,
   } = useQuery<BlockListQuery>(BlockListDocument, {
-    variables: { offset: mineOffset, limit, excludeEmptyTxs, miner: hash },
-    skip: !(endpoint && mineOffset !== undefined && hash),
+    variables: { offset, limit, excludeEmptyTxs, miner: hash },
+    skip: !(endpoint && offset !== undefined && hash),
   });
+  const {
+    loading: transactionsLoading,
+    error: transactionsError,
+    data: transactionsData,
+  } = useQuery<TransactionsByAccountQuery>(TransactionsByAccountDocument, {
+    variables: { offset, limit, involvedAddress: hash },
+    skip: !(endpoint && offset !== undefined && hash),
+  });
+  const {
+    loading: stagedTxsLoading,
+    error: stagedTxsError,
+    data: stagedTxsData,
+  } = useQuery<StagedTransactionsByAccountQuery>(
+    StagedTransactionsByAccountDocument,
+    {
+      variables: { offset, limit, involvedAddress: hash },
+      skip: !(endpoint && offset !== undefined && hash),
+    }
+  );
   const blocks = useMemo(
     () =>
       !blocksError && !!endpoint && !blocksLoading
@@ -80,148 +91,157 @@ export default function AccountPage({ staticEndpoint }: CommonPageProps) {
     transactionsError,
     transactionsLoading,
   ]);
+  const { involvedStagedTxs, signedStagedTxs } = useMemo(() => {
+    const stagedTxsQueryResult =
+      !stagedTxsError && !!endpoint && !stagedTxsLoading
+        ? stagedTxsData?.chainQuery.transactionQuery
+        : null;
+    return {
+      involvedStagedTxs: stagedTxsQueryResult?.involvedTransactions as
+        | Transaction[],
+      signedStagedTxs: stagedTxsQueryResult?.signedTransactions as
+        | Transaction[],
+    };
+  }, [
+    endpoint,
+    stagedTxsData?.chainQuery.transactionQuery,
+    stagedTxsError,
+    stagedTxsLoading,
+  ]);
   return (
     <Wrapper>
-      <h1>Account Details</h1>
-      <p>
-        Address: <b>{hash}</b>
-      </p>
-
-      <h2>Transactions count</h2>
-
-      {transactionsError ? (
-        <>
-          <ConsoleError>{transactionsError}</ConsoleError>
-          <p>{transactionsError.message}</p>
-        </>
-      ) : !!endpoint &&
-        !transactionsLoading &&
-        (!involvedTransactions || !signedTransactions) ? (
-        <p>Failed to retrieve transactions.</p>
-      ) : (
-        <>
-          <Ul>
-            <li>
-              Signed Transaction:{' '}
-              {!endpoint || transactionsLoading ? (
-                <>Loading...</>
-              ) : signedTransactions.length === limit ? (
-                (limit - 1).toString() + '+'
-              ) : (
-                signedTransactions.length
-              )}
-            </li>
-            <li>
-              Involved Transaction:{' '}
-              {!endpoint || transactionsLoading ? (
-                <>Loading...</>
-              ) : involvedTransactions.length === limit ? (
-                (limit - 1).toString() + '+'
-              ) : (
-                involvedTransactions.length
-              )}
-            </li>
-          </Ul>
-          <OffsetSwitch
-            olderHandler={txOlderHandler}
-            newerHandler={txNewerHandler}
-            disable={
-              !endpoint || transactionsLoading
-                ? { older: true, newer: true }
-                : {
-                    older:
-                      new Set(
-                        signedTransactions
-                          .map(tx => tx.id)
-                          .concat(involvedTransactions.map(tx => tx.id))
-                      ).size < limit,
-                    newer: !txOffset,
-                  }
-            }
-          />
-          <TransactionListWrap
-            loading={!endpoint || transactionsLoading}
-            signed={signedTransactions}
-            involved={involvedTransactions}
-            endpoint={endpoint ?? nullEndpoint}
-          />
-        </>
-      )}
-      <h2>Mined Blocks</h2>
-      {blocksError ? (
-        <>
-          <ConsoleError>blocksError</ConsoleError>
-          <p>{blocksError.message}</p>
-        </>
-      ) : (
-        <>
-          <Checkbox
-            label="Include blocks having any tx"
-            checked={excludeEmptyTxs}
-            disabled={!endpoint || blocksLoading}
-            onChange={() => {
-              setExcludeEmptyTxs(!excludeEmptyTxs);
-            }}
-          />
-          <OffsetSwitch
-            olderHandler={mineOlderHandler}
-            newerHandler={mineNewerHandler}
-            disable={
-              !endpoint || blocksLoading
-                ? { older: true, newer: true }
-                : {
-                    older: !!blocks && blocks.length < limit,
-                    newer: !mineOffset,
-                  }
-            }
-          />
-          <BlockList
-            blocks={blocks}
-            loading={!endpoint || blocksLoading}
-            columns={accountMineColumns(endpoint ?? nullEndpoint)}
-            endpoint={endpoint ?? nullEndpoint}
-          />
-        </>
-      )}
+      <h2>Account {hash}</h2>
+      <Stack horizontal horizontalAlign="space-between">
+        <OffsetSwitch
+          olderHandler={olderHandler}
+          newerHandler={newerHandler}
+          disable={
+            !endpoint ||
+            blocksLoading ||
+            transactionsLoading ||
+            stagedTxsLoading
+              ? { older: true, newer: true }
+              : {
+                  older:
+                    !!blocks &&
+                    blocks.length < limit &&
+                    !!signedTransactions &&
+                    !!involvedTransactions &&
+                    new Set(
+                      signedTransactions
+                        .map(tx => tx.id)
+                        .concat(involvedTransactions.map(tx => tx.id))
+                    ).size < limit &&
+                    !!signedStagedTxs &&
+                    !!involvedStagedTxs &&
+                    new Set(
+                      signedStagedTxs
+                        .map(tx => tx.id)
+                        .concat(involvedStagedTxs.map(tx => tx.id))
+                    ).size < limit,
+                  newer: !offset,
+                }
+          }
+        />
+        <Checkbox
+          label="Include blocks having any tx"
+          checked={excludeEmptyTxs}
+          onChange={() => {
+            setExcludeEmptyTxs(!excludeEmptyTxs);
+          }}
+        />
+      </Stack>
+      <Pivot>
+        <PivotItem headerText="Mined Blocks">
+          {blocksError ? (
+            <>
+              <ConsoleError>blocksError</ConsoleError>
+              <p>{blocksError.message}</p>
+            </>
+          ) : (
+            <BlockList
+              blocks={blocks}
+              loading={!endpoint || blocksLoading}
+              columns={accountMineColumns(endpoint ?? nullEndpoint)}
+              endpoint={endpoint ?? nullEndpoint}
+            />
+          )}
+        </PivotItem>
+        <PivotItem headerText="Signed Txs">
+          {transactionsError ? (
+            <>
+              <ConsoleError>{transactionsError}</ConsoleError>
+              <p>{transactionsError.message}</p>
+            </>
+          ) : !!endpoint && !transactionsLoading && !signedTransactions ? (
+            <p>Failed to retrieve transactions.</p>
+          ) : (
+            <TransactionList
+              loading={!endpoint || transactionsLoading}
+              transactions={signedTransactions ? signedTransactions : null}
+              notFoundMessage={'No Signed Transactions'}
+              endpoint={endpoint ?? nullEndpoint}
+              columns={accountTxColumns(endpoint ?? nullEndpoint)}
+            />
+          )}
+        </PivotItem>
+        <PivotItem headerText="Involved Txs">
+          {transactionsError ? (
+            <>
+              <ConsoleError>{transactionsError}</ConsoleError>
+              <p>{transactionsError.message}</p>
+            </>
+          ) : !!endpoint && !transactionsLoading && !involvedTransactions ? (
+            <p>Failed to retrieve transactions.</p>
+          ) : (
+            <TransactionList
+              loading={!endpoint || transactionsLoading}
+              transactions={involvedTransactions ? involvedTransactions : null}
+              notFoundMessage={'No Involved Transactions'}
+              endpoint={endpoint ?? nullEndpoint}
+              columns={accountTxColumns(endpoint ?? nullEndpoint)}
+            />
+          )}
+        </PivotItem>
+        <PivotItem headerText="Signed Txs (Staged)">
+          {stagedTxsError ? (
+            <>
+              <ConsoleError>{stagedTxsError}</ConsoleError>
+              <p>{stagedTxsError.message}</p>
+            </>
+          ) : !!endpoint && !stagedTxsLoading && !signedStagedTxs ? (
+            <p>Failed to retrieve staged transactions.</p>
+          ) : (
+            <TransactionList
+              loading={!endpoint || stagedTxsLoading}
+              transactions={signedStagedTxs ? signedStagedTxs : null}
+              notFoundMessage={'No Signed Staged Transactions'}
+              endpoint={endpoint ?? nullEndpoint}
+              columns={accountTxColumns(endpoint ?? nullEndpoint)}
+            />
+          )}
+        </PivotItem>
+        <PivotItem headerText="Involved Txs (Staged)">
+          {stagedTxsError ? (
+            <>
+              <ConsoleError>{stagedTxsError}</ConsoleError>
+              <p>{stagedTxsError.message}</p>
+            </>
+          ) : !!endpoint && !stagedTxsLoading && !involvedStagedTxs ? (
+            <p>Failed to retrieve staged transactions.</p>
+          ) : (
+            <TransactionList
+              loading={!endpoint || stagedTxsLoading}
+              transactions={involvedStagedTxs ? involvedStagedTxs : null}
+              notFoundMessage={'No Involved Staged Transactions'}
+              endpoint={endpoint ?? nullEndpoint}
+              columns={accountTxColumns(endpoint ?? nullEndpoint)}
+            />
+          )}
+        </PivotItem>
+      </Pivot>
     </Wrapper>
   );
-}
-
-function TransactionListWrap({
-  signed,
-  involved,
-  loading,
-  endpoint,
-}: {
-  signed?: TransactionCommonFragment[];
-  involved?: TransactionCommonFragment[];
-  loading: boolean;
-  endpoint: GraphQLEndPoint;
-}) {
-  return (
-    <>
-      <h2>Signed Transactions{counter(signed)}</h2>
-      <TransactionList
-        loading={loading}
-        transactions={signed ? signed : null}
-        notFoundMessage={'No Signed Transactions'}
-        endpoint={endpoint}
-        columns={accountTxColumns(endpoint)}
-      />
-      <h2>Involved Transactions{counter(involved)}</h2>
-      <TransactionList
-        loading={loading}
-        transactions={involved ? involved : null}
-        notFoundMessage={'No Involved Transactions'}
-        endpoint={endpoint}
-        columns={accountTxColumns(endpoint)}
-      />
-    </>
-  );
-}
-
-function counter(items?: unknown[]) {
-  return items !== undefined && items.length > 0 && `: ${items.length}`;
 }
 
 const Ul = styled.ul`
