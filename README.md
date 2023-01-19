@@ -38,7 +38,7 @@ yarn
 yarn dev
 ~~~~
 
-You can now see the web app from *localhost:8000*.
+You can now see the web app from *localhost:3000*.
 
 
 Development (with server)
@@ -57,7 +57,7 @@ yarn
 yarn dev
 ~~~~
 
-You can now see the web app from *localhost:8000*.
+You can now see the web app from *localhost:3000*.
 
 
 Production
