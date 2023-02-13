@@ -1,0 +1,269 @@
+schema {
+  query: ExplorerQuery
+}
+
+type ExplorerQuery {
+  blockQuery: BlockQuery
+  transactionQuery: TransactionQuery
+  stateQuery: StateQuery
+  nodeState: NodeState!
+  blockPolicy: BlockPolicy!
+}
+
+type BlockQuery {
+  blocks(
+    desc: Boolean = false
+    offset: Int = 0
+    limit: Int
+    excludeEmptyTxs: Boolean = false
+    miner: Address
+  ): [Block!]!
+  block(hash: ID, index: ID): Block
+}
+
+type Block {
+  # A block's hash.
+  hash: ID!
+
+  # The height of the block.
+  index: Long!
+
+  # The mining difficulty that the block's nonce has to satisfy.
+  difficulty: Long!
+
+  # The total mining difficulty since the genesis including the block's difficulty.
+  totalDifficulty: BigInt!
+
+  # The proof-of-work nonce which satisfies the required difficulty.
+  nonce: ByteString!
+
+  # The address of the miner.
+  miner: Address!
+
+  # The public key of the Miner.
+  publicKey: PublicKey
+
+  # The previous block.  If it's a genesis block (i.e., its index is 0) this must be null.
+  previousBlock: Block
+  timestamp: DateTimeOffset!
+
+  # The hash of the resulting states after evaluating transactions and a block action (if exists)
+  stateRootHash: ByteString!
+
+  # The digital signature of the whole block content (except for hash, which is derived from the signature and other contents)
+  signature: ByteString
+
+  # Transactions belonging to the block.
+  transactions: [Transaction!]!
+}
+
+scalar Long
+
+scalar BigInt
+
+scalar ByteString
+
+scalar Address
+
+scalar PublicKey
+
+# The `DateTimeOffset` scalar type represents a date, time and offset from UTC. `DateTimeOffset` expects timestamps to be formatted in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard.
+scalar DateTimeOffset
+
+type Transaction {
+  # A unique identifier derived from this transaction content.
+  id: ID!
+
+  # The number of previous transactions committed by the signer of this tx.
+  nonce: Long!
+
+  # An address of the account who signed this transaction.
+  signer: Address!
+
+  # A PublicKey of the account who signed this transaction.
+  publicKey: ByteString!
+
+  # Addresses whose states were affected by Actions.
+  updatedAddresses: [Address!]!
+
+  # A digital signature of the content of this transaction.
+  signature: ByteString!
+
+  # The time this transaction was created and signed.
+  timestamp: DateTimeOffset!
+
+  # A list of actions in this transaction.
+  actions: [Action!]!
+
+  # A serialized tx payload in base64 string.
+  serializedPayload: String!
+
+  # The block including the transaction.
+  blockRef: [Block!]
+}
+
+type Action {
+  # Raw Action data ('hex' or 'base64' encoding available.)
+  raw(encode: String = "hex"): String!
+
+  # A readable representation for debugging.
+  inspection: String!
+
+  # A JSON representaion of action data
+  json: String!
+}
+
+type TransactionQuery {
+  transactions(
+    signer: Address
+    involvedAddress: Address
+    desc: Boolean = false
+    offset: Int = 0
+    limit: Int
+  ): [Transaction!]!
+  stagedTransactions(
+    signer: Address
+    involvedAddress: Address
+    desc: Boolean = false
+    offset: Int = 0
+    limit: Int
+  ): [Transaction!]!
+  transaction(id: ID): Transaction
+  unsignedTransaction(
+    # The hexadecimal string of public key for Transaction.
+    publicKey: String!
+
+    # The hexadecimal string of plain value for Action.
+    plainValue: String!
+
+    # The nonce for Transaction.
+    nonce: Long
+  ): ByteString!
+  nextNonce(
+    # Address of the account to get the next tx nonce.
+    address: Address!
+  ): Long!
+
+  # Attach the given signature to the given transaction and return tx as hexadecimal
+  bindSignature(
+    # The hexadecimal string of unsigned transaction to attach the given signature.
+    unsignedTransaction: String!
+
+    # The hexadecimal string of the given unsigned transaction.
+    signature: String!
+  ): String!
+  transactionResult(
+    # transaction id.
+    txId: ID!
+  ): TxResultType!
+}
+
+type TxResultType {
+  # The transaction status.
+  txStatus: TxStatus!
+
+  # The block index which the target transaction executed.
+  blockIndex: Long
+
+  # The block hash which the target transaction executed.
+  blockHash: String
+
+  # The name of exception. (when only failed)
+  exceptionName: String
+
+  # The hexadecimal string of the exception metadata. (when only failed)
+  exceptionMetadata: BencodexValue
+  updatedStates: [UpdatedStateType!]
+  updatedFungibleAssets: [FungibleAssetBalancesType!]
+  fungibleAssetsDelta: [FungibleAssetBalancesType!]
+  actionsLogsList: [[String!]!]
+}
+
+enum TxStatus {
+  INVALID
+  STAGING
+  SUCCESS
+  FAILURE
+}
+
+scalar BencodexValue
+
+type UpdatedStateType {
+  address: Address!
+  state: BencodexValue
+}
+
+type FungibleAssetBalancesType {
+  address: Address!
+  fungibleAssetValues: [FungibleAssetValue!]!
+}
+
+# Holds a fungible asset value which holds its currency together.
+type FungibleAssetValue {
+  # The currency of the fungible asset.
+  currency: Currency!
+
+  # Gets a number that indicates the sign (-1: negative, 1: positive, or 0: zero) of the value.
+  sign: Int!
+  majorUnit: BigInt!
+  minorUnit: BigInt!
+
+  # The value quantity without its currency in string, e.g., "123.45".
+  quantity: String!
+
+  # The value quantity with its currency in string, e.g., "123.45 ABC".
+  string: String!
+}
+
+type Currency {
+  # The ticker symbol, e.g., USD.
+  ticker: String!
+
+  # The number of digits to treat as minor units (i.e., exponents).
+  decimalPlaces: UInt!
+
+  # The addresses who can mint this currency.  If this is null anyone can mint the currency.  On the other hand, unlike null, an empty set means no one can mint the currency.
+  minters: [Address!]
+
+  # The uppermost quantity of currency allowed to exist.  null means unlimited supply.
+  maximumSupply: FungibleAssetValue
+
+  # Whether the total supply of this currency is trackable.
+  totalSupplyTrackable: Boolean!
+
+  # The deterministic hash derived from other fields.
+  hash: ByteString!
+}
+
+scalar UInt
+
+type StateQuery {
+  balance(
+    owner: Address!
+    currencyHash: ByteString!
+    offsetBlockHash: ID!
+  ): FungibleAssetValue!
+  totalSupply(
+    currencyHash: ByteString!
+    offsetBlockHash: ID!
+  ): FungibleAssetValue
+  validators(offsetBlockHash: ID!): [Validator!]
+}
+
+# A data type holds validator's public key and its voting power.
+type Validator {
+  # The public key of the validator.
+  publicKey: PublicKey!
+
+  # Gets the voting power of the validator.
+  power: BigInt!
+}
+
+type NodeState {
+  preloaded: Boolean!
+}
+
+type BlockPolicy {
+  # A fixed set of native tokens, which are supported by the blockchain as first-class assets.
+  nativeTokens: [Currency!]!
+}
