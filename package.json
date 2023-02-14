@@ -1,4 +1,8 @@
 {
+  "workspaces": [
+    "libplanet/@planetarium/tx",
+    "sphere/packages/*"
+  ],
   "name": "libplanet-explorer",
   "version": "0.1.0",
   "description": "Libplanet Explorer",
@@ -43,9 +47,9 @@
     "@graphql-codegen/cli": "^2.13.8",
     "@graphql-codegen/client-preset": "^1.1.3",
     "@graphql-typed-document-node/core": "^3.1.1",
-    "@planetarium/account-raw": "^0.0.3",
-    "@planetarium/sign": "^0.0.12",
-    "@planetarium/tx": "^0.47.0",
+    "@planetarium/account-raw": "workspace:^",
+    "@planetarium/sign": "workspace:^",
+    "@planetarium/tx": "workspace:^",
     "@typescript-eslint/eslint-plugin": "^5.42.0",
     "@typescript-eslint/parser": "^5.42.0",
     "bencodex": "^0.1.2",
@@ -68,5 +72,12 @@
     "eslint-config-next": "13.0.0",
     "typescript": "4.8.4"
   },
-  "packageManager": "yarn@3.2.4"
+  "packageManager": "yarn@3.2.4",
+  "resolutions": {
+    "@planetarium/account-aws-kms": "portal:sphere/packages/account-aws-kms",
+    "@planetarium/account-local": "portal:sphere/packages/account-local",
+    "@planetarium/account-raw": "portal:sphere/packages/account-raw",
+    "@planetarium/sign": "portal:sphere/packages/sign",
+    "@planetarium/tx": "portal:libplanet/@planetarium/tx"
+  }
 }

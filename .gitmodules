@@ -1,0 +1,8 @@
+[submodule "libplanet"]
+	path = libplanet
+	url = git@github.com:planetarium/libplanet.git
+	branch = npm-tx-experiments
+[submodule "sphere"]
+	path = sphere
+	url = git@github.com:planetarium/sphere.git
+	branch = libplanet-sdk-experiments
