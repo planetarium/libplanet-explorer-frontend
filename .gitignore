@@ -19,6 +19,7 @@
 # production
 /build
 src/gql
+src/explorerGql
 
 # misc
 .DS_Store
