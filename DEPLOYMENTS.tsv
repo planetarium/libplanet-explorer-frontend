@@ -4,4 +4,5 @@
 9c-mobile	https://d1nyazrmymvbiy.cloudfront.net/graphql
 9c-pbft-testing	https://d3r0h4z3bfp4wc.cloudfront.net/graphql
 9c-bridge-audit	https://bridge-audit.planetarium.dev/graphql
+9c-internal-mead	https://9c-internal-mead-explorer.nine-chronicles.com/graphql
 localhost	http://localhost:5000/graphql
