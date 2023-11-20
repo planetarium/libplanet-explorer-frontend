@@ -1,8 +1,6 @@
-9c-internal	https://9c-internal-rpc-1.nine-chronicles.com/graphql
-9c-main	https://d236f2h2ct6v3x.cloudfront.net/graphql
-9c-previewnet	https://d1v2umn46lfey6.cloudfront.net/graphql
-9c-mobile	https://d1nyazrmymvbiy.cloudfront.net/graphql
-9c-pbft-testing	https://d3r0h4z3bfp4wc.cloudfront.net/graphql
-9c-bridge-audit	https://bridge-audit.planetarium.dev/graphql
-9c-internal-mead	https://9c-internal-mead-explorer.nine-chronicles.com/graphql
+odin-internal	https://odin-internal-rpc-1.nine-chronicles.com/graphql
+odin	https://odin-full-state.nine-chronicles.com/graphql
+heimdall-internal	https://heimdall-internal-rpc-1.nine-chronicles.com/graphql
+heimdall	https://heimdall-full-state.nine-chronicles.com/graphql
+idun-internal	https://idun-internal-rpc-1.nine-chronicles.com/graphql
 localhost	http://localhost:5000/graphql
