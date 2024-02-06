@@ -5,5 +5,5 @@ heimdall-internal	https://heimdall-internal-rpc-1.nine-chronicles.com/graphql
 heimdall	https://heimdall-full-state.nine-chronicles.com/graphql
 idun-internal	https://idun-internal-rpc-1.nine-chronicles.com/graphql
 idun		https://idun-full-state.nine-chronicles.com/graphql
-dev-v2		http://k8s-9codinli-remotehe-55686c889c-fbbfdb2f7f6d58ec.elb.us-east-2.amazonaws.com/graphql
+dev-v2		https://9c-dev-v2-rpc-1.nine-chronicles.com/graphql
 localhost	http://localhost:5000/graphql
