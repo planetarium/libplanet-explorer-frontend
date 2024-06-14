@@ -180,3 +180,13 @@ query StagedTransactionsByAccount(
     }
   }
 }
+
+query Get9cTransferAssetAction($sender: Address!, $recipient: Address!, $amount: String!, $currency: CurrencyEnum!, $memo: String) {
+  actionQuery {
+    transferAsset(sender: $sender recipient: $recipient, amount: $amount, currency: $currency, memo: $memo)
+  }
+}
+
+mutation StageTransaction9c($payload: String!) {
+  stageTransaction(payload: $payload)
+}

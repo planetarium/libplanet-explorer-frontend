@@ -1,0 +1,5 @@
+query NextAccountNonce($address: Address!) {
+  transactionQuery {
+    nextNonce(address: $address)
+  }
+}

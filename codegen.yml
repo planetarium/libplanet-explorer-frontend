@@ -1,8 +1,15 @@
 overwrite: true
-schema: ./src/schema.graphql
-documents: ./src/api.graphql
 generates:
   src/gql/:
+    schema: ./src/schema.graphql
+    documents: ./src/api.graphql
+    preset: client
+    config:
+      scalars:
+        BigInt: BigInt
+  src/explorerGql/:  # FIXME: swap with 9c
+    schema: ./src/explorerSchema.graphql
+    documents: ./src/explorerApi.graphql
     preset: client
     config:
       scalars:
