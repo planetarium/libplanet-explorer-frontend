@@ -1,11 +1,6 @@
 9c-internal	https://9c-internal-rpc-1.nine-chronicles.com/graphql
 odin-internal	https://odin-internal-rpc-1.nine-chronicles.com/graphql
-odin-internal-v180	https://9c-internal-rpc-1-v180.nine-chronicles.com/graphql
-odin		https://odin-full-state.nine-chronicles.com/graphql
 heimdall-internal	https://heimdall-internal-rpc-1.nine-chronicles.com/graphql
-heimdall-internal-v180	https://heimdall-internal-rpc-1-v180.nine-chronicles.com/graphql
-heimdall	https://heimdall-full-state.nine-chronicles.com/graphql
 idun-internal	https://idun-internal-rpc-1.nine-chronicles.com/graphql
-idun		https://idun-full-state.nine-chronicles.com/graphql
 dev-v2		https://9c-dev-v2-rpc-1.nine-chronicles.com/graphql
 localhost	http://localhost:5000/graphql
