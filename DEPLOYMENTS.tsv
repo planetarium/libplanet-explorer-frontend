@@ -1,8 +1,9 @@
 odin-internal	https://odin-internal-rpc-1.nine-chronicles.com/graphql
+odin-preview	https://odin-preview-validator-5.nine-chronicles.com/graphql
 heimdall-internal	https://heimdall-internal-rpc-1.nine-chronicles.com/graphql
-odin-internal	https://odin-preview-rpc-1.nine-chronicles.com/graphql
-heimdall-internal	https://heimdall-preview-rpc-1.nine-chronicles.com/graphql
+heimdall-preview	https://heimdall-preview-validator-1.nine-chronicles.com/graphql
 idun-internal	https://idun-internal-rpc-1.nine-chronicles.com/graphql
 thor-internal	https://thor-internal-rpc-1.nine-chronicles.com/graphql
+thor-preview	https://thor-preview-validator-1.nine-chronicles.com/graphql
 dev-v2		https://9c-dev-v2-rpc-1.nine-chronicles.com/graphql
 localhost	http://localhost:5000/graphql
